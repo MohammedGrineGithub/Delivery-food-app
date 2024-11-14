@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.pages.*
 import com.example.deliveryfoodapp.ui.theme.DeliveryFoodAppTheme
+import com.example.deliveryfoodapp.utils.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +28,26 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "MainApp",
+                        startDestination = Routes.MAIN_APP,
                         Modifier.padding(innerPadding)
                     ) {
-                        composable("MainApp") { MainApp(modifier = Modifier.padding(innerPadding),navController = navController) }
-                        composable("OnboardingPage") { OnboardingPage(navController) }
-                        composable("LoginPage") { LoginPage(navController) }
-                        composable("SignupPage") { SignupPage(navController) }
+                        composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
+                        composable(Routes.ONBOARDING_PAGE) { OnboardingPage(navController) }
+                        composable(Routes.LOGIN_PAGE) { LoginPage(navController) }
+                        composable(Routes.SIGNUP_PAGE) { SignupPage(navController) }
+                        composable(Routes.HOME_PAGE) { HomePage(navController) }
+                        composable(Routes.NOTIFICATIONS_PAGE) { NotificationsPage(navController) }
+                        composable(Routes.RESTAURANT_DETAILS_PAGE) { RestaurantDetailsPage(navController) }
+                        composable(Routes.VALIDATE_PAYMENT_PAGE) { ValidatePaymentPage(navController) }
+                        composable(Routes.ORDER_PLACED_PAGE) { OrderPlacedPage(navController) }
+                        composable(Routes.PLUS_INFO_PAGE) { PlusInfoPage(navController) }
+                        composable(Routes.MY_ORDERS_PAGE) { MyOrdersPage(navController) }
+                        composable(Routes.MY_ORDERS_DETAILS_PAGE) { MyOrderDetailsPage(navController) }
+                        composable(Routes.RATING_PAGE) { RatingPage(navController) }
+                        composable(Routes.PROFILE_PAGE) { ProfilePage(navController) }
+                        composable(Routes.MY_INFORMATION_PAGE) { MyInformationPage(navController) }
+                        composable(Routes.CHANGE_PASSWORD_PAGE) { ChangePasswordPage(navController) }
+                        composable(Routes.CHANGE_LOCATION_PAGE) { ChangeLocationPage(navController) }
                     }
                 }
             }
@@ -45,5 +59,6 @@ class MainActivity : ComponentActivity() {
 fun MainApp(navController : NavHostController, modifier: Modifier = Modifier) {
 
     // here we get the token and check if the user is authenticated or not
+    // It has the global bottom navigation bar
     Text("main page")
 }

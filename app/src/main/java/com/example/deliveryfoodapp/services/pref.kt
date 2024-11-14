@@ -9,23 +9,23 @@ object Pref {
 
     lateinit var context: Context
 
-    fun saveID(id:String) {
-        val pref = context.getSharedPreferences("pref",Context.MODE_PRIVATE)
+    fun saveUserID(userID:String) {
+        val pref = context.getSharedPreferences("user_pref",Context.MODE_PRIVATE)
         pref.edit {
-            putString("ID",id)
+            putString("UserID",userID)
         }
     }
 
     fun getID():String? {
-        val pref = context.getSharedPreferences("pref",Context.MODE_PRIVATE)
-        val id = pref.getString("ID","")
-        return id
+        val pref = context.getSharedPreferences("user_pref",Context.MODE_PRIVATE)
+        val userID = pref.getString("UserID","")
+        return userID
     }
 
     fun clearID() {
-        val pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE)
+        val pref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
         pref.edit {
-            remove("ID") // Removes the "ID" entry
+            remove("UserID") // Removes the "ID" entry
         }
     }
 
