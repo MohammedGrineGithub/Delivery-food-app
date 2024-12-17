@@ -6,5 +6,5 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun OnboardingPage(navController : NavHostController) {
-    Text("Onboarding page")
+    Text("Onboarding page ...")
 }
