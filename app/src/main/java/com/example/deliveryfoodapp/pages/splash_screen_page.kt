@@ -17,6 +17,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.R
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.rotate
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +42,18 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SplashScreenPage(navController: NavHostController) {
+    // Animate rotation for 2 seconds
+    val rotation = remember { androidx.compose.animation.core.Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        rotation.animateTo(
+            targetValue = 360f, // Rotate 360 degrees
+            animationSpec = androidx.compose.animation.core.tween(2000) // 2 seconds duration
+        )
+        // Navigate to the next page after rotation completes
+        navController.navigate("next_page") // Replace "next_page" with your actual destination
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize() // Make the container fill the entire screen
@@ -47,7 +64,9 @@ fun SplashScreenPage(navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.Center) // Center the image within the Box
                 .size(200.dp) // Set the desired size of the image
+                .rotate(rotation.value) // Apply the animated rotation
         )
     }
 }
+
 
