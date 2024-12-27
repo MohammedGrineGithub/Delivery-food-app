@@ -1,6 +1,6 @@
 package com.example.deliveryfoodapp.models
 
-class Wilaya(
+data class Wilaya(
     val id: Int,
     val name: String
 ) {
