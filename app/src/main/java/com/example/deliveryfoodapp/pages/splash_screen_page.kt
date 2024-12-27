@@ -13,39 +13,14 @@ import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.draw.rotate
-
-
-
-//class MainActivity : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            // Set up navigation with NavController
-//            val navController = rememberNavController()
-//
-//            // Navigation Host
-//            NavHost(navController = navController, startDestination = "splash_screen") {
-//                composable("splash_screen") {
-//                    SplashScreenPage(navController)
-//                }
-//            }
-//        }
-//    }
-//}
+import com.example.deliveryfoodapp.utils.*
 
 @Composable
 fun SplashScreenPage(navController: NavHostController) {
-    // Animate rotation for 2 seconds
-    val rotation = remember { androidx.compose.animation.core.Animatable(0f) }
 
     LaunchedEffect(Unit) {
-        rotation.animateTo(
-            targetValue = 360f, // Rotate 360 degrees
-            animationSpec = androidx.compose.animation.core.tween(2000) // 2 seconds duration
-        )
-        // Navigate to the next page after rotation completes
-        navController.navigate("next_page") // Replace "next_page" with your actual destination
+        kotlinx.coroutines.delay(300)
+        navController.navigate(Routes.ONBOARDING_PAGE)
     }
 
     Box(
@@ -58,7 +33,6 @@ fun SplashScreenPage(navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.Center) // Center the image within the Box
                 .size(200.dp) // Set the desired size of the image
-                .rotate(rotation.value) // Apply the animated rotation
         )
     }
 }
