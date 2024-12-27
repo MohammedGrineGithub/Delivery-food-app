@@ -4,6 +4,7 @@ class Routes {
     companion object {
         const val MAIN_APP = "MainApp"
         const val ONBOARDING_PAGE = "OnboardingPage"
+        const val SPLASH_SCREEN_PAGE = "splash_screen_page"
         const val LOGIN_PAGE = "LoginPage"
         const val SIGNUP_PAGE = "SignupPage"
         const val HOME_PAGE = "HomePage"
