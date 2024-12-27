@@ -9,10 +9,21 @@ import androidx.compose.ui.unit.sp
 import com.example.deliveryfoodapp.R
 
 // Set of Material typography styles to start with
+
+val ibmplexsansFontFamily = FontFamily(
+    Font(R.font.ibmplexsans_bold, FontWeight.Bold),
+    Font(R.font.ibmplexsans_extralight, FontWeight.ExtraLight),
+    Font(R.font.ibmplexsans_light, FontWeight.Light),
+    Font(R.font.ibmplexsans_medium, FontWeight.Medium),
+    Font(R.font.ibmplexsans_regular, FontWeight.Normal),
+    Font(R.font.ibmplexsans_semibold, FontWeight.SemiBold)
+)
+
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = ibmplexsansFontFamily,
         fontWeight = FontWeight.Normal,
+        color = Black,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
@@ -34,14 +45,6 @@ val Typography = Typography(
     */
 )
 
-val ibmplexsansFontFamily = FontFamily(
-    Font(R.font.ibmplexsans_bold, FontWeight.Bold),
-    Font(R.font.ibmplexsans_extralight, FontWeight.ExtraLight),
-    Font(R.font.ibmplexsans_light, FontWeight.Light),
-    Font(R.font.ibmplexsans_medium, FontWeight.Medium),
-    Font(R.font.ibmplexsans_regular, FontWeight.Normal),
-    Font(R.font.ibmplexsans_semibold, FontWeight.SemiBold)
-)
 
 val lemonFontFamily = FontFamily(
     Font(R.font.lemon_regular)
