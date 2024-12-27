@@ -35,7 +35,7 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.ui.theme.BlackStrock
-import com.example.deliveryfoodapp.ui.theme.GreyStrock
+import com.example.deliveryfoodapp.ui.theme.GreyStrok
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -62,6 +62,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.deliveryfoodapp.utils.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,7 +165,6 @@ fun ChangeLocationPage(navController : NavHostController) {
                                     )
                                 }
                                 else {
-
                                     TextField (
                                         modifier = Modifier.menuAnchor().fillMaxWidth(),
                                         value = selected ,
@@ -189,7 +189,6 @@ fun ChangeLocationPage(navController : NavHostController) {
                                             modifier = Modifier.fillMaxWidth()
                                         )
                                     }
-
                                 }
                             }
                         }
@@ -204,8 +203,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                             TextField(
                                 value = exact_location,
                                 onValueChange = { exact_location = it },
-                                placeholder = { Text("Example: Sommame - Bab Ezzouar" ,
-                                    color = GreyStrock) },
+                                placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStrok) },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
                             )
@@ -244,18 +242,18 @@ fun ChangeLocationPage(navController : NavHostController) {
                             )  {
                                 if (locationText == "") {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.vector), // Replace with your drawable resource
+                                        painter = painterResource(id = R.drawable.vector),
                                         contentDescription = "Location",
                                         modifier = Modifier.size(32.dp),
-                                        tint = Color.Unspecified // Use Unspecified to retain the icon's original colors
+                                        tint = Color.Unspecified
                                     )
                                 }
                                 else{
                                     Icon(
-                                        painter = painterResource(id = R.drawable.done), // Replace with your drawable resource
+                                        painter = painterResource(id = R.drawable.done),
                                         contentDescription = "Location",
                                         modifier = Modifier.size(32.dp),
-                                        tint = Color.Unspecified // Use Unspecified to retain the icon's original colors
+                                        tint = Color.Unspecified
                                     )
                                 }
                             }
@@ -270,7 +268,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                 ) {
                     Button(
                         onClick = {
-
+                            navController.navigate(Routes.PROFILE_PAGE)
                         } ,
                         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)) ,
                         colors = ButtonDefaults.buttonColors(Primary),
