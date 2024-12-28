@@ -6,5 +6,5 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun PlusInfoPage(navController : NavHostController) {
-    Text("Onboarding page")
+    Text("Plus info page ...")
 }
