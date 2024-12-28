@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.ONBOARDING_PAGE,
+                        startDestination = Routes.MAIN_APP,
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -58,8 +58,5 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp(navController : NavHostController, modifier: Modifier = Modifier) {
-
-    // here we get the token and check if the user is authenticated or not
-    // It has the global bottom navigation bar
-        Text("main page" )
+    Text(text = "Main App")
 }
