@@ -186,6 +186,7 @@ fun HomePage(navController : NavHostController) {
                             )
                         }
                         Row(
+                            horizontalArrangement =  Arrangement.spacedBy(6.dp),
     modifier = Modifier.fillMaxWidth()
 ) {
     ExposedDropdownMenuBox(
