@@ -20,6 +20,7 @@ class Routes {
         const val CHANGE_LOCATION_PAGE = "ChangeLocationPage"
         const val ORDER_PLACED_PAGE = "OrderPlacedPage"
         const val RATING_PAGE = "RatingPage"
+        const val LOCATION_PAGE = "LocationPage"
     }
 }
 

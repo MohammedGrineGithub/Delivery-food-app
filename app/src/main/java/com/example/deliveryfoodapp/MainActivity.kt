@@ -4,18 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.pages.*
 import com.example.deliveryfoodapp.ui.theme.DeliveryFoodAppTheme
+import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.utils.*
 
 class MainActivity : ComponentActivity() {
@@ -28,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.PLUS_INFO_PAGE,
+                        startDestination = Routes.CHANGE_LOCATION_PAGE,
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -49,6 +58,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.MY_INFORMATION_PAGE) { MyInformationPage(navController) }
                         composable(Routes.CHANGE_PASSWORD_PAGE) { ChangePasswordPage(navController) }
                         composable(Routes.CHANGE_LOCATION_PAGE) { ChangeLocationPage(navController) }
+                        composable(Routes.LOCATION_PAGE){ LocationPage(navController) }
                     }
                 }
             }
@@ -58,5 +68,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp(navController : NavHostController, modifier: Modifier = Modifier) {
-    Text(text = "Main App")
+
+    // here we get the token and check if the user is authenticated or not
+    // It has the global bottom navigation bar
+        Text("main page" )
 }
