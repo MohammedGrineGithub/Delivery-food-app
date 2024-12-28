@@ -76,7 +76,7 @@ fun LoginPage(navController : NavHostController) {
                 )
                 Text(
                     text = "Please choose with what you want to login",
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Light,
 
                 )
@@ -104,7 +104,7 @@ fun LoginPage(navController : NavHostController) {
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Log in with google",
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                         )
                     }
@@ -201,7 +201,7 @@ fun LoginPage(navController : NavHostController) {
                     Text(
                         text = "Log In",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         color = Color.White
                     )
                 }
@@ -214,7 +214,7 @@ fun LoginPage(navController : NavHostController) {
             Text(
                 text = "Don’t have an account ?",
                 fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = Black
             )
             Spacer(Modifier.width(10.dp))
@@ -224,7 +224,7 @@ fun LoginPage(navController : NavHostController) {
                 },
                 text = "Sign Up",
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 color = Primary,
                 textDecoration = TextDecoration.Underline
             )
