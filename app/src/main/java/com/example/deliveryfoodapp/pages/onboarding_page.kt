@@ -1,48 +1,94 @@
 package com.example.deliveryfoodapp.pages
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.utils.Routes
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+
+val CustomFontFamily = FontFamily(
+    Font(R.font.lemon_regular, FontWeight.Normal),
+    Font(R.font.lemon_regular, FontWeight.Bold)
+)
 
 
 @Composable
 fun OnboardingPage(navController: NavHostController) {
-    Text("MAKLAEXPRESS",
-        color = colorResource(id = R.color.PRIMARY_GREEN),
-        fontWeight = FontWeight.Bold,
-        fontSize = 30.sp
-    )
-    Box(
+    Column(
         modifier = Modifier
-            .fillMaxSize() // Makes the Box take up the entire available space
+            .fillMaxSize() // Fill the entire screen space
+            .padding(16.dp), // Add some padding around the column
+        horizontalAlignment = Alignment.CenterHorizontally, // Center items horizontally
+        //verticalArrangement = Arrangement.SpaceEvenly // Space out items evenly
     ) {
+        // 1. Title Text
+        Text(
+            "MAKLAEXPRESS",
+            modifier = Modifier.padding(top = 50.dp),
+            color = colorResource(id = R.color.PRIMARY_GREEN),
+            fontWeight = FontWeight.Bold,
+            fontSize = 30.sp,
+            style = TextStyle(fontFamily = CustomFontFamily)
+        )
+
+        // 2. Onboarding Image
         Image(
             painter = painterResource(id = R.drawable.onboarding_logo),
             contentDescription = "App Logo",
             modifier = Modifier
-                .align(Alignment.Center) // Center the image within the Box
-                .size(500.dp)
+                .size(400.dp) // Set the image size
         )
-    }
-    Text("Welcome to MAKLAEXPRESS  the best delivery food app in Algeria. You can order food from any restaurant you want, place orders with variant of items and explore the best, fast and efficient delivery service",
-        //color = colorResource(id = R.color.PRIMARY_GREEN),
-        fontWeight = FontWeight.Bold,
-        //fontSize = 30.sp
-    )
-    Button(onClick = {}) {
-        Text("Start")
+
+        // 3. Welcome Text
+        Text(
+            "Welcome to MAKLAEXPRESS, the best delivery food app in Algeria. You can order food from any restaurant you want, place orders with a variety of items, and explore the best, fast, and efficient delivery service.",
+            modifier = Modifier.padding(bottom = 30.dp),
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center // Center the text within the column,
+
+        )
+
+        // 4. Start Button
+        Button(
+            onClick = {navController.navigate(Routes.LOGIN_PAGE)},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.PRIMARY_GREEN), // Button background color
+                contentColor = Color.White // Text color inside the button
+            ),
+            shape = RoundedCornerShape(8.dp), // Rounded corners for the button
+            modifier = Modifier
+                .width(345.dp) // Set button width
+                .height(50.dp)
+        ) {
+            Text(
+                "Start",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+
+            )
+        }
     }
 }
