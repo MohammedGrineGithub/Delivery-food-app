@@ -185,176 +185,175 @@ fun HomePage(navController : NavHostController) {
                                 tint = Color.Unspecified
                             )
                         }
-                        ExposedDropdownMenuBox(
-                            expanded = CuisineisExpanded,
-                            onExpandedChange = { CuisineisExpanded = !CuisineisExpanded }
-                        ) {
-                            if (cuisine == "Cuisine") {
-                                TextField(
-                                    value = cuisine,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = CuisineisExpanded
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .background(Grey, RoundedCornerShape(12.dp))
-                                        .menuAnchor()
-                                        .width((screenWidth * 0.4f)),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedContainerColor = Color.Transparent,
-                                        focusedTextColor = Color.Black,
-                                        unfocusedTextColor = Color.Black,
-                                        disabledTextColor = Color.Gray,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        disabledIndicatorColor = Color.Transparent
-                                    ),
-                                    textStyle = LocalTextStyle.current.copy(
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal
-                                    )
-                                )
-                            } else {
-                                TextField(
-                                    value = cuisine,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    singleLine = true,
-                                    trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = CuisineisExpanded
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .background(Grey, RoundedCornerShape(12.dp))
-                                        .menuAnchor()
-                                        .width((screenWidth * 0.40f)),
-
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedContainerColor = Color.Transparent,
-                                        focusedTextColor = Color.Black,
-                                        unfocusedTextColor = Color.Black,
-                                        disabledTextColor = Color.Gray,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        disabledIndicatorColor = Color.Transparent
-                                    ),
-                                    textStyle = LocalTextStyle.current.copy(
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal
-                                    )
-                                )
-                            }
-                            ExposedDropdownMenu(
-                                expanded = CuisineisExpanded,
-                                onDismissRequest = { CuisineisExpanded = false },
-                                modifier = Modifier.heightIn(max = 300.dp)
-                                    .background(color = Grey)
-                            ) {
-                                cuisineTypes.forEachIndexed { index, Cuisine ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = Cuisine) },
-                                        onClick = {
-                                            cuisine = Cuisine
-                                            CuisineisExpanded = false
-                                        },
-                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                        modifier = Modifier.fillMaxWidth()
-                                            .background(color = Grey)
-                                    )
-                                }
-                            }
-                        }
-                        ExposedDropdownMenuBox(
-                            expanded = WilayaisExpanded,
-                            onExpandedChange = { WilayaisExpanded = !WilayaisExpanded }
-                        ) {
-                            if (wilaya == "Wilaya") {
-                                TextField(
-                                    value = wilaya,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = WilayaisExpanded
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .background(Grey, RoundedCornerShape(12.dp))
-                                        .menuAnchor()
-                                        .width((screenWidth * 0.41f)),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedContainerColor = Color.Transparent,
-                                        focusedTextColor = Color.Black,
-                                        unfocusedTextColor = Color.Black,
-                                        disabledTextColor = Color.Gray,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        disabledIndicatorColor = Color.Transparent
-                                    ),
-                                    textStyle = LocalTextStyle.current.copy(
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal
-                                    )
-                                )
-                            } else {
-                                TextField(
-                                    value = wilaya,
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    singleLine = true,
-                                    trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = WilayaisExpanded
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .background(Grey, RoundedCornerShape(12.dp))
-                                        .menuAnchor()
-                                        .width((screenWidth * 0.41f)),
-
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedContainerColor = Color.Transparent,
-                                        focusedTextColor = Color.Black,
-                                        unfocusedTextColor = Color.Black,
-                                        disabledTextColor = Color.Gray,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        disabledIndicatorColor = Color.Transparent
-                                    ),
-                                    textStyle = LocalTextStyle.current.copy(
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal
-                                    )
-                                )
-                            }
-                            ExposedDropdownMenu(
-                                expanded = WilayaisExpanded,
-                                onDismissRequest = { WilayaisExpanded = false },
-                                modifier = Modifier.heightIn(max = 300.dp)
-                                    .background(color = Grey)
-                            ) {
-                                wilayas.forEachIndexed { index, Wilaya ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = Wilaya) },
-                                        onClick = {
-                                            wilaya = Wilaya
-                                            WilayaisExpanded = false
-                                        },
-                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                        modifier = Modifier.background(color = Grey)
-                                            .width((screenWidth * 0.40f))
-                                    )
-                                }
-                            }
-                        }
+                        Row(
+    modifier = Modifier.fillMaxWidth()
+) {
+    ExposedDropdownMenuBox(
+        expanded = CuisineisExpanded,
+        onExpandedChange = { CuisineisExpanded = !CuisineisExpanded },
+        modifier = Modifier.weight(1f)
+    ) {
+        if (cuisine == "Cuisine") {
+            TextField(
+                value = cuisine,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = CuisineisExpanded
+                    )
+                },
+                modifier = Modifier
+                    .background(Grey, RoundedCornerShape(12.dp))
+                    .menuAnchor(),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Gray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            )
+        } else {
+            TextField(
+                value = cuisine,
+                onValueChange = {},
+                readOnly = true,
+                singleLine = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = CuisineisExpanded
+                    )
+                },
+                modifier = Modifier
+                    .background(Grey, RoundedCornerShape(12.dp))
+                    .menuAnchor(),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Gray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            )
+        }
+        ExposedDropdownMenu(
+            expanded = CuisineisExpanded,
+            onDismissRequest = { CuisineisExpanded = false },
+            modifier = Modifier.heightIn(max = 300.dp)
+                .background(color = Grey)
+        ) {
+            cuisineTypes.forEachIndexed { index, Cuisine ->
+                DropdownMenuItem(
+                    text = { Text(text = Cuisine) },
+                    onClick = {
+                        cuisine = Cuisine
+                        CuisineisExpanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    modifier = Modifier.fillMaxWidth()
+                        .background(color = Grey)
+                )
+            }
+        }
+    }
+    ExposedDropdownMenuBox(
+        expanded = WilayaisExpanded,
+        onExpandedChange = { WilayaisExpanded = !WilayaisExpanded },
+        modifier = Modifier.weight(1f)
+    ) {
+        if (wilaya == "Wilaya") {
+            TextField(
+                value = wilaya,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = WilayaisExpanded
+                    )
+                },
+                modifier = Modifier
+                    .background(Grey, RoundedCornerShape(12.dp))
+                    .menuAnchor(),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Gray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            )
+        } else {
+            TextField(
+                value = wilaya,
+                onValueChange = {},
+                readOnly = true,
+                singleLine = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = WilayaisExpanded
+                    )
+                },
+                modifier = Modifier
+                    .background(Grey, RoundedCornerShape(12.dp))
+                    .menuAnchor(),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+                    disabledTextColor = Color.Gray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            )
+        }
+        ExposedDropdownMenu(
+            expanded = WilayaisExpanded,
+            onDismissRequest = { WilayaisExpanded = false },
+            modifier = Modifier.heightIn(max = 300.dp)
+                .background(color = Grey)
+        ) {
+            wilayas.forEachIndexed { index, Wilaya ->
+                DropdownMenuItem(
+                    text = { Text(text = Wilaya) },
+                    onClick = {
+                        wilaya = Wilaya
+                        WilayaisExpanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    modifier = Modifier.background(color = Grey)
+                )
+            }
+        }
+    }
+}
                     }
                 }
                 LazyColumn {
