@@ -4,27 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.pages.*
 import com.example.deliveryfoodapp.ui.theme.DeliveryFoodAppTheme
-import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.utils.*
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +27,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.HOME_PAGE,
+                        startDestination = Routes.MAIN_APP,
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -67,24 +57,4 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp(navController : NavHostController, modifier: Modifier = Modifier) {
-
-    // here we get the token and check if the user is authenticated or not
-    // It has the global bottom navigation bar
-    Column (
-        modifier = Modifier.fillMaxSize() ,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,  // Centers items inside the column
-    ){
-        Text("main page" )
-        Button (onClick = {
-            navController.navigate(Routes.HOME_PAGE)
-        } ,
-            colors = ButtonDefaults.buttonColors(Secondary),
-            ) {
-            Text("Go To change password" ,
-                color = Color.White ,
-                modifier = Modifier.background(color = Color.Transparent).padding( 4.dp )
-            )
-        }
-    }
 }

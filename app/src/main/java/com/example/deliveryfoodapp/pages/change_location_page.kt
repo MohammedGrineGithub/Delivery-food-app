@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +14,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,37 +29,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.deliveryfoodapp.ui.theme.Black
-import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.navigation.compose.rememberNavController
-import com.example.deliveryfoodapp.ui.theme.BlackStrock
-import com.example.deliveryfoodapp.ui.theme.GreyStrok
-import android.annotation.SuppressLint
-import android.content.Context
+import com.example.deliveryfoodapp.ui.theme.BlackStroke
+import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import androidx.compose.ui.platform.LocalContext
 import com.example.deliveryfoodapp.ui.theme.Primary
-import com.example.deliveryfoodapp.ui.theme.Secondary
 import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.example.deliveryfoodapp.utils.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +112,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                         textAlign = TextAlign.Center ,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = BlackStrock
+                        color = BlackStroke
                     )
                 }
                 Column (
@@ -155,8 +138,8 @@ fun ChangeLocationPage(navController : NavHostController) {
                                         modifier = Modifier.menuAnchor().fillMaxWidth(),
                                         value = selected ,
                                         colors = TextFieldDefaults.colors(
-                                            focusedTextColor = BlackStrock,
-                                            unfocusedTextColor = BlackStrock,
+                                            focusedTextColor = BlackStroke,
+                                            unfocusedTextColor = BlackStroke,
                                         ),
                                         onValueChange = {} ,
                                         readOnly = true ,
@@ -203,7 +186,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                             TextField(
                                 value = exact_location,
                                 onValueChange = { exact_location = it },
-                                placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStrok) },
+                                placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke) },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
                             )
