@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,9 +51,16 @@ import com.example.deliveryfoodapp.utils.Routes
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(navController : NavHostController) {
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        return email.matches(emailRegex.toRegex())
+    }
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -59,10 +68,10 @@ fun LoginPage(navController : NavHostController) {
             .padding(all = 20.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(60.dp),
+            verticalArrangement = Arrangement.spacedBy(40.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 60.dp)
+                .padding(top = 40.dp)
                 .weight(1f)
 
         ) {
@@ -81,7 +90,9 @@ fun LoginPage(navController : NavHostController) {
 
                 )
             }
-            Column{
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ){
                 OutlinedButton(
                     onClick = {  },
                     modifier = Modifier
@@ -188,7 +199,33 @@ fun LoginPage(navController : NavHostController) {
                     )
                 )
                 Button(
-                    onClick = {  },
+                    onClick = {
+                        if (email.isEmpty()){
+                            Toast.makeText(
+                                context,
+                                "Email must not be empty",
+                                Toast.LENGTH_SHORT).show()
+                        }else if (!isValidEmail(email)) {
+                            Toast.makeText(
+                                context,
+                                "Your email is not valid",
+                                Toast.LENGTH_SHORT).show()
+                        }
+                        if (password.isEmpty()){
+                            Toast.makeText(
+                                context,
+                                "Password must not be empty",
+                                Toast.LENGTH_SHORT).show()
+                        } else if (password.length < 8){
+                            Toast.makeText(
+                                context,
+                                "Password must have more than 8 characters",
+                                Toast.LENGTH_SHORT).show()
+                        }
+                        if (isValidEmail(email) && email.isNotEmpty() && password.length >= 8){
+                            println("Login with email/password function")
+                        }
+                    },
                     modifier = Modifier
                         .padding(top = 12.dp, bottom = 12.dp)
                         .fillMaxWidth()
@@ -215,12 +252,12 @@ fun LoginPage(navController : NavHostController) {
                 text = "Don’t have an account ?",
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
-                color = Black
             )
             Spacer(Modifier.width(10.dp))
             Text(
                 modifier = Modifier.clickable {
                     navController.navigate(Routes.SIGNUP_PAGE)
+
                 },
                 text = "Sign Up",
                 fontWeight = FontWeight.Bold,
