@@ -28,7 +28,9 @@ fun SplashScreenPage(navController: NavHostController) {
     LaunchedEffect(key1 = true) {
         alpha.animateTo(1f, animationSpec = tween(300))
         kotlinx.coroutines.delay(300)
-        navController.navigate(Routes.ONBOARDING_PAGE)
+        navController.navigate(Routes.ONBOARDING_PAGE){
+            popUpTo(Routes.SPLASH_SCREEN_PAGE) { inclusive = true }
+        }
     }
 
     Box(
