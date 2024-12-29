@@ -51,6 +51,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.ui.unit.Dp
+import com.example.deliveryfoodapp.ui.theme.CardBackground
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -369,7 +370,7 @@ fun HomePage(navController : NavHostController) {
 @Composable
 fun Restautant_Box(SreenHeight : Dp , navController : NavHostController){
     Box(
-        modifier = Modifier.fillMaxWidth().background(color = Grey, shape = RoundedCornerShape(20.dp)).clickable {
+        modifier = Modifier.fillMaxWidth().background(color = CardBackground, shape = RoundedCornerShape(20.dp)).clickable {
             navController.navigate(Routes.RESTAURANT_DETAILS_PAGE)
         }
     ){
