@@ -1,51 +1,92 @@
 package com.example.deliveryfoodapp.models
 
+import android.annotation.SuppressLint
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
+@Suppress("UNCHECKED_CAST")
 data class Restaurant(
-    val restaurantName: String,
-    val logoId: Int,
-    val bannerLogoId: Int,
-    val locationId: Int,
-    val cuisineTypeId: Int,
-    val ratingId: Int,
-    val phone: String,
-    val email: String,
-    val deliveryPrice: Double,
-    val deliveryDuration: String,
-    val menuId: Int,
-    val openingTime: String,
-    val closingTime: String
+    var id : Int,
+    var restaurantName: String,
+    var logo: AppImage,
+    var bannerLogo: AppImage,
+    var location: Location,
+    var cuisineType: CuisineType,
+    var rating: Rating,
+    var phone: String,
+    var email: String,
+    var deliveryPrice: Double,
+    var deliveryDuration: LocalTime,
+    var menu: RestaurantMenu,
+    var openingTime: LocalDateTime,
+    var closingTime: LocalDateTime
 ) {
-    fun toMap(): Map<String, Any> = mapOf(
-        "restaurantName" to restaurantName,
-        "logoId" to logoId,
-        "bannerLogoId" to bannerLogoId,
-        "locationId" to locationId,
-        "cuisineTypeId" to cuisineTypeId,
-        "ratingId" to ratingId,
-        "phone" to phone,
-        "email" to email,
-        "deliveryPrice" to deliveryPrice,
-        "deliveryDuration" to deliveryDuration,
-        "menuId" to menuId,
-        "openingTime" to openingTime,
-        "closingTime" to closingTime
-    )
+
+    @SuppressLint("NewApi")
+    fun toMap(): Map<String, Any> {
+        return mapOf(
+            "id" to id,
+            "restaurantName" to restaurantName,
+            "logo" to logo.toMap(),
+            "bannerLogo" to bannerLogo.toMap(),
+            "location" to location.toMap(),
+            "cuisineType" to cuisineType.toMap(),
+            "rating" to rating.toMap(),
+            "phone" to phone,
+            "email" to email,
+            "deliveryPrice" to deliveryPrice,
+            "deliveryDuration" to deliveryDuration.toString(),
+            "menu" to menu.toMap(),
+            "openingTime" to openingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            "closingTime" to closingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        )
+    }
+
 
     companion object {
-        fun fromMap(map: Map<String, Any>) = Restaurant(
-            restaurantName = map["restaurantName"] as String,
-            logoId = map["logoId"] as Int,
-            bannerLogoId = map["bannerLogoId"] as Int,
-            locationId = map["locationId"] as Int,
-            cuisineTypeId = map["cuisineTypeId"] as Int,
-            ratingId = map["ratingId"] as Int,
-            phone = map["phone"] as String,
-            email = map["email"] as String,
-            deliveryPrice = map["deliveryPrice"] as Double,
-            deliveryDuration = map["deliveryDuration"] as String,
-            menuId = map["menuId"] as Int,
-            openingTime = map["openingTime"] as String,
-            closingTime = map["closingTime"] as String
-        )
+
+        @SuppressLint("NewApi")
+        fun fromMap(map: Map<String, Any>): Restaurant {
+            val id = map["id"] as? Int ?: -1
+            val restaurantName = map["restaurantName"] as? String ?: ""
+            val logo = AppImage.fromMap(map["logo"] as? Map<String, Any> ?: emptyMap())
+            val bannerLogo = AppImage.fromMap(map["bannerLogo"] as? Map<String, Any> ?: emptyMap())
+            val location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap())
+            val cuisineType = CuisineType.fromMap(map["cuisineType"] as? Map<String, Any> ?: emptyMap())
+            val rating = Rating.fromMap(map["rating"] as? Map<String, Any> ?: emptyMap())
+            val phone = map["phone"] as? String ?: ""
+            val email = map["email"] as? String ?: ""
+            val deliveryPrice = map["deliveryPrice"] as? Double ?: 0.0
+            val deliveryDuration = LocalTime.parse(map["deliveryDuration"] as? String ?: "00:00:00")
+            val menu = RestaurantMenu.fromMap(map["menu"] as? Map<String, Any> ?: emptyMap())
+            val openingTime = LocalDateTime.parse(map["openingTime"] as? String ?: "2000-01-01T00:00:00")
+            val closingTime = LocalDateTime.parse(map["closingTime"] as? String ?: "2000-01-01T00:00:00")
+
+            return Restaurant(
+                id, restaurantName, logo, bannerLogo, location, cuisineType, rating, phone, email,
+                deliveryPrice, deliveryDuration, menu, openingTime, closingTime
+            )
+        }
+
+        @SuppressLint("NewApi")
+        fun emptyRestaurant(): Restaurant {
+            return Restaurant(
+                id = 0,
+                restaurantName = "",
+                logo = AppImage.emptyAppImage(),
+                bannerLogo = AppImage.emptyAppImage(),
+                location = Location.emptyLocation(),
+                cuisineType = CuisineType.emptyCusineType(),
+                rating = Rating.emptyRating(),
+                phone = "",
+                email = "",
+                deliveryPrice = 0.0,
+                deliveryDuration = LocalTime.MIDNIGHT,
+                menu = RestaurantMenu.emptyRestaurantMenu(),
+                openingTime = LocalDateTime.MIN,
+                closingTime = LocalDateTime.MIN
+            )
+        }
     }
 }
