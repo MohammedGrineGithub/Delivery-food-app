@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.utils.Routes
+import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -198,7 +199,8 @@ fun LoginPage(navController : NavHostController) {
                         unfocusedBorderColor = GreyStroke
                     )
                 )
-                Button(
+                PrincipalButton(
+                    text = "Log In",
                     onClick = {
                         if (email.isEmpty()){
                             Toast.makeText(
@@ -225,23 +227,8 @@ fun LoginPage(navController : NavHostController) {
                         if (isValidEmail(email) && email.isNotEmpty() && password.length >= 8){
                             println("Login with email/password function")
                         }
-                    },
-                    modifier = Modifier
-                        .padding(top = 12.dp, bottom = 12.dp)
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Primary // Set background color
-                    )
-                ) {
-                    Text(
-                        text = "Log In",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color.White
-                    )
-                }
+                    }
+                )
             }
         }
         Row(

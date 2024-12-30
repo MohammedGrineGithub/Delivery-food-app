@@ -51,6 +51,7 @@ import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.utils.Routes
 import androidx.compose.animation.*
 import androidx.compose.ui.platform.LocalContext
+import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
@@ -277,7 +278,8 @@ fun SignupPage(navController : NavHostController) {
                                     unfocusedBorderColor = GreyStroke
                                 )
                             )
-                            Button(
+                            PrincipalButton(
+                                text = "Sign Up",
                                 onClick = {
                                     if (password.isEmpty()){
                                         Toast.makeText(
@@ -299,23 +301,8 @@ fun SignupPage(navController : NavHostController) {
                                     if (password.length >= 8 && confirmPassword == password){
                                         println("Signup with email/password function")
                                     }
-                                },
-                                modifier = Modifier
-                                    .padding(top = 12.dp, bottom = 12.dp)
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Primary // Set background color
-                                )
-                            ) {
-                                Text(
-                                    text = "Sign Up",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
-                                    color = Color.White
-                                )
-                            }
+                                }
+                            )
                         }
                     } else {
                         Column (

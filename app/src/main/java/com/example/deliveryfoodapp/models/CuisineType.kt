@@ -13,7 +13,7 @@ data class CuisineType(
             id = map["id"] as? Int ?: -1,
             name = map["name"] as String
         )
-        fun emptyCusineType() : CuisineType {
+        fun emptyCuisineType() : CuisineType {
             return CuisineType(id =  0, name = "")
         }
     }

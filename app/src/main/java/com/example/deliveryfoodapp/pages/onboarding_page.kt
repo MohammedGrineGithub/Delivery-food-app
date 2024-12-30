@@ -26,6 +26,7 @@ import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
+import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 
 @Composable
@@ -65,24 +66,9 @@ fun OnboardingPage(navController: NavHostController) {
         )
 
         // 4. Start Button
-        Button(
+        PrincipalButton(
+            text = "Start",
             onClick = {navController.navigate(Routes.LOGIN_PAGE)},
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.PRIMARY_GREEN), // Button background color
-                contentColor = Color.White // Text color inside the button
-            ),
-            shape = RoundedCornerShape(8.dp), // Rounded corners for the button
-            modifier = Modifier
-                .width(345.dp) // Set button width
-                .height(50.dp)
-        ) {
-            Text(
-                "Start",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-
-            )
-        }
+        )
     }
 }

@@ -77,7 +77,7 @@ data class Restaurant(
                 logo = AppImage.emptyAppImage(),
                 bannerLogo = AppImage.emptyAppImage(),
                 location = Location.emptyLocation(),
-                cuisineType = CuisineType.emptyCusineType(),
+                cuisineType = CuisineType.emptyCuisineType(),
                 rating = Rating.emptyRating(),
                 phone = "",
                 email = "",

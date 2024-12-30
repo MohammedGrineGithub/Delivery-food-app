@@ -65,6 +65,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.deliveryfoodapp.ui.theme.Grey
 import com.example.deliveryfoodapp.utils.Routes
+import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,8 +131,8 @@ fun ChangeLocationPage(navController : NavHostController) {
                     Text(
                         text = "you can change your location here" ,
                         textAlign = TextAlign.Center ,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
                         color = BlackStroke
                     )
                 }
@@ -149,6 +150,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                                 fontSize = 16.sp ,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             ExposedDropdownMenuBox(
                                 expanded = isExpanded ,
                                 onExpandedChange = { isExpanded = !isExpanded }
@@ -218,6 +220,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                                 fontSize = 16.sp ,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             TextField(
                                 value = exact_location,
                                 onValueChange = { exact_location = it },
@@ -239,12 +242,13 @@ fun ChangeLocationPage(navController : NavHostController) {
                         Column {
 
                             Text(
-                                text = "Exact Location",
+                                text = "Current Location",
                                 fontSize = 16.sp,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             Button(
-                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = Black , shape =RoundedCornerShape(20.dp) ) ,
+                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
                                 colors = ButtonDefaults.buttonColors(Color.White),
                                 onClick = {
                                     if (ContextCompat.checkSelfPermission(
@@ -292,23 +296,12 @@ fun ChangeLocationPage(navController : NavHostController) {
                     verticalArrangement = Arrangement.Bottom,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Button(
+                    PrincipalButton(
+                        text = "Save changes",
                         onClick = {
                             navController.navigate(Routes.PROFILE_PAGE)
-                        } ,
-                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)) ,
-                        colors = ButtonDefaults.buttonColors(Primary),
-                        shape = RectangleShape ,
-
-                        ) {
-                        Text(
-                            text = "Save Changes" ,
-                            textAlign = TextAlign.Center,
-                            color = Color.White ,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }
