@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.SPLASH_SCREEN_PAGE,
+                        startDestination = Routes.HOME_SCREEN,
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.LOGIN_PAGE) { LoginPage(navController) }
                         composable(Routes.SIGNUP_PAGE) { SignupPage(navController) }
                         composable(Routes.HOME_PAGE) { HomePage(navController) }
+                        composable(Routes.HOME_SCREEN) { HomeScreen(navController) }
                         composable(Routes.NOTIFICATIONS_PAGE) { NotificationsPage(navController) }
                         composable(Routes.RESTAURANT_DETAILS_PAGE) { RestaurantDetailsPage(navController) }
                         composable(Routes.VALIDATE_PAYMENT_PAGE) { ValidatePaymentPage(navController) }
