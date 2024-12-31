@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.ONBOARDING_PAGE,
+                        startDestination = Routes.SPLASH_SCREEN_PAGE,
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -50,6 +50,8 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.CHANGE_PASSWORD_PAGE) { ChangePasswordPage(navController) }
                         composable(Routes.CHANGE_LOCATION_PAGE) { ChangeLocationPage(navController) }
                     }
+
+
                 }
             }
         }
@@ -62,4 +64,6 @@ fun MainApp(navController : NavHostController, modifier: Modifier = Modifier) {
     // here we get the token and check if the user is authenticated or not
     // It has the global bottom navigation bar
         Text("main page" )
+
+
 }

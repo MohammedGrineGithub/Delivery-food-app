@@ -1,6 +1,7 @@
 package com.example.deliveryfoodapp.utils
 
 class Routes {
+
     companion object {
         const val MAIN_APP = "MainApp"
         const val ONBOARDING_PAGE = "OnboardingPage"
