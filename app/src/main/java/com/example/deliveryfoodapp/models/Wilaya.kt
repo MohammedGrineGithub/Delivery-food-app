@@ -1,8 +1,8 @@
 package com.example.deliveryfoodapp.models
 
 data class Wilaya(
-    val id: Int,
-    val name: String
+    var id: Int,
+    var name: String
 ) {
 
     // Method to convert an instance of Wilaya to a Map

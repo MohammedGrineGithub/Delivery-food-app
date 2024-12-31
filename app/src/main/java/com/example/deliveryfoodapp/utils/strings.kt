@@ -8,6 +8,7 @@ class Routes {
         const val LOGIN_PAGE = "LoginPage"
         const val SIGNUP_PAGE = "SignupPage"
         const val HOME_PAGE = "HomePage"
+        const val HOME_SCREEN = "HomeScreen"
         const val NOTIFICATIONS_PAGE = "NotificationsPage"
         const val RESTAURANT_DETAILS_PAGE = "RestaurantDetailsPage"
         const val VALIDATE_PAYMENT_PAGE = "ValidatePaymentPage"
@@ -20,6 +21,7 @@ class Routes {
         const val CHANGE_LOCATION_PAGE = "ChangeLocationPage"
         const val ORDER_PLACED_PAGE = "OrderPlacedPage"
         const val RATING_PAGE = "RatingPage"
+        const val LOCATION_PAGE = "LocationPage"
     }
 }
 

@@ -19,19 +19,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.utils.Routes
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-
-val CustomFontFamily = FontFamily(
-    Font(R.font.lemon_regular, FontWeight.Normal),
-    Font(R.font.lemon_regular, FontWeight.Bold)
-)
+import com.example.deliveryfoodapp.ui.theme.Primary
+import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
+import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 
 @Composable
@@ -47,10 +42,9 @@ fun OnboardingPage(navController: NavHostController) {
         Text(
             "MAKLAEXPRESS",
             modifier = Modifier.padding(top = 50.dp),
-            color = colorResource(id = R.color.PRIMARY_GREEN),
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp,
-            style = TextStyle(fontFamily = CustomFontFamily)
+            color = Primary,
+            fontFamily = lemonFontFamily,
+            fontSize = 36.sp
         )
 
         // 2. Onboarding Image
@@ -65,30 +59,16 @@ fun OnboardingPage(navController: NavHostController) {
         Text(
             "Welcome to MAKLAEXPRESS, the best delivery food app in Algeria. You can order food from any restaurant you want, place orders with a variety of items, and explore the best, fast, and efficient delivery service.",
             modifier = Modifier.padding(bottom = 30.dp),
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Light,
+            fontSize = 14.sp,
             textAlign = TextAlign.Center // Center the text within the column,
 
         )
 
         // 4. Start Button
-        Button(
+        PrincipalButton(
+            text = "Start",
             onClick = {navController.navigate(Routes.LOGIN_PAGE)},
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.PRIMARY_GREEN), // Button background color
-                contentColor = Color.White // Text color inside the button
-            ),
-            shape = RoundedCornerShape(8.dp), // Rounded corners for the button
-            modifier = Modifier
-                .width(345.dp) // Set button width
-                .height(50.dp)
-        ) {
-            Text(
-                "Start",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-
-            )
-        }
+        )
     }
 }
