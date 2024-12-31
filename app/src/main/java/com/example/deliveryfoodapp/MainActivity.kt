@@ -29,6 +29,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = Routes.SPLASH_SCREEN_PAGE,
+
+                        startDestination = Routes.MY_ORDERS_PAGE,
+
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -37,6 +40,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.LOGIN_PAGE) { LoginPage(navController) }
                         composable(Routes.SIGNUP_PAGE) { SignupPage(navController) }
                         composable(Routes.HOME_PAGE) { HomePage(navController) }
+                        composable(Routes.HOME_SCREEN) { HomeScreen(navController) }
                         composable(Routes.NOTIFICATIONS_PAGE) { NotificationsPage(navController) }
                         composable(Routes.RESTAURANT_DETAILS_PAGE) { RestaurantDetailsPage(navController) }
                         composable(Routes.VALIDATE_PAYMENT_PAGE) { ValidatePaymentPage(navController) }
@@ -49,6 +53,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.MY_INFORMATION_PAGE) { MyInformationPage(navController) }
                         composable(Routes.CHANGE_PASSWORD_PAGE) { ChangePasswordPage(navController) }
                         composable(Routes.CHANGE_LOCATION_PAGE) { ChangeLocationPage(navController) }
+                        composable(Routes.LOCATION_PAGE){ LocationPage(navController) }
                     }
 
 

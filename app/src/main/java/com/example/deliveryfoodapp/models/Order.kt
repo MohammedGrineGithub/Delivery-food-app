@@ -1,15 +1,17 @@
 package com.example.deliveryfoodapp.models
 
 data class Order(
-    val userId: Int,
-    val restaurantId: Int,
-    val totalPrice: Double,
-    val createdAt: String,
-    val status: Int,
-    val deliveryNote: String?,
-    val deliveryPersonId: Int?
+    var id : Int,
+    var userId: Int,
+    var restaurantId: Int,
+    var totalPrice: Double,
+    var createdAt: String,
+    var status: Int,
+    var deliveryNote: String?,
+    var deliveryPersonId: Int?
 ) {
     fun toMap(): Map<String, Any> = mapOf(
+        "id" to id,
         "userId" to userId,
         "restaurantId" to restaurantId,
         "totalPrice" to totalPrice,
@@ -21,6 +23,7 @@ data class Order(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = Order(
+            id = map["id"] as? Int ?: -1,
             userId = map["userId"] as Int,
             restaurantId = map["restaurantId"] as Int,
             totalPrice = map["totalPrice"] as Double,

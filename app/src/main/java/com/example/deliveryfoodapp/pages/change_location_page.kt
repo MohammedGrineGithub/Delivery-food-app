@@ -34,12 +34,13 @@ import com.example.deliveryfoodapp.ui.theme.Black
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.compose.rememberNavController
-import com.example.deliveryfoodapp.ui.theme.BlackStrock
-import com.example.deliveryfoodapp.ui.theme.GreyStrock
+import com.example.deliveryfoodapp.ui.theme.BlackStroke
+import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,6 +63,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.deliveryfoodapp.ui.theme.Grey
+import com.example.deliveryfoodapp.utils.Routes
+import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,8 +73,8 @@ fun ChangeLocationPage(navController : NavHostController) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
-    val topBottomMargin = (screenHeight * 0.1f) // 11.3% of screen height
-    val leftRightMargin = (screenWidth * 0.04f) // 22% of screen width
+    val topBottomMargin = (screenHeight * 0.1f)
+    val leftRightMargin = (screenWidth * 0.04f)
     val context = LocalContext.current
     val wilayas = listOf("Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Béjaïa", "Biskra", "Béchar", "Blida", "Bouira", "Tamanrasset", "Tébessa", "Tlemcen", "Tiaret", "Tizi Ouzou", "Algiers", "Djelfa", "Jijel", "Sétif", "Saïda", "Skikda", "Sidi Bel Abbès", "Annaba", "Guelma", "Constantine", "Médéa", "Mostaganem", "M’Sila", "Mascara", "Ouargla", "Oran", "El Bayadh", "Illizi", "Bordj Bou Arreridj", "Boumerdès", "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela", "Souk Ahras", "Tipaza", "Mila", "Aïn Defla", "Naâma", "Aïn Témouchent", "Ghardaïa", "Relizane", "Timimoun", "Bordj Badji Mokhtar", "Ouled Djellal", "Béni Abbès", "In Salah", "In Guezzam", "Touggourt", "Djanet", "El M'Ghair", "El Meniaa")
     var isExpanded by remember {
@@ -93,9 +97,10 @@ fun ChangeLocationPage(navController : NavHostController) {
         IconButton(
             onClick = { navController.popBackStack() } ,
             modifier = Modifier.align(Alignment.TopStart)
-        ) {
+        )
+        {
             Icon(
-                painter = painterResource(id = R.drawable.back), // Replace with your back icon resource
+                painter = painterResource(id = R.drawable.back),
                 contentDescription = "Go Back"
             )
         }
@@ -126,9 +131,9 @@ fun ChangeLocationPage(navController : NavHostController) {
                     Text(
                         text = "you can change your location here" ,
                         textAlign = TextAlign.Center ,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = BlackStrock
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = BlackStroke
                     )
                 }
                 Column (
@@ -145,6 +150,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                                 fontSize = 16.sp ,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             ExposedDropdownMenuBox(
                                 expanded = isExpanded ,
                                 onExpandedChange = { isExpanded = !isExpanded }
@@ -154,42 +160,55 @@ fun ChangeLocationPage(navController : NavHostController) {
                                         modifier = Modifier.menuAnchor().fillMaxWidth(),
                                         value = selected ,
                                         colors = TextFieldDefaults.colors(
-                                            focusedTextColor = BlackStrock,
-                                            unfocusedTextColor = BlackStrock,
+                                            focusedContainerColor = Grey,
+                                            unfocusedContainerColor = Grey,
+                                            disabledTextColor = Black,
+                                            focusedIndicatorColor = GreyStroke,
+                                            unfocusedIndicatorColor = GreyStroke,
+                                            disabledIndicatorColor = GreyStroke
                                         ),
                                         onValueChange = {} ,
                                         readOnly = true ,
                                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon( expanded = isExpanded)} ,
-                                        placeholder = { }
+                                        placeholder = { } ,
+                                        singleLine = true
                                     )
                                 }
                                 else {
-
-                                    TextField (
+                                    TextField(
                                         modifier = Modifier.menuAnchor().fillMaxWidth(),
                                         value = selected ,
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Grey,
+                                            unfocusedContainerColor = Grey,
+                                            disabledTextColor = Black,
+                                            focusedIndicatorColor = GreyStroke,
+                                            unfocusedIndicatorColor = GreyStroke,
+                                            disabledIndicatorColor = GreyStroke
+                                        ),
                                         onValueChange = {} ,
                                         readOnly = true ,
                                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon( expanded = isExpanded)} ,
+                                        placeholder = { } ,
+                                        singleLine = true
                                     )
                                 }
                                 ExposedDropdownMenu(
                                     expanded = isExpanded ,
                                     onDismissRequest = { isExpanded = false } ,
-                                    modifier = Modifier.heightIn(max = 300.dp).fillMaxWidth()
+                                    modifier = Modifier.heightIn(max = 300.dp).fillMaxWidth().background(color = Grey)
                                 ) {
                                     wilayas.forEachIndexed { index , wilaya ->
                                         DropdownMenuItem(
-                                            text = { Text(text = wilaya) },
+                                            text = { Text(text = "${index+1}- " + wilaya) },
                                             onClick = {
                                                 selected = wilaya
                                                 isExpanded = false
                                             },
                                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding ,
-                                            modifier = Modifier.fillMaxWidth()
+                                            modifier = Modifier.fillMaxWidth().background(color = Grey)
                                         )
                                     }
-
                                 }
                             }
                         }
@@ -201,11 +220,19 @@ fun ChangeLocationPage(navController : NavHostController) {
                                 fontSize = 16.sp ,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             TextField(
                                 value = exact_location,
                                 onValueChange = { exact_location = it },
-                                placeholder = { Text("Example: Sommame - Bab Ezzouar" ,
-                                    color = GreyStrock) },
+                                placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke) },
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Grey,
+                                    unfocusedContainerColor = Grey,
+                                    disabledTextColor = Black,
+                                    focusedIndicatorColor = GreyStroke,
+                                    unfocusedIndicatorColor = GreyStroke,
+                                    disabledIndicatorColor = GreyStroke
+                                ),
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
                             )
@@ -215,12 +242,13 @@ fun ChangeLocationPage(navController : NavHostController) {
                         Column {
 
                             Text(
-                                text = "Exact Location",
+                                text = "Current Location",
                                 fontSize = 16.sp,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             Button(
-                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = Black , shape =RoundedCornerShape(20.dp) ) ,
+                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
                                 colors = ButtonDefaults.buttonColors(Color.White),
                                 onClick = {
                                     if (ContextCompat.checkSelfPermission(
@@ -244,18 +272,18 @@ fun ChangeLocationPage(navController : NavHostController) {
                             )  {
                                 if (locationText == "") {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.vector), // Replace with your drawable resource
+                                        painter = painterResource(id = R.drawable.vector),
                                         contentDescription = "Location",
                                         modifier = Modifier.size(32.dp),
-                                        tint = Color.Unspecified // Use Unspecified to retain the icon's original colors
+                                        tint = Color.Unspecified
                                     )
                                 }
                                 else{
                                     Icon(
-                                        painter = painterResource(id = R.drawable.done), // Replace with your drawable resource
+                                        painter = painterResource(id = R.drawable.done),
                                         contentDescription = "Location",
                                         modifier = Modifier.size(32.dp),
-                                        tint = Color.Unspecified // Use Unspecified to retain the icon's original colors
+                                        tint = Color.Unspecified
                                     )
                                 }
                             }
@@ -268,23 +296,12 @@ fun ChangeLocationPage(navController : NavHostController) {
                     verticalArrangement = Arrangement.Bottom,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Button(
+                    PrincipalButton(
+                        text = "Save changes",
                         onClick = {
-
-                        } ,
-                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)) ,
-                        colors = ButtonDefaults.buttonColors(Primary),
-                        shape = RectangleShape ,
-
-                        ) {
-                        Text(
-                            text = "Save Changes" ,
-                            textAlign = TextAlign.Center,
-                            color = Color.White ,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
+                            navController.navigate(Routes.PROFILE_PAGE)
+                        }
+                    )
                 }
             }
         }
