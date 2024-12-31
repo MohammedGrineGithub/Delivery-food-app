@@ -1,17 +1,27 @@
 package com.example.deliveryfoodapp.models
+
 data class Category(
-    val name: String,
-    val restaurantMenuId: Int
+    var id: Int,
+    var name: String,
+    var items: MutableList<Item>
 ) {
     fun toMap(): Map<String, Any> = mapOf(
+        "id" to id,
         "name" to name,
-        "restaurantMenuId" to restaurantMenuId
+        "items" to items.map { it.toMap() }
     )
 
     companion object {
         fun fromMap(map: Map<String, Any>) = Category(
-            name = map["name"] as String,
-            restaurantMenuId = map["restaurantMenuId"] as Int
+            id = map["id"] as? Int ?: -1,
+            name = map["name"] as? String ?: "",
+            items = (map["items"] as? List<Map<String, Any>>)?.map {
+                Item.fromMap(it)
+            }?.toMutableList() ?: mutableListOf()
         )
+
+        fun emptyCategory(): Category {
+            return Category(id = 0, name = "", items = mutableListOf())
+        }
     }
 }
