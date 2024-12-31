@@ -13,5 +13,6 @@ val PrimaryFill = Color(0xFFD5FFE9)
 val SecondaryFill = Color(0xFFE3FFF0)
 val CardBackground = Color(0xFFF2F2F2)
 val Red = Color(0xFFFF0000)
+val Blue = Color(0xFF4385FF)
 val Orange = Color(0xFFFFA500)
 
