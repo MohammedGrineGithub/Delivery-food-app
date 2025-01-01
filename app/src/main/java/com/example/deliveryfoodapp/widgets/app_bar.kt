@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import com.example.deliveryfoodapp.ui.theme.BlackStroke
@@ -34,11 +35,16 @@ fun CustomAppBar(text : String, onClick: () -> Unit){
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ){
-        Icon(
-            painter = painterResource(id = R.drawable.back),
-            contentDescription = "back",
+        IconButton(
+            onClick = onClick,
             modifier = Modifier.size(16.dp)
-        )
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.back),
+                contentDescription = "back",
+                modifier = Modifier.size(16.dp)
+            )
+        }
         Text(
             text = text,
             fontSize = 22.sp,

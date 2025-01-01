@@ -1,27 +1,37 @@
 package com.example.deliveryfoodapp.models
 
 data class OrderItem(
-    var id : Int,
-    var orderId: Int,
-    var itemId: Int,
+    var id: Int,
+    var item: Item,
     var note: String?,
     var itemQuantity: Int
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
-        "orderId" to orderId,
-        "itemId" to itemId,
+        "item" to item.toMap(),
         "note" to (note ?: ""),
         "itemQuantity" to itemQuantity
     )
 
+    fun totalPrice() : Double {
+        return item.price * itemQuantity
+    }
+
     companion object {
         fun fromMap(map: Map<String, Any>) = OrderItem(
             id = map["id"] as? Int ?: -1,
-            orderId = map["orderId"] as Int,
-            itemId = map["itemId"] as Int,
+            item = Item.fromMap(map["item"] as? Map<String, Any> ?: emptyMap()),
             note = map["note"] as? String,
-            itemQuantity = map["itemQuantity"] as Int
+            itemQuantity = map["itemQuantity"] as? Int ?: 0
         )
+
+        fun emptyOrderItem() : OrderItem{
+            return OrderItem(
+                id = 0,
+                item = Item.emptyItem(),
+                note = "",
+                itemQuantity = 0
+            )
+        }
     }
 }

@@ -14,9 +14,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.pages.*
 import com.example.deliveryfoodapp.ui.theme.DeliveryFoodAppTheme
 import com.example.deliveryfoodapp.utils.*
+
+var authenticatedUser : User = createUserForTest()
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.MY_ORDERS_PAGE,
+                        startDestination = Routes.USER_CART_PAGE,
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -51,6 +54,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.CHANGE_PASSWORD_PAGE) { ChangePasswordPage(navController) }
                         composable(Routes.CHANGE_LOCATION_PAGE) { ChangeLocationPage(navController) }
                         composable(Routes.LOCATION_PAGE){ LocationPage(navController) }
+                        composable(Routes.USER_CART_PAGE){ UserCartPage(navController) }
                     }
                 }
             }

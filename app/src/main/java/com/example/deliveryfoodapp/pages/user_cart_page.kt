@@ -7,39 +7,74 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.deliveryfoodapp.ui.theme.BlackStroke
-import com.example.deliveryfoodapp.ui.theme.GreyStroke
-import com.example.deliveryfoodapp.ui.theme.Black
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.ui.theme.GreyStroke
+import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.PrimaryFill
+import com.example.deliveryfoodapp.ui.theme.Secondary
+import com.example.deliveryfoodapp.ui.theme.SecondaryFill
+import com.example.deliveryfoodapp.ui.theme.White
 import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserCartPage(navController : NavHostController){
 
-    var totalItemsNumber = remember { mutableIntStateOf(2) }
-    var totalItemsPrice = remember { mutableDoubleStateOf(1200.0) }
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
+    /** ********************************************** **/
+
+    val restaurantID = 1
+    val userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID)
+
+    /** ********************************************** **/
+
+    val totalItemsNumber = remember {
+        mutableIntStateOf(userCart.totalItems())
+    }
+    val totalItemsPrice = remember {
+        mutableDoubleStateOf(userCart.totalPrice())
+    }
+
 
     /** Main Page **/
     Column(
@@ -50,14 +85,15 @@ fun UserCartPage(navController : NavHostController){
     ) {
         /** AppBar + Main content **/
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxWidth()
         ){
             /** AppBar (Title + back arrow icon) **/
             CustomAppBar(
                 text = "My Cart",
                 onClick = {navController.popBackStack()}
             )
+
+            Spacer(Modifier.height(24.dp))
 
             /** Main content **/
             Column(
@@ -67,27 +103,270 @@ fun UserCartPage(navController : NavHostController){
                 /** Number of items + Total price **/
                 Row(
                     modifier = Modifier.fillMaxWidth()
-                        .background(color = PrimaryFill)
                         .clip(shape = RoundedCornerShape(8))
-                        .padding(all = 8.dp),
+                        .background(color = PrimaryFill)
+                        .padding(all = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(
-                        text = "Items ($totalItemsNumber)",
+                        text = "Items (${totalItemsNumber.intValue})",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "$totalItemsPrice DA",
+                        text = "${totalItemsPrice.doubleValue} DA",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Bold
                     )
                 }
+
+                Spacer(Modifier.height(24.dp))
+
+                /** List of EditItemCard **/
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(screenHeight/2),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    itemsIndexed(userCart.orderItems) { index, _ ->
+
+                        var note by remember {
+                            mutableStateOf(userCart.orderItems[index].note)
+                        }
+                        val itemName by remember {
+                            mutableStateOf(userCart.orderItems[index].item.name)
+                        }
+                        val singleItemTotalPrice = remember {
+                            mutableDoubleStateOf(
+                                userCart.orderItems[index].totalPrice()
+                            )
+                        }
+                        val itemQuantity = remember {
+                            mutableIntStateOf(
+                                userCart.orderItems[index].itemQuantity
+                            )
+                        }
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    itemName,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Column(
+                                    horizontalAlignment = Alignment.End
+                                ) {
+
+                                    Text(
+                                        text = "${singleItemTotalPrice.doubleValue} DA",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Normal
+                                    )
+
+                                    Spacer(Modifier.height(4.dp))
+
+                                    Row(
+                                        modifier = Modifier
+                                            .width(120.dp)
+                                            .clip(shape = RoundedCornerShape(8))
+                                            .background(color = SecondaryFill),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                // update itemQuantity state variable to show
+                                                itemQuantity.value += 1
+
+                                                // update the itemQuantity of the order item of the user cart
+                                                authenticatedUser
+                                                    .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                    .orderItems[index]
+                                                    .itemQuantity += 1
+
+                                                // update the singleItemTotalPrice state variable of the order item of the user cart
+                                                singleItemTotalPrice.doubleValue =
+                                                    authenticatedUser
+                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                        .orderItems[index]
+                                                        .totalPrice()
+
+                                                // update the totalItemsNumber state variable
+                                                totalItemsNumber.intValue =
+                                                    authenticatedUser
+                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                        .totalItems()
+
+                                                // update the totalItemsPrice state variable
+                                                totalItemsPrice.doubleValue =
+                                                    authenticatedUser
+                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                        .totalPrice()
+
+                                            }
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(R.drawable.add_icon),
+                                                contentDescription = "plus",
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
+
+                                        Text(
+                                            text = "${itemQuantity.intValue}",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Normal
+                                        )
+
+                                        IconButton(
+                                            onClick = {
+                                                if (itemQuantity.intValue > 0) {
+
+                                                    // update itemQuantity state variable to show
+                                                    itemQuantity.value -= 1
+
+                                                    // update the itemQuantity of the order item of the user cart
+                                                    authenticatedUser
+                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                        .orderItems[index]
+                                                        .itemQuantity -= 1
+
+                                                    // update the singleItemTotalPrice state variable of the order item of the user cart
+                                                    singleItemTotalPrice.doubleValue =
+                                                        authenticatedUser
+                                                            .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                            .orderItems[index]
+                                                            .totalPrice()
+
+                                                    // update the totalItemsNumber state variable
+                                                    totalItemsNumber.intValue =
+                                                        authenticatedUser
+                                                            .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                            .totalItems()
+
+                                                    // update the totalItemsPrice state variable
+                                                    totalItemsPrice.doubleValue =
+                                                        authenticatedUser
+                                                            .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                                            .totalPrice()
+                                                }
+                                            }
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(R.drawable.remove_icon),
+                                                contentDescription = "minus",
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(Modifier.height(16.dp))
+
+                            OutlinedTextField(
+                                onValueChange = { newNote ->
+                                    note = newNote
+                                    // Update the note of the item in the UserCart
+                                    authenticatedUser
+                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
+                                        .orderItems[index]
+                                        .note = newNote
+                                },
+                                value = "$note",
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                maxLines = 4,
+                                shape = RoundedCornerShape(
+                                    topStart = 2.dp,
+                                    topEnd = 2.dp,
+                                    bottomStart = 16.dp,
+                                    bottomEnd = 16.dp
+                                ),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Secondary.copy(alpha = 0.4f),
+                                    unfocusedBorderColor = GreyStroke
+                                )
+                            )
+                        }
+
+                        Spacer(Modifier.height(24.dp))
+
+                        HorizontalDivider( color = GreyStroke)
+                    }
+                }
+
+                /** Add shadow effect after the list **/
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Black.copy(alpha = 0.1f),
+                                    Color.Transparent
+                                )
+                            )
+                        )
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                /** Row to add new items **/
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    Text(
+                        text = "Do you need more items ?",
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp
+                    )
+
+
+                    Button(
+                        onClick = {navController.popBackStack()},
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.add_icon),
+                                contentDescription = "Add more items",
+                                modifier = Modifier.size(22.dp)
+                            )
+
+                            Spacer(Modifier.width(8.dp))
+
+                            Text(
+                                text = "Add",
+                                fontSize = 14.sp,
+                                color = White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
 
             }
         }
 
+        /** Continue button **/
         PrincipalButton(
             text = "Continue",
             onClick = {}

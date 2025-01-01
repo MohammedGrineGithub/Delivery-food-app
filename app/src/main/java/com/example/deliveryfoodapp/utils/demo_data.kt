@@ -6,9 +6,12 @@ import com.example.deliveryfoodapp.models.Category
 import com.example.deliveryfoodapp.models.CuisineType
 import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.models.Location
+import com.example.deliveryfoodapp.models.OrderItem
 import com.example.deliveryfoodapp.models.Rating
 import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.models.RestaurantMenu
+import com.example.deliveryfoodapp.models.User
+import com.example.deliveryfoodapp.models.UserCart
 import java.time.LocalTime
 
 
@@ -77,4 +80,30 @@ fun createRestaurantForTest() : Restaurant {
     restaurant.rating = Rating(id=0, reviewersCount = 209, rating = 4.5)
     restaurant.menu = menu
     return restaurant
+}
+
+fun createUserForTest() : User {
+    val user : User = User.emptyUser()
+
+    val items = mutableListOf(
+        Item(1, "Margherita", "Tomatoes, Mozzarella, Basil", 400.0, AppImage.emptyAppImage()),
+        Item(2, "Pepperoni", "Tomatoes, Mozzarella, Pepperoni", 450.0, AppImage.emptyAppImage()),
+        Item(3, "Vegetarian", "Tomatoes, Mozzarella, Mixed Vegetables", 420.0, AppImage.emptyAppImage()),
+        Item(4, "BBQ Chicken", "BBQ Sauce, Chicken, Red Onion", 480.0, AppImage.emptyAppImage())
+    )
+    val orderItems = mutableListOf(
+        OrderItem(id = 1, item = items[0], note = "Extra cheese", itemQuantity = 2),
+        OrderItem(id = 2, item = items[1], note = "No pepperoni", itemQuantity = 1),
+        OrderItem(id = 3, item = items[2], note = "Add olives", itemQuantity = 3),
+        OrderItem(id = 4, item = items[3], note = "Extra BBQ sauce", itemQuantity = 1)
+    )
+    val cart = UserCart(
+        id = 1,
+        orderItems = orderItems,
+        restaurantID = 1
+    )
+
+    user.carts.add(cart)
+
+    return user
 }
