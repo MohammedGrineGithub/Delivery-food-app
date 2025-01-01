@@ -1,6 +1,7 @@
 package com.example.deliveryfoodapp.utils
 
 import android.annotation.SuppressLint
+import androidx.compose.ui.graphics.Color
 import com.example.deliveryfoodapp.models.AppImage
 import com.example.deliveryfoodapp.models.Category
 import com.example.deliveryfoodapp.models.CuisineType
@@ -12,6 +13,11 @@ import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.models.RestaurantMenu
 import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.models.UserCart
+import com.example.deliveryfoodapp.ui.theme.BlackStroke
+import com.example.deliveryfoodapp.ui.theme.Blue
+import com.example.deliveryfoodapp.ui.theme.Primary
+import com.example.deliveryfoodapp.ui.theme.Red
+import com.example.deliveryfoodapp.ui.theme.Secondary
 import java.time.LocalTime
 
 
@@ -106,4 +112,104 @@ fun createUserForTest() : User {
     user.carts.add(cart)
 
     return user
+}
+
+data class OrderTest(
+    val id: String,
+    val restaurantName: String,
+    val price: String,
+    val orderedAtTime: String,
+    val orderedAtDate: String,
+    val status: String,
+    val imageUrl: String,
+    val statusId: Color
+)
+
+fun createOrdersForTest() : List<OrderTest> {
+
+    val imagePath = "https://th.bing.com/th/id/OIP.M9t7f55K3088Y3ZCGxUATgHaHa?rs=1&pid=ImgDetMain"
+    // A sample list of orders
+    val sampleOrders = listOf(
+        OrderTest(
+            id = "1",
+            restaurantName = "Pizzeria Woodpecker",
+            price = "2700 DA",
+            orderedAtTime = "08:30 p.m.",
+            orderedAtDate = "08/12/2024",
+            status = "On the way",
+            imageUrl = imagePath,
+            statusId = Blue
+        ),
+        OrderTest(
+            id = "2",
+            restaurantName = "Tacozza",
+            price = "700 DA",
+            orderedAtTime = "11:30 a.m.",
+            orderedAtDate = "08/12/2024",
+            status = "IsPrepared",
+            imageUrl = imagePath,
+            statusId = BlackStroke
+        ),
+        OrderTest(
+            id = "3",
+            restaurantName = "American Burger",
+            price = "1800 DA",
+            orderedAtTime = "12:00 a.m.",
+            orderedAtDate = "10/11/2024",
+            status = "Canceled",
+            imageUrl = imagePath,
+            statusId = Red
+        ),
+        OrderTest(
+            id = "4",
+            restaurantName = "La Casa del Burger",
+            price = "1200 DA",
+            orderedAtTime = "12:10 a.m.",
+            orderedAtDate = "10/11/2024",
+            status = "Delivered",
+            imageUrl = imagePath,
+            statusId = Secondary
+        ),
+        OrderTest(
+            id = "1",
+            restaurantName = "Pizzeria Woodpecker",
+            price = "2700 DA",
+            orderedAtTime = "08:30 p.m.",
+            orderedAtDate = "08/12/2024",
+            status = "On the way",
+            imageUrl = imagePath,
+            statusId = Blue
+        ),
+        OrderTest(
+            id = "2",
+            restaurantName = "Tacozza",
+            price = "700 DA",
+            orderedAtTime = "11:30 a.m.",
+            orderedAtDate = "08/12/2024",
+            status = "IsPrepared",
+            imageUrl = imagePath,
+            statusId = BlackStroke
+        ),
+        OrderTest(
+            id = "3",
+            restaurantName = "American Burger",
+            price = "1800 DA",
+            orderedAtTime = "12:00 a.m.",
+            orderedAtDate = "10/11/2024",
+            status = "Canceled",
+            imageUrl = imagePath,
+            statusId = Red
+        ),
+        OrderTest(
+            id = "4",
+            restaurantName = "La Casa del Burger",
+            price = "1200 DA",
+            orderedAtTime = "12:10 a.m.",
+            orderedAtDate = "10/11/2024",
+            status = "Delivered",
+            imageUrl = imagePath,
+            statusId = Primary
+        )
+    )
+    return sampleOrders
 }

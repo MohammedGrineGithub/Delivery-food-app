@@ -25,9 +25,3 @@ class Routes {
         const val USER_CART_PAGE = "UserCartPage"
     }
 }
-
-class Titles {
-    companion object {
-
-    }
-}
