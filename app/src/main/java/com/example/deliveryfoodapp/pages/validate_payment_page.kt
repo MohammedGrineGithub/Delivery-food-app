@@ -371,6 +371,9 @@ fun ValidatePaymentPage(navController : NavHostController) {
         PrincipalButton(
             text = "Place the order",
             onClick = {
+
+                // do some logic (create new order, empty user cart, ...)
+
                 navController.navigate(Routes.ORDER_PLACED_PAGE){
                     popUpTo(Routes.VALIDATE_PAYMENT_PAGE) { inclusive = true }
                 }

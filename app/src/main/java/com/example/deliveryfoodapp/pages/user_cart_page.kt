@@ -52,6 +52,7 @@ import com.example.deliveryfoodapp.ui.theme.PrimaryFill
 import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.ui.theme.SecondaryFill
 import com.example.deliveryfoodapp.ui.theme.White
+import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
@@ -386,7 +387,10 @@ fun UserCartPage(navController : NavHostController){
         /** Continue button **/
         PrincipalButton(
             text = "Continue",
-            onClick = {}
+            onClick = {
+                navController.navigate(Routes.VALIDATE_PAYMENT_PAGE){
+                }
+            }
         )
     }
 }

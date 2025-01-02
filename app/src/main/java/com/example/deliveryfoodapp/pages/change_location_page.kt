@@ -45,7 +45,6 @@ import com.google.android.gms.location.LocationServices
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.deliveryfoodapp.ui.theme.Grey
-import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -280,7 +279,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                     PrincipalButton(
                         text = "Save changes",
                         onClick = {
-                            navController.navigate(Routes.PROFILE_PAGE)
+                            navController.popBackStack()
                         }
                     )
                 }

@@ -87,7 +87,8 @@ fun OrderPlacedPage(navController : NavHostController) {
             text = "Back to Home",
             onClick = {
                 navController.navigate(Routes.HOME_SCREEN){
-                    popUpTo(Routes.ORDER_PLACED_PAGE) { inclusive = true }
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    launchSingleTop = true
                 }
             }
         )
