@@ -11,6 +11,36 @@ data class UserCart(
         "restaurantID" to restaurantID
     )
 
+    fun getOrderItemByItemID(item : Item) : OrderItem {
+        var orderItem : OrderItem? = orderItems.find { it.item.id == item.id }
+
+        if (orderItem == null) {
+            orderItem = OrderItem.emptyOrderItem()
+
+            /** orderItem.id = newOrderItemID  ## here i should create new order item id in sqlLite and a
+            associate it here **/
+
+            orderItem.item = item.copy()
+            orderItem.itemQuantity = 1
+            return  orderItem
+        }
+        return orderItem
+    }
+
+    private fun getOrderItemIndexByOrderItemID(orderItemID : Int) : Int {
+        val index : Int? = orderItems.indexOfFirst { it.id == orderItemID }.takeIf { it != -1 }
+        return index ?: -1
+    }
+
+    fun updateByOrderItem(orderItem: OrderItem) {
+        val index = getOrderItemIndexByOrderItemID(orderItem.id)
+        if (index == -1) {
+            orderItems.add(orderItem)
+        }else {
+            orderItems[index] = orderItem.copy()
+        }
+    }
+
     fun totalItems() : Int {
         return orderItems.sumOf { it.itemQuantity }
     }

@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,7 +52,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.models.Restaurant
+import com.example.deliveryfoodapp.ui.theme.Black
+import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Orange
 import com.example.deliveryfoodapp.ui.theme.Primary
@@ -58,6 +65,7 @@ import com.example.deliveryfoodapp.ui.theme.White
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.utils.createRestaurantForTest
+import com.example.deliveryfoodapp.widgets.InfoAddItemDialog
 import com.example.deliveryfoodapp.widgets.ItemCard
 
 
@@ -68,8 +76,15 @@ fun RestaurantDetailsPage(navController : NavHostController) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     var selectedIndex by remember { mutableIntStateOf(0) }
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedItem by remember { mutableStateOf<Item?>(null) }
+
+    /** ****************************************************************** **/
 
     val restaurant : Restaurant = createRestaurantForTest()
+
+    // val userCart : UserCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = restaurant.id)
+    val userCart = remember { mutableStateOf(authenticatedUser.getUserCartByRestaurantID(restaurantID = restaurant.id)) }
 
     /** Main page **/
     Column(
@@ -245,101 +260,177 @@ fun RestaurantDetailsPage(navController : NavHostController) {
         }
 
         /** Restaurant menu **/
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 20.dp)
-        ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+        ){
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                /** Title menu **/
-                Text(
-                    text = "Menu",
-                    fontSize = 24.sp,
-                    fontFamily = lemonFontFamily,
-                )
 
-                /** Cuisine type **/
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-
-                    Icon(
-                        painter = painterResource(R.drawable.restaurant_icon),
-                        contentDescription = "rating",
-                        modifier = Modifier.size(28.dp),
-                        tint = Primary
-                    )
-                    Spacer(Modifier.width(6.dp))
+                    /** Title menu **/
                     Text(
-                        text = restaurant.cuisineType.name,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center,
-                        color = Primary,
-                        fontFamily = lemonFontFamily
+                        text = "Menu",
+                        fontSize = 24.sp,
+                        fontFamily = lemonFontFamily,
                     )
-                }
-            }
 
-            /** Divider **/
-            HorizontalDivider(thickness = 1.dp, color = GreyStroke)
+                    /** Cuisine type **/
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
-            Spacer(Modifier.height(8.dp))
-
-            /** Row list of categories **/
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(36.dp)
-            ) {
-                itemsIndexed(restaurant.menu.categories) { index, category ->
-                    CategoryItem(
-                        categoryName = category.name,
-                        isSelected = index == selectedIndex,
-                        onClick = { selectedIndex = index }
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            /** List of the items of each category **/
-
-            AnimatedContent(
-                targetState = selectedIndex,
-                transitionSpec = {
-                    if (targetState > initialState) {
-                        // Slide in from the right and out to the left (<--)
-                        slideInHorizontally(initialOffsetX = { it }) togetherWith
-                                slideOutHorizontally(targetOffsetX = { -it }) using
-                                SizeTransform(clip = false)
-                    } else {
-                        // Slide in from the left and out to the right (-->)
-                        slideInHorizontally(initialOffsetX = { -it }) togetherWith
-                                slideOutHorizontally(targetOffsetX = { it }) using
-                                SizeTransform(clip = false)
-                    }
-                },
-                label = ""
-            ) { targetIndex ->
-                LazyColumn(
-                    modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    itemsIndexed(restaurant.menu.categories[targetIndex].items) { index, item ->
-                        ItemCard(
-                            item = item,
-                            onClick = {
-                            }
+                        Icon(
+                            painter = painterResource(R.drawable.restaurant_icon),
+                            contentDescription = "rating",
+                            modifier = Modifier.size(28.dp),
+                            tint = Primary
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            text = restaurant.cuisineType.name,
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center,
+                            color = Primary,
+                            fontFamily = lemonFontFamily
                         )
                     }
                 }
+
+                /** Divider **/
+                HorizontalDivider(thickness = 1.dp, color = GreyStroke)
+
+                Spacer(Modifier.height(8.dp))
+
+                /** Row list of categories **/
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(36.dp)
+                ) {
+                    itemsIndexed(restaurant.menu.categories) { index, category ->
+                        CategoryItem(
+                            categoryName = category.name,
+                            isSelected = index == selectedIndex,
+                            onClick = { selectedIndex = index }
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                /** List of the items of each category **/
+
+                AnimatedContent(
+                    targetState = selectedIndex,
+                    transitionSpec = {
+                        if (targetState > initialState) {
+                            // Slide in from the right and out to the left (<--)
+                            slideInHorizontally(initialOffsetX = { it }) togetherWith
+                                    slideOutHorizontally(targetOffsetX = { -it }) using
+                                    SizeTransform(clip = false)
+                        } else {
+                            // Slide in from the left and out to the right (-->)
+                            slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                                    slideOutHorizontally(targetOffsetX = { it }) using
+                                    SizeTransform(clip = false)
+                        }
+                    },
+                    label = ""
+                ) { targetIndex ->
+                    LazyColumn(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        itemsIndexed(restaurant.menu.categories[targetIndex].items) { _, item ->
+                            ItemCard(
+                                item = item,
+                                modifier = Modifier
+                                    .clickable {
+                                        selectedItem = item
+                                        showDialog = true
+                                    }
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(CardBackground)
+                                    .padding(all = 10.dp)
+                            )
+                        }
+                    }
+                }
+
             }
 
+            /** Button of user cart **/
+            if (userCart.value.totalItems() != 0)
+            Button(
+                onClick = {
+                    navController.navigate(Routes.USER_CART_PAGE)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Primary // Set background color
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ){
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 6.dp, bottom = 6.dp)
+                                .background(Black.copy(alpha = 0.7f), shape = CircleShape)
+                                .size(24.dp),
+                        ){
+                            Text(
+                                text = "${userCart.value.totalItems()}",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = White,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                        Text(
+                            text = "Cart",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = White
+                        )
+                    }
+                    Text(
+                        text = "${userCart.value.totalPrice()} DA",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = White
+                    )
+                }
+            }
         }
+    }
+
+    if (showDialog && selectedItem != null) {
+        InfoAddItemDialog(
+            userCart = userCart.value,
+            item = selectedItem!!,
+            onDismiss = {
+                showDialog = false
+            }
+        )
     }
 
 }

@@ -22,8 +22,21 @@ data class User(
     )
 
     fun getUserCartByRestaurantID(restaurantID: Int): UserCart {
-        return carts.find { it.restaurantID == restaurantID }!!
+
+        var userCart : UserCart? = carts.find { it.restaurantID == restaurantID }
+        if (userCart == null) {
+
+            userCart = UserCart.emptyUserCart()
+
+            /** userCart.id = newCartId  ## here i should create new user cart id in sqlLite and a
+             associate it here **/
+
+            userCart.restaurantID = restaurantID
+            return userCart
+        }
+        return userCart
     }
+
     fun getUserCartIndexByRestaurantID(restaurantID: Int): Int {
         return carts.indexOfFirst { it.restaurantID == restaurantID }.takeIf { it != -1 } !!
     }

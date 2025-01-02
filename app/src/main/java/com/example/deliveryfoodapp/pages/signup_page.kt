@@ -393,7 +393,7 @@ fun SignupPage(navController : NavHostController) {
                                 placeholder = { Text("", color = GreyStroke) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { navController.navigate(Routes.CHANGE_LOCATION_PAGE) },
+                                    .clickable { navController.navigate(Routes.LOCATION_PAGE) },
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.location),

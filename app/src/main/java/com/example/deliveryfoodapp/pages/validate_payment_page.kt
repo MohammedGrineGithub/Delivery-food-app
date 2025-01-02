@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,10 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.ui.theme.GreyStroke
+import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ValidatePaymentPage(navController : NavHostController) {
 
@@ -206,7 +211,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
                         value = note_To_driver,
                         onValueChange = {note_To_driver=it},
                         placeholder = { Text(
-                            text = "Ex : Without onion and without hot sauce",
+                            text = "Ex : I live in the third stage of the building",
                             style = TextStyle( fontSize = 14.sp, fontWeight = FontWeight.Normal, color = Color(0xFF9F9F9F)  )) },
                         modifier = Modifier
                             .height(120.dp)
@@ -216,6 +221,10 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             topEnd = 0.dp,
                             bottomEnd = 16.dp,
                             bottomStart = 16.dp
+                        ),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Secondary.copy(alpha = 0.4f),
+                            unfocusedBorderColor = GreyStroke
                         )
 
 

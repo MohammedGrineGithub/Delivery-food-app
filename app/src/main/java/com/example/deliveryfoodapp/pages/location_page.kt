@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +14,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,13 +29,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.deliveryfoodapp.ui.theme.Black
-import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -45,24 +38,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import androidx.compose.ui.platform.LocalContext
 import com.example.deliveryfoodapp.ui.theme.Primary
-import com.example.deliveryfoodapp.ui.theme.Secondary
 import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.example.deliveryfoodapp.ui.theme.Grey
 import com.example.deliveryfoodapp.utils.Routes
 
@@ -129,8 +112,10 @@ fun LocationPage(navController : NavHostController) {
                     )
                     Text(
                         text = "Please fill all your location details" ,
-                        textAlign = TextAlign.Start ,
-                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center ,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = BlackStroke
                     )
                 }
                 Column (
@@ -147,6 +132,7 @@ fun LocationPage(navController : NavHostController) {
                                 fontSize = 16.sp ,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             ExposedDropdownMenuBox(
                                 expanded = isExpanded ,
                                 onExpandedChange = { isExpanded = !isExpanded }
@@ -216,6 +202,7 @@ fun LocationPage(navController : NavHostController) {
                                 fontSize = 16.sp ,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             TextField(
                                 value = exact_location,
                                 onValueChange = { exact_location = it },
@@ -237,12 +224,13 @@ fun LocationPage(navController : NavHostController) {
                         Column {
 
                             Text(
-                                text = "Exact Location",
+                                text = "Current Location",
                                 fontSize = 16.sp,
                                 color = Black
                             )
+                            Spacer(Modifier.height(8.dp))
                             Button(
-                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = Black , shape =RoundedCornerShape(20.dp) ) ,
+                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
                                 colors = ButtonDefaults.buttonColors(Color.White),
                                 onClick = {
                                     if (ContextCompat.checkSelfPermission(
@@ -300,7 +288,7 @@ fun LocationPage(navController : NavHostController) {
 
                         ) {
                         Text(
-                            text = "confirm" ,
+                            text = "Confirm" ,
                             textAlign = TextAlign.Center,
                             color = Color.White ,
                             fontSize = 20.sp,
