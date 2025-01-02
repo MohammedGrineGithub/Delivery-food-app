@@ -21,6 +21,8 @@ import com.example.deliveryfoodapp.utils.*
 
 var authenticatedUser : User = createUserForTest()
 
+var x = 1
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

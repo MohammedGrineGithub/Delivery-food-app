@@ -182,7 +182,19 @@ fun UserCartPage(navController : NavHostController){
                                         fontWeight = FontWeight.Light,
                                         textDecoration = TextDecoration.Underline,
                                         modifier = Modifier.clickable {
-                                            userCart.value.orderItems.removeAt(index)
+                                            // update userCart
+                                            val updatedOrderItems = userCart.value.orderItems.toMutableList()
+                                            updatedOrderItems.removeAt(index)
+                                            userCart.value = userCart.value.copy(orderItems = updatedOrderItems)
+
+                                            // update states
+                                            totalItemsNumber.intValue = userCart.value.totalItems()
+                                            totalItemsPrice.doubleValue = userCart.value.totalPrice()
+
+                                            // update authenticated user with that userCart
+                                            authenticatedUser.updateByUserCart(userCart = userCart.value)
+
+                                            // TODO the userCart of the user in SqlLite with that userCart
                                         }
                                     )
                                 }
@@ -246,7 +258,7 @@ fun UserCartPage(navController : NavHostController){
 
                                         IconButton(
                                             onClick = {
-                                                if (itemQuantity.intValue > 0) {
+                                                if (itemQuantity.intValue > 1) {
 
                                                     // update itemQuantity state variable to show
                                                     itemQuantity.value -= 1

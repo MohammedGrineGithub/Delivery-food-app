@@ -47,7 +47,10 @@ import com.example.deliveryfoodapp.ui.theme.White
 @Composable
 fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
 
-    var note by remember { mutableStateOf("") }
+    // get the order item if exists, else create new one
+    val orderItem : OrderItem = userCart.getOrderItemByItemID(item)
+
+    var note by remember { mutableStateOf(orderItem.note ?: "") }
     val itemQuantity = remember { mutableIntStateOf(1) }
     val totalPrice = remember { mutableDoubleStateOf(item.price) }
     /** ************************************************************* **/
@@ -136,7 +139,7 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                     /** Item ingredients **/
                     Text(
                         text = "Ingredients : ${item.ingredients}",
-                        fontSize = 12.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.padding(start = 20.dp, end = 20.dp)
                     )
@@ -238,8 +241,6 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                                     if (itemQuantity.intValue > 1) {
                                         totalPrice.doubleValue /= itemQuantity.intValue
                                         itemQuantity.value -= 1
-                                    }else {
-                                        onDismiss()
                                     }
                                 },
                                 modifier = Modifier
@@ -283,14 +284,11 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                     /** Button to add to the cart **/
                     Button(
                         onClick = {
-                            // create order item
-                            val orderItem : OrderItem = userCart.getOrderItemByItemID(item)
-
                             // update note
                             orderItem.note = note
 
                             // update quantity
-                            orderItem.itemQuantity = itemQuantity.intValue
+                            orderItem.itemQuantity += itemQuantity.intValue
 
                             // update user cart
                             userCart.updateByOrderItem(orderItem)
