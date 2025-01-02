@@ -83,8 +83,12 @@ fun RestaurantDetailsPage(navController : NavHostController) {
 
     val restaurant : Restaurant = createRestaurantForTest()
 
-    // val userCart : UserCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = restaurant.id)
-    val userCart = remember { mutableStateOf(authenticatedUser.getUserCartByRestaurantID(restaurantID = restaurant.id)) }
+    val userCart = remember {
+        mutableStateOf(
+            authenticatedUser
+                .getUserCartByRestaurantID(restaurantID = restaurant.id)
+        )
+    }
 
     /** Main page **/
     Column(
@@ -378,7 +382,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     .align(Alignment.BottomCenter),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Primary // Set background color
+                    containerColor = Primary
                 )
             ) {
                 Row(

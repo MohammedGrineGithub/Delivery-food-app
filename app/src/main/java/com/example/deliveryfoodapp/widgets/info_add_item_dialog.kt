@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.models.OrderItem
 import com.example.deliveryfoodapp.models.UserCart
@@ -50,8 +51,6 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
     val itemQuantity = remember { mutableIntStateOf(1) }
     val totalPrice = remember { mutableDoubleStateOf(item.price) }
     /** ************************************************************* **/
-
-    val orderItem : OrderItem = userCart.getOrderItemByItemID(item)
 
 
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -239,6 +238,8 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                                     if (itemQuantity.intValue > 1) {
                                         totalPrice.doubleValue /= itemQuantity.intValue
                                         itemQuantity.value -= 1
+                                    }else {
+                                        onDismiss()
                                     }
                                 },
                                 modifier = Modifier
@@ -282,6 +283,9 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                     /** Button to add to the cart **/
                     Button(
                         onClick = {
+                            // create order item
+                            val orderItem : OrderItem = userCart.getOrderItemByItemID(item)
+
                             // update note
                             orderItem.note = note
 
@@ -290,6 +294,12 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
 
                             // update user cart
                             userCart.updateByOrderItem(orderItem)
+
+                            // update authentication user with that userCart
+                            authenticatedUser.updateByUserCart(userCart = userCart)
+
+                            // TODO update user with that userCart in SqlLite
+
 
                             // close the dialog
                             onDismiss()

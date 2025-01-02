@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
-import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.PrimaryFill
 import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.ui.theme.SecondaryFill
@@ -65,17 +64,23 @@ fun UserCartPage(navController : NavHostController){
     val screenHeight = configuration.screenHeightDp.dp
 
     /** ********************************************** **/
-
+    // TODO ab3at restaurantID bin hado les page (men home 7ata lhna)
     val restaurantID = 1
-    val userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID)
+
+    val userCart = remember {
+        mutableStateOf(
+            authenticatedUser
+                .getUserCartByRestaurantID(restaurantID = restaurantID)
+        )
+    }
 
     /** ********************************************** **/
 
     val totalItemsNumber = remember {
-        mutableIntStateOf(userCart.totalItems())
+        mutableIntStateOf(userCart.value.totalItems())
     }
     val totalItemsPrice = remember {
-        mutableDoubleStateOf(userCart.totalPrice())
+        mutableDoubleStateOf(userCart.value.totalPrice())
     }
 
 
@@ -132,22 +137,22 @@ fun UserCartPage(navController : NavHostController){
                         .height(screenHeight/2),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    itemsIndexed(userCart.orderItems) { index, _ ->
+                    itemsIndexed(userCart.value.orderItems) { index, _ ->
 
                         var note by remember {
-                            mutableStateOf(userCart.orderItems[index].note)
+                            mutableStateOf(userCart.value.orderItems[index].note)
                         }
                         val itemName by remember {
-                            mutableStateOf(userCart.orderItems[index].item.name)
+                            mutableStateOf(userCart.value.orderItems[index].item.name)
                         }
                         val singleItemTotalPrice = remember {
                             mutableDoubleStateOf(
-                                userCart.orderItems[index].totalPrice()
+                                userCart.value.orderItems[index].totalPrice()
                             )
                         }
                         val itemQuantity = remember {
                             mutableIntStateOf(
-                                userCart.orderItems[index].itemQuantity
+                                userCart.value.orderItems[index].itemQuantity
                             )
                         }
 
@@ -177,7 +182,7 @@ fun UserCartPage(navController : NavHostController){
                                         fontWeight = FontWeight.Light,
                                         textDecoration = TextDecoration.Underline,
                                         modifier = Modifier.clickable {
-                                            // userCart.orderItems.removeAt(index)
+                                            userCart.value.orderItems.removeAt(index)
                                         }
                                     )
                                 }
@@ -207,30 +212,22 @@ fun UserCartPage(navController : NavHostController){
                                                 // update itemQuantity state variable to show
                                                 itemQuantity.value += 1
 
-                                                // update the itemQuantity of the order item of the user cart
-                                                authenticatedUser
-                                                    .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                    .orderItems[index]
-                                                    .itemQuantity += 1
+                                                // update the itemQuantity of the order item of the userCart
+                                                userCart.value.orderItems[index].itemQuantity += 1
 
                                                 // update the singleItemTotalPrice state variable of the order item of the user cart
-                                                singleItemTotalPrice.doubleValue =
-                                                    authenticatedUser
-                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                        .orderItems[index]
-                                                        .totalPrice()
+                                                singleItemTotalPrice.doubleValue = userCart.value.orderItems[index].totalPrice()
 
                                                 // update the totalItemsNumber state variable
-                                                totalItemsNumber.intValue =
-                                                    authenticatedUser
-                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                        .totalItems()
+                                                totalItemsNumber.intValue = userCart.value.totalItems()
 
                                                 // update the totalItemsPrice state variable
-                                                totalItemsPrice.doubleValue =
-                                                    authenticatedUser
-                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                        .totalPrice()
+                                                totalItemsPrice.doubleValue = userCart.value.totalPrice()
+
+                                                // update authenticated user with that userCart
+                                                authenticatedUser.updateByUserCart(userCart = userCart.value)
+
+                                                // TODO the userCart of the user in SqlLite with that userCart
 
                                             }
                                         ) {
@@ -255,29 +252,22 @@ fun UserCartPage(navController : NavHostController){
                                                     itemQuantity.value -= 1
 
                                                     // update the itemQuantity of the order item of the user cart
-                                                    authenticatedUser
-                                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                        .orderItems[index]
-                                                        .itemQuantity -= 1
+                                                    userCart.value.orderItems[index].itemQuantity -= 1
 
                                                     // update the singleItemTotalPrice state variable of the order item of the user cart
-                                                    singleItemTotalPrice.doubleValue =
-                                                        authenticatedUser
-                                                            .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                            .orderItems[index]
-                                                            .totalPrice()
+                                                    singleItemTotalPrice.doubleValue = userCart.value.orderItems[index].totalPrice()
 
                                                     // update the totalItemsNumber state variable
-                                                    totalItemsNumber.intValue =
-                                                        authenticatedUser
-                                                            .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                            .totalItems()
+                                                    totalItemsNumber.intValue = userCart.value.totalItems()
 
                                                     // update the totalItemsPrice state variable
-                                                    totalItemsPrice.doubleValue =
-                                                        authenticatedUser
-                                                            .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                                            .totalPrice()
+                                                    totalItemsPrice.doubleValue = userCart.value.totalPrice()
+
+                                                    // update authenticated user with that userCart
+                                                    authenticatedUser.updateByUserCart(userCart = userCart.value)
+
+                                                    // TODO the userCart of the user in SqlLite with that userCart
+
                                                 }
                                             }
                                         ) {
@@ -296,11 +286,8 @@ fun UserCartPage(navController : NavHostController){
                             OutlinedTextField(
                                 onValueChange = { newNote ->
                                     note = newNote
-                                    // Update the note of the item in the UserCart
-                                    authenticatedUser
-                                        .carts[authenticatedUser.getUserCartIndexByRestaurantID(restaurantID)]
-                                        .orderItems[index]
-                                        .note = newNote
+                                    // Update the note of the item in the userCart
+                                    userCart.value.orderItems[index].note = newNote
                                 },
                                 value = "$note",
                                 modifier = Modifier
@@ -388,6 +375,7 @@ fun UserCartPage(navController : NavHostController){
         PrincipalButton(
             text = "Continue",
             onClick = {
+                // do some logic (update the userCart)
                 navController.navigate(Routes.VALIDATE_PAYMENT_PAGE){
                 }
             }

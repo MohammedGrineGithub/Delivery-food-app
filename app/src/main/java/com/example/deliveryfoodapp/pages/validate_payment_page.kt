@@ -25,16 +25,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.models.UserCart
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.utils.Routes
@@ -46,13 +45,26 @@ import com.example.deliveryfoodapp.widgets.PrincipalButton
 fun ValidatePaymentPage(navController : NavHostController) {
 
 
+    // TODO ab3at restaurantID bin hado les page (men home 7ata lhna)
+    val restaurantID = 1
+
+    // TODO ab3at restaurantDeliveryFees bin hado les page (men home 7ata lhna)
+    val restaurantDeliveryFees = 250.0
+
+
+    var userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = restaurantID)
+
     val address by remember { mutableStateOf("P549+9JQ Bab Ezzouar, Algeria") }
     val phone by remember { mutableStateOf("0745458965") }
-    var note_To_driver by remember { mutableStateOf("") } // Valeur par défaut vide
-    var Items_total by remember { mutableStateOf(1200) }
-    var Delivery_fees by remember { mutableStateOf(250) }
-    var Service_fees by remember { mutableStateOf(0) }
-    var Total_price by remember { mutableStateOf(Items_total + Delivery_fees + Service_fees) }
+    var note_To_driver by remember { mutableStateOf("") }
+    val Items_total by remember {
+        mutableStateOf(
+            userCart.totalPrice()
+        )
+    }
+    val Delivery_fees by remember { mutableStateOf(restaurantDeliveryFees) }
+    val Service_fees by remember { mutableStateOf(0) }
+    val Total_price by remember { mutableStateOf(Items_total + Delivery_fees + Service_fees) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -372,7 +384,15 @@ fun ValidatePaymentPage(navController : NavHostController) {
             text = "Place the order",
             onClick = {
 
-                // do some logic (create new order, empty user cart, ...)
+                // TODO Create new order fel backend
+
+                // Delete that cart
+                authenticatedUser.deleteCart(userCart)
+
+                // Empty userCart of authenticated user
+                userCart = UserCart.emptyUserCart()
+
+                // TODO delete that cart from SqlLite
 
                 navController.navigate(Routes.ORDER_PLACED_PAGE){
                     popUpTo(Routes.VALIDATE_PAYMENT_PAGE) { inclusive = true }
@@ -380,19 +400,4 @@ fun ValidatePaymentPage(navController : NavHostController) {
             }
         )
     }
-
-
-
-
-}
-
-@Composable
-fun px_tp_DP(pixel:Int ):Dp{
-    return (pixel/LocalDensity.current.density).dp
-}
-
-@Composable
-
-fun pxToSp(px: Int): TextUnit {
-    return (px / LocalDensity.current.density).sp
 }

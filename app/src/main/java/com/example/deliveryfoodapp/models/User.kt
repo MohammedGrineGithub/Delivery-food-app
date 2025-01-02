@@ -28,8 +28,7 @@ data class User(
 
             userCart = UserCart.emptyUserCart()
 
-            /** userCart.id = newCartId  ## here i should create new user cart id in sqlLite and a
-             associate it here **/
+            // TODO userCart.id = newCartId  ## here i should create new user cart id in sqlLite and associate it here
 
             userCart.restaurantID = restaurantID
             return userCart
@@ -37,8 +36,25 @@ data class User(
         return userCart
     }
 
-    fun getUserCartIndexByRestaurantID(restaurantID: Int): Int {
-        return carts.indexOfFirst { it.restaurantID == restaurantID }.takeIf { it != -1 } !!
+    private fun getUserCartIndexByRestaurantID(restaurantID: Int): Int {
+        val index : Int? = carts.indexOfFirst { it.restaurantID == restaurantID }.takeIf { it != -1 }
+        return index ?: -1
+    }
+
+    fun updateByUserCart(userCart : UserCart){
+        val index = getUserCartIndexByRestaurantID(userCart.restaurantID)
+        if (index == -1) {
+            carts.add(userCart)
+        }else {
+            carts[index] = userCart.copy()
+        }
+    }
+
+    fun deleteCart(userCart : UserCart){
+        val index = getUserCartIndexByRestaurantID(userCart.restaurantID)
+        if (index != -1) {
+            carts.removeAt(index)
+        }
     }
 
     companion object {

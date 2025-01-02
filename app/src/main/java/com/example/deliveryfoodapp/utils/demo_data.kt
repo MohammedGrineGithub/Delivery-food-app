@@ -75,6 +75,7 @@ fun createRestaurantForTest() : Restaurant {
 
 
     val restaurant : Restaurant = Restaurant.emptyRestaurant()
+    restaurant.id = 1
     restaurant.banner = banner
     restaurant.logo = logo
     restaurant.restaurantName = "American Burger"
@@ -110,7 +111,7 @@ fun createUserForTest() : User {
     )
 
     user.carts.add(cart)
-
+    user.id = 1
     return user
 }
 

@@ -17,11 +17,9 @@ data class UserCart(
         if (orderItem == null) {
             orderItem = OrderItem.emptyOrderItem()
 
-            /** orderItem.id = newOrderItemID  ## here i should create new order item id in sqlLite and a
-            associate it here **/
+            // TODO orderItem.id = newOrderItemID  ## here i should create new order item id in sqlLite and associate it here
 
             orderItem.item = item.copy()
-            orderItem.itemQuantity = 1
             return  orderItem
         }
         return orderItem
