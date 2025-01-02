@@ -1,5 +1,7 @@
 package com.example.deliveryfoodapp.pages
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,11 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,380 +26,419 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
-import com.example.deliveryfoodapp.authenticatedUser
-import com.example.deliveryfoodapp.models.UserCart
-import com.example.deliveryfoodapp.ui.theme.GreyStroke
-import com.example.deliveryfoodapp.ui.theme.Secondary
+import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.utils.Routes
-import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ValidatePaymentPage(navController : NavHostController) {
 
 
-    // TODO ab3at restaurantID bin hado les page (men home 7ata lhna)
-    val restaurantID = 1
-
-    // TODO ab3at restaurantDeliveryFees bin hado les page (men home 7ata lhna)
-    val restaurantDeliveryFees = 250.0
-
-
-    var userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = restaurantID)
-
     val address by remember { mutableStateOf("P549+9JQ Bab Ezzouar, Algeria") }
     val phone by remember { mutableStateOf("0745458965") }
-    var note_To_driver by remember { mutableStateOf("") }
-    val Items_total by remember {
-        mutableStateOf(
-            userCart.totalPrice()
-        )
-    }
-    val Delivery_fees by remember { mutableStateOf(restaurantDeliveryFees) }
-    val Service_fees by remember { mutableStateOf(0) }
-    val Total_price by remember { mutableStateOf(Items_total + Delivery_fees + Service_fees) }
+    var note_To_driver by remember { mutableStateOf("") } // Valeur par défaut vide
+    var Items_total by remember { mutableStateOf(1200.00) }
+    var Delivery_fees by remember { mutableStateOf(250.00) }
+    var Service_fees by remember { mutableStateOf(0.00) }
+    var Total_price by remember { mutableStateOf(Items_total + Delivery_fees + Service_fees) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
 
     ) {
 
-        Column {
-            CustomAppBar(
-                text = "Validate payment",
-                onClick = {navController.popBackStack()}
+        //Header
+
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+
+            Icon(
+                painter = painterResource(id= R.drawable.back),
+                contentDescription = "back icons",
+                modifier = Modifier.size(16.dp)
+
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(32.dp)
-            ) {
-
-                Row (
-                    modifier = Modifier.fillMaxWidth()
-                        .clickable { navController.navigate(Routes.CHANGE_LOCATION_PAGE) },
-                    horizontalArrangement = Arrangement.SpaceBetween
-
-                ) {
-                    Row {
-                        Icon(
-                            painter = painterResource(id = R.drawable.address_icon),
-                            contentDescription = "address",
-                            Modifier.size(26.dp),
-                            tint = Color.Black
-                        )
-
-
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-
-                        Column {
-                            Text(
-                                text = "Address",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-
-                            Spacer(modifier = Modifier.height(6.dp))
-
-                            Text(
-                                text = address,
-                                style = TextStyle(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Light
-                                )
-                            )
-
-
-                        }
-                    }
-                    Icon(
-                        painter = painterResource(id=R.drawable.chevron_right_icon),
-                        contentDescription = "arrow",
-                        Modifier.size(22.dp)
-                            .align(Alignment.CenterVertically)
-                    )
-
-
-
-
-
-
-                }
-
-                Row (
-                    modifier = Modifier.fillMaxWidth()
-                        .clickable { },
-                    horizontalArrangement = Arrangement.SpaceBetween
-
-                ) {
-
-                    Row {
-                        Icon(
-                            painter = painterResource(id = R.drawable.phone),
-                            contentDescription = "call",
-                            Modifier.size(22.dp),
-                            tint = Color.Black
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column {
-                            Text(
-                                text = "Phone number",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-
-                            Spacer(modifier = Modifier.height(6.dp))
-
-                            Text(
-                                text = phone,
-                                style = TextStyle(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Light
-                                )
-                            )
-
-
-                        }
-
-                    }
-
-
-                    Icon(
-                        painter = painterResource(id=R.drawable.chevron_right_icon),
-                        contentDescription = "arrow chevron",
-                        Modifier.size(22.dp)
-                            .align(Alignment.CenterVertically)
-                    )
-                }
-
-                Column {
-
-                    Row (
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.note_icon),
-                            contentDescription = "note to driver",
-                            Modifier.size(26.dp),
-                            tint = Color.Black
-                        )
-
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-
-                        Text(
-                            text = "Note to driver",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    OutlinedTextField(
-                        value = note_To_driver,
-                        onValueChange = {note_To_driver=it},
-                        placeholder = { Text(
-                            text = "Ex : I live in the third stage of the building",
-                            style = TextStyle( fontSize = 14.sp, fontWeight = FontWeight.Normal, color = Color(0xFF9F9F9F)  )) },
-                        modifier = Modifier
-                            .height(120.dp)
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomEnd = 16.dp,
-                            bottomStart = 16.dp
-                        ),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Secondary.copy(alpha = 0.4f),
-                            unfocusedBorderColor = GreyStroke
-                        )
-
-
-                    )
-
-                }
-
-                Column {
-                    Row (
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.billing_icon),
-                            contentDescription = "billing",
-                            Modifier.size(26.dp),
-                            tint = Color.Black
-                        )
-
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-
-                        Text(
-                            text = "Billing",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-
-                    ) {
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text ="Items total",
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            )
-
-                            Text(
-                                text = "$Items_total DA",
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            )
-
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text ="Delivery fees",
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            )
-
-                            Text(
-                                text = "$Delivery_fees DA",
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            )
-
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text ="Service fees",
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            )
-
-                            Text(
-                                text = "$Service_fees DA",
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            )
-
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text ="Total price",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF058240)
-                                )
-                            )
-
-                            Text(
-                                text = "$Total_price DA",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF058240)
-                                )
-                            )
-
-                        }
-
-
-
-
-
-
-
-                    }
-
-                }
-
-
-            }
+            Spacer(modifier = Modifier.width(78.dp))
+
+            Text(
+                text = "Validate payment",
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
         }
 
-        PrincipalButton(
-            text = "Place the order",
-            onClick = {
 
-                // TODO Create new order fel backend
 
-                // Delete that cart
-                authenticatedUser.deleteCart(userCart)
 
-                // Empty userCart of authenticated user
-                userCart = UserCart.emptyUserCart()
+        Spacer(modifier = Modifier.height(60.dp))
 
-                // TODO delete that cart from SqlLite
+        Column(
+            verticalArrangement = Arrangement.spacedBy(40.dp)
+        ) {
 
-                navController.navigate(Routes.ORDER_PLACED_PAGE){
-                    popUpTo(Routes.VALIDATE_PAYMENT_PAGE) { inclusive = true }
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+
+                Row {
+                    Icon(
+                        painter = painterResource(id = R.drawable.adress),
+                        contentDescription = "adress",
+                        Modifier.size(27.38.dp),
+                        tint = Color.Black
+                    )
+
+
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+
+                    Column {
+                        Text(
+                            text = "Adress",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(7.dp))
+
+                        Text(
+                            text = address,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light
+                            )
+                        )
+
+
+                    }
                 }
+
+
+
+
+                Icon(
+                    painter = painterResource(id=R.drawable.icon_arrow),
+                    contentDescription = "arrow",
+                    Modifier
+                        .size(8.dp, 12.dp)
+                        .align(Alignment.CenterVertically)
+                        .clickable { navController.navigate(Routes.CHANGE_LOCATION_PAGE) }
+                )
+
+
+
+
+
+
             }
-        )
+
+
+
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+
+                Row {
+                    Icon(
+                        painter = painterResource(id = R.drawable.call),
+                        contentDescription = "call",
+                        Modifier.size(27.38.dp),
+                        tint = Color.Black
+                    )
+
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+
+                    Column {
+                        Text(
+                            text = "Phone number",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(7.dp))
+
+                        Text(
+                            text = phone!!,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light
+                            )
+                        )
+
+
+                    }
+
+                }
+
+
+                Icon(
+                    painter = painterResource(id=R.drawable.icon_arrow),
+                    contentDescription = "arrow",
+                    Modifier
+                        .size(8.dp, 12.dp)
+                        .align(Alignment.CenterVertically)
+                        .clickable { navController.navigate(Routes.CHANGE_PASSWORD_PAGE) }
+                )
+
+
+
+
+
+
+            }
+
+
+            Column {
+
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.note),
+                        contentDescription = "note to driver",
+                        Modifier.size(27.38.dp),
+                        tint = Color.Black
+                    )
+
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+
+                    Text(
+                        text = "Note to driver",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                OutlinedTextField(
+                    value = note_To_driver,
+                    onValueChange = {note_To_driver=it},
+                    placeholder = { Text(
+                        text = "Ex : Without onion and without hot sauce",
+                        style = TextStyle( fontSize = 14.sp, fontWeight = FontWeight.Normal, color = BlackStroke  )) },
+                    modifier = Modifier
+                        .padding(10.dp, 8.dp)
+                        .height(120.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 25.dp,
+                        bottomStart = 25.dp
+                    )
+
+
+                )
+            }
+
+
+            Column {
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+
+
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.billing),
+                        contentDescription = "billing",
+                        Modifier.size(27.38.dp),
+                        tint = Color.Black
+                    )
+
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+
+                    Text(
+                        text = "Billing",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+
+                ) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text ="Items total",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+
+                        Text(
+                            text = "${Items_total.toInt()} DA",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text ="Delivery fees",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+
+                        Text(
+                            text = "${Delivery_fees.toInt()} DA",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text ="Service fees",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+
+                        Text(
+                            text = "${Service_fees.toInt()} DA",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text ="Total price",
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF058240)
+                            )
+                        )
+
+                        Text(
+                            text = "${Total_price.toInt()} DA",
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF058240)
+                            )
+                        )
+
+                    }
+
+
+
+
+
+
+
+                }
+
+
+
+            }
+
+
+
+            PrincipalButton("Place the order",{navController.navigate((Routes.ORDER_PLACED_PAGE))})
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
     }
+
+
+
+
+}
+
+@Composable
+fun Px_tp_DP(pixel:Int ):Dp{
+    return (pixel/LocalDensity.current.density).dp
+}
+
+@Composable
+
+fun pxToSp(px: Int): TextUnit {
+    return (px / LocalDensity.current.density).sp
 }
