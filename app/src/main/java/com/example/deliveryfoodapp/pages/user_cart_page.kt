@@ -142,7 +142,7 @@ fun UserCartPage(navController : NavHostController){
                         var note by remember {
                             mutableStateOf(userCart.value.orderItems[index].note)
                         }
-                        var itemName by remember {
+                        val itemName by remember {
                             mutableStateOf(userCart.value.orderItems[index].item.name)
                         }
                         val singleItemTotalPrice = remember {
@@ -182,12 +182,8 @@ fun UserCartPage(navController : NavHostController){
                                         fontWeight = FontWeight.Light,
                                         textDecoration = TextDecoration.Underline,
                                         modifier = Modifier.clickable {
-                                            // update userCart
-                                            /*val updatedOrderItems = userCart.value.orderItems.toMutableList()
-                                            updatedOrderItems.removeAt(index)
-                                            userCart.value = userCart.value.copy(orderItems = updatedOrderItems)
-                                            */
 
+                                            // update userCart
                                             userCart.value = userCart.value.copy(
                                                 orderItems = userCart.value.orderItems.toMutableList().apply {
                                                     removeAt(index)
