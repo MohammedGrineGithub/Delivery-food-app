@@ -292,7 +292,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     ) {
 
                         Icon(
-                            painter = painterResource(R.drawable.restaurant_icon),
+                            painter = painterResource(R.drawable.cuisine_type_icon),
                             contentDescription = "rating",
                             modifier = Modifier.size(28.dp),
                             tint = Primary

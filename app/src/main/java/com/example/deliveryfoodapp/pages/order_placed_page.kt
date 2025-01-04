@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,12 @@ import com.example.deliveryfoodapp.widgets.PrincipalButton
 @Composable
 fun OrderPlacedPage(navController : NavHostController) {
 
+    BackHandler {
+        navController.navigate(Routes.HOME_SCREEN) {
+            popUpTo(0) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
 
     Column (
         modifier = Modifier.fillMaxSize()

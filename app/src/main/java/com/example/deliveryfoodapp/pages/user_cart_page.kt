@@ -137,7 +137,7 @@ fun UserCartPage(navController : NavHostController){
                         .height(screenHeight/2),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    itemsIndexed(userCart.value.orderItems) { index, _ ->
+                    itemsIndexed(userCart.value.orderItems, key = { _, item -> item.id }) { index, orderItem ->
 
                         var note by remember {
                             mutableStateOf(userCart.value.orderItems[index].note)
@@ -182,10 +182,13 @@ fun UserCartPage(navController : NavHostController){
                                         fontWeight = FontWeight.Light,
                                         textDecoration = TextDecoration.Underline,
                                         modifier = Modifier.clickable {
+
                                             // update userCart
-                                            val updatedOrderItems = userCart.value.orderItems.toMutableList()
-                                            updatedOrderItems.removeAt(index)
-                                            userCart.value = userCart.value.copy(orderItems = updatedOrderItems)
+                                            userCart.value = userCart.value.copy(
+                                                orderItems = userCart.value.orderItems.toMutableList().apply {
+                                                    removeAt(index)
+                                                }
+                                            )
 
                                             // update states
                                             totalItemsNumber.intValue = userCart.value.totalItems()

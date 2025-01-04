@@ -1,7 +1,9 @@
 package com.example.deliveryfoodapp.pages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -60,7 +62,15 @@ fun MyOrdersPage(navController : NavHostController) {
                 .padding(16.dp)
         ) {
             itemsIndexed(sampleOrders) { index, order ->
-                OrderCard(order = order)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clip(shape = RoundedCornerShape(8))
+                        .clickable { navController.navigate(Routes.MY_ORDERS_DETAILS_PAGE) }
+                ){
+                    OrderCard(order = order)
+                }
             }
         }
     }
@@ -72,8 +82,7 @@ fun MyOrdersPage(navController : NavHostController) {
 fun OrderCard(order: OrderTest) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         colors = CardColors(
             containerColor = CardBackground,
             contentColor = Color.Unspecified,

@@ -396,7 +396,7 @@ fun SignupPage(navController : NavHostController) {
                                     .clickable { navController.navigate(Routes.LOCATION_PAGE) },
                                 trailingIcon = {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.location),
+                                        painter = painterResource(id = R.drawable.maps),
                                         contentDescription = "location",
                                         tint = Secondary,
                                         modifier = Modifier
