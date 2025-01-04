@@ -128,7 +128,10 @@ data class OrderTest(
 
 fun createOrdersForTest() : List<OrderTest> {
 
-    val imagePath = "https://th.bing.com/th/id/OIP.M9t7f55K3088Y3ZCGxUATgHaHa?rs=1&pid=ImgDetMain"
+    val imagePath1 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKM4bEp3laJBx99q9bKpyDm_m1uQGF1r0UMg&s"
+    val imagePath2 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3a9bC67pnkc3h7JTXGnooTHeez0qpL6-9nQ&s"
+    val imagePath3 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPuQ1_d2pRT9JOC1_6CbRZoSyeXJGijM7rA&s"
+    val imagePath4 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2OSPi0oehcfsWEsJaCulFc7wU9VIN170d1g&s"
     // A sample list of orders
     val sampleOrders = listOf(
         OrderTest(
@@ -138,7 +141,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "08:30 p.m.",
             orderedAtDate = "08/12/2024",
             status = "On the way",
-            imageUrl = imagePath,
+            imageUrl = imagePath1,
             statusId = Blue
         ),
         OrderTest(
@@ -148,7 +151,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "11:30 a.m.",
             orderedAtDate = "08/12/2024",
             status = "IsPrepared",
-            imageUrl = imagePath,
+            imageUrl = imagePath2,
             statusId = BlackStroke
         ),
         OrderTest(
@@ -158,7 +161,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:00 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Canceled",
-            imageUrl = imagePath,
+            imageUrl = imagePath3,
             statusId = Red
         ),
         OrderTest(
@@ -168,7 +171,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:10 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Delivered",
-            imageUrl = imagePath,
+            imageUrl = imagePath4,
             statusId = Secondary
         ),
         OrderTest(
@@ -178,7 +181,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "08:30 p.m.",
             orderedAtDate = "08/12/2024",
             status = "On the way",
-            imageUrl = imagePath,
+            imageUrl = imagePath1,
             statusId = Blue
         ),
         OrderTest(
@@ -188,7 +191,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "11:30 a.m.",
             orderedAtDate = "08/12/2024",
             status = "IsPrepared",
-            imageUrl = imagePath,
+            imageUrl = imagePath2,
             statusId = BlackStroke
         ),
         OrderTest(
@@ -198,7 +201,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:00 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Canceled",
-            imageUrl = imagePath,
+            imageUrl = imagePath3,
             statusId = Red
         ),
         OrderTest(
@@ -208,7 +211,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:10 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Delivered",
-            imageUrl = imagePath,
+            imageUrl = imagePath4,
             statusId = Primary
         )
     )
