@@ -142,7 +142,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
 
                 Row (
                     modifier = Modifier.fillMaxWidth()
-                        .clickable { },
+                        .clickable {  },
                     horizontalArrangement = Arrangement.SpaceBetween
 
                 ) {
