@@ -1,26 +1,25 @@
 package com.example.deliveryfoodapp.models
 
+import Location
 import android.annotation.SuppressLint
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-
 @Suppress("UNCHECKED_CAST")
 data class Restaurant(
     var id : Int,
     var restaurantName: String,
     var logo: AppImage,
     var banner: AppImage,
-    var location: Location,
+    var location: Location ,
     var cuisineType: CuisineType,
     var rating: Rating,
     var phone: String,
     var email: String,
-    var deliveryPrice: Double,
-    var deliveryDuration: LocalTime,
+    var deliveryPrice: Int,
+    var deliveryDuration: Int,
     var menu: RestaurantMenu,
-    var openingTime: LocalDateTime,
-    var closingTime: LocalDateTime
+    var openingTime: LocalTime,
+    var closingTime: LocalTime
 ) {
 
     @SuppressLint("NewApi")
@@ -36,7 +35,7 @@ data class Restaurant(
             "phone" to phone,
             "email" to email,
             "deliveryPrice" to deliveryPrice,
-            "deliveryDuration" to deliveryDuration.toString(),
+            "deliveryDuration" to deliveryDuration,
             "menu" to menu.toMap(),
             "openingTime" to openingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             "closingTime" to closingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -57,11 +56,11 @@ data class Restaurant(
             val rating = Rating.fromMap(map["rating"] as? Map<String, Any> ?: emptyMap())
             val phone = map["phone"] as? String ?: ""
             val email = map["email"] as? String ?: ""
-            val deliveryPrice = map["deliveryPrice"] as? Double ?: 0.0
-            val deliveryDuration = LocalTime.parse(map["deliveryDuration"] as? String ?: "00:00:00")
+            val deliveryPrice = map["deliveryPrice"] as? Int ?: 0
+            val deliveryDuration = map["deliveryDuration"] as? Int ?: 0
             val menu = RestaurantMenu.fromMap(map["menu"] as? Map<String, Any> ?: emptyMap())
-            val openingTime = LocalDateTime.parse(map["openingTime"] as? String ?: "2000-01-01T00:00:00")
-            val closingTime = LocalDateTime.parse(map["closingTime"] as? String ?: "2000-01-01T00:00:00")
+            val openingTime = LocalTime.parse(map["openingTime"] as? String ?: "2000-01-01T00:00:00")
+            val closingTime = LocalTime.parse(map["closingTime"] as? String ?: "2000-01-01T00:00:00")
 
             return Restaurant(
                 id, restaurantName, logo, bannerLogo, location, cuisineType, rating, phone, email,
@@ -81,11 +80,11 @@ data class Restaurant(
                 rating = Rating.emptyRating(),
                 phone = "",
                 email = "",
-                deliveryPrice = 0.0,
-                deliveryDuration = LocalTime.MIDNIGHT,
+                deliveryPrice = 0,
+                deliveryDuration = 0,
                 menu = RestaurantMenu.emptyRestaurantMenu(),
-                openingTime = LocalDateTime.MIN,
-                closingTime = LocalDateTime.MIN
+                openingTime = LocalTime.MIN,
+                closingTime = LocalTime.MIN
             )
         }
     }

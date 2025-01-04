@@ -2,17 +2,7 @@ package com.example.deliveryfoodapp.utils
 
 import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
-import com.example.deliveryfoodapp.models.AppImage
-import com.example.deliveryfoodapp.models.Category
-import com.example.deliveryfoodapp.models.CuisineType
-import com.example.deliveryfoodapp.models.Item
-import com.example.deliveryfoodapp.models.Location
-import com.example.deliveryfoodapp.models.OrderItem
-import com.example.deliveryfoodapp.models.Rating
-import com.example.deliveryfoodapp.models.Restaurant
-import com.example.deliveryfoodapp.models.RestaurantMenu
-import com.example.deliveryfoodapp.models.User
-import com.example.deliveryfoodapp.models.UserCart
+import com.example.deliveryfoodapp.models.*
 import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.Blue
 import com.example.deliveryfoodapp.ui.theme.Primary
@@ -82,8 +72,8 @@ fun createRestaurantForTest() : Restaurant {
     restaurant.location = Location.emptyLocation()
     restaurant.location.address = "Rue Nadjet Slimane, Kouba, Algiers"
     restaurant.cuisineType = CuisineType(id=0, name = "American")
-    restaurant.deliveryDuration = LocalTime.of(14, 30)
-    restaurant.deliveryPrice = 300.0
+    restaurant.deliveryDuration = 30
+    restaurant.deliveryPrice = 300
     restaurant.rating = Rating(id=0, reviewersCount = 209, rating = 4.5)
     restaurant.menu = menu
     return restaurant
