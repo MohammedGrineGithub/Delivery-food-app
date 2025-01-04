@@ -8,6 +8,7 @@ data class User(
     var phone: String,
     var location: Location,
     var photo: AppImage,
+    var has_notification: Boolean,
     var carts: MutableList<UserCart>
 ) {
 
@@ -18,6 +19,7 @@ data class User(
         "phone" to phone,
         "location" to location.toMap(),
         "photo" to photo.toMap(),
+        "has_notification" to has_notification,
         "carts" to carts.map { it.toMap() }
     )
 
@@ -65,6 +67,7 @@ data class User(
             phone = map["phone"] as? String ?: "",
             location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap()),
             photo = AppImage.fromMap(map["photo"] as? Map<String, Any> ?: emptyMap()),
+            has_notification = map["has_notification"] as? Boolean ?: false,
             carts = (map["carts"] as? List<Map<String, Any>>)?.map {
                 UserCart.fromMap(it)
             }?.toMutableList() ?: mutableListOf()
@@ -78,6 +81,7 @@ data class User(
                 phone = "",
                 location = Location.emptyLocation(),
                 photo = AppImage.emptyAppImage(),
+                has_notification = false,
                 carts = mutableListOf()
             )
         }

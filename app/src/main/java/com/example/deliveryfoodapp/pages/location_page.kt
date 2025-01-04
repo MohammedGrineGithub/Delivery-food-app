@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.deliveryfoodapp.ui.theme.Primary
 import androidx.compose.ui.res.painterResource
 import com.example.deliveryfoodapp.ui.theme.Grey
+import com.example.deliveryfoodapp.models.*
 import com.example.deliveryfoodapp.utils.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +59,68 @@ fun LocationPage(navController : NavHostController) {
     val topBottomMargin = (screenHeight * 0.1f)
     val leftRightMargin = (screenWidth * 0.04f)
     val context = LocalContext.current
-    val wilayas = listOf("Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Béjaïa", "Biskra", "Béchar", "Blida", "Bouira", "Tamanrasset", "Tébessa", "Tlemcen", "Tiaret", "Tizi Ouzou", "Algiers", "Djelfa", "Jijel", "Sétif", "Saïda", "Skikda", "Sidi Bel Abbès", "Annaba", "Guelma", "Constantine", "Médéa", "Mostaganem", "M’Sila", "Mascara", "Ouargla", "Oran", "El Bayadh", "Illizi", "Bordj Bou Arreridj", "Boumerdès", "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela", "Souk Ahras", "Tipaza", "Mila", "Aïn Defla", "Naâma", "Aïn Témouchent", "Ghardaïa", "Relizane", "Timimoun", "Bordj Badji Mokhtar", "Ouled Djellal", "Béni Abbès", "In Salah", "In Guezzam", "Touggourt", "Djanet", "El M'Ghair", "El Meniaa")
+    val wilayas = listOf(
+    Wilaya(1, "Adrar"),
+    Wilaya(2, "Chlef"),
+    Wilaya(3, "Laghouat"),
+    Wilaya(4, "Oum El Bouaghi"),
+    Wilaya(5, "Batna"),
+    Wilaya(6, "Béjaïa"),
+    Wilaya(7, "Biskra"),
+    Wilaya(8, "Béchar"),
+    Wilaya(9, "Blida"),
+    Wilaya(10, "Bouira"),
+    Wilaya(11, "Tamanrasset"),
+    Wilaya(12, "Tébessa"),
+    Wilaya(13, "Tlemcen"),
+    Wilaya(14, "Tiaret"),
+    Wilaya(15, "Tizi Ouzou"),
+    Wilaya(16, "Algiers"),
+    Wilaya(17, "Djelfa"),
+    Wilaya(18, "Jijel"),
+    Wilaya(19, "Sétif"),
+    Wilaya(20, "Saïda"),
+    Wilaya(21, "Skikda"),
+    Wilaya(22, "Sidi Bel Abbès"),
+    Wilaya(23, "Annaba"),
+    Wilaya(24, "Guelma"),
+    Wilaya(25, "Constantine"),
+    Wilaya(26, "Médéa"),
+    Wilaya(27, "Mostaganem"),
+    Wilaya(28, "M’Sila"),
+    Wilaya(29, "Mascara"),
+    Wilaya(30, "Ouargla"),
+    Wilaya(31, "Oran"),
+    Wilaya(32, "El Bayadh"),
+    Wilaya(33, "Illizi"),
+    Wilaya(34, "Bordj Bou Arreridj"),
+    Wilaya(35, "Boumerdès"),
+    Wilaya(36, "El Tarf"),
+    Wilaya(37, "Tindouf"),
+    Wilaya(38, "Tissemsilt"),
+    Wilaya(39, "El Oued"),
+    Wilaya(40, "Khenchela"),
+    Wilaya(41, "Souk Ahras"),
+    Wilaya(42, "Tipaza"),
+    Wilaya(43, "Mila"),
+    Wilaya(44, "Aïn Defla"),
+    Wilaya(45, "Naâma"),
+    Wilaya(46, "Aïn Témouchent"),
+    Wilaya(47, "Ghardaïa"),
+    Wilaya(48, "Relizane"),
+    Wilaya(49, "Timimoun"),
+    Wilaya(50, "Bordj Badji Mokhtar"),
+    Wilaya(51, "Ouled Djellal"),
+    Wilaya(52, "Béni Abbès"),
+    Wilaya(53, "In Salah"),
+    Wilaya(54, "In Guezzam"),
+    Wilaya(55, "Touggourt"),
+    Wilaya(56, "Djanet"),
+    Wilaya(57, "El M'Ghair"),
+    Wilaya(58, "El Meniaa")
+)
+    val location = Location.emptyLocation()
+
     var isExpanded by remember {
         mutableStateOf(false)
     }
@@ -68,8 +130,8 @@ fun LocationPage(navController : NavHostController) {
     var exact_location by remember {
         mutableStateOf("")
     }
-    var fusedLocationClient = remember {
-        LocationServices.getFusedLocationProviderClient(context)
+    var location_extracted = remember {
+        mutableStateOf(false)
     }
     var locationText by remember { mutableStateOf("") }
     Box (
@@ -176,18 +238,18 @@ fun LocationPage(navController : NavHostController) {
                                     )
                                 }
                                 ExposedDropdownMenu(
-                                    expanded = isExpanded ,
-                                    onDismissRequest = { isExpanded = false } ,
+                                    expanded = isExpanded,
+                                    onDismissRequest = { isExpanded = false },
                                     modifier = Modifier.heightIn(max = 300.dp).fillMaxWidth().background(color = Grey)
                                 ) {
-                                    wilayas.forEachIndexed { index , wilaya ->
+                                    wilayas.forEach { wilaya ->
                                         DropdownMenuItem(
-                                            text = { Text(text = "${index+1}- " + wilaya) },
+                                            text = { Text(text = "${wilaya.id}- ${wilaya.name}") },
                                             onClick = {
-                                                selected = wilaya
+                                                selected = wilaya.name
                                                 isExpanded = false
                                             },
-                                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding ,
+                                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                             modifier = Modifier.fillMaxWidth().background(color = Grey)
                                         )
                                     }
@@ -233,26 +295,10 @@ fun LocationPage(navController : NavHostController) {
                                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
                                 colors = ButtonDefaults.buttonColors(Color.White),
                                 onClick = {
-                                    if (ContextCompat.checkSelfPermission(
-                                            context,
-                                            android.Manifest.permission.ACCESS_FINE_LOCATION
-                                        ) == PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        fusedLocationClient.lastLocation
-                                            .addOnSuccessListener { locationObj ->
-                                                locationObj?.let {
-                                                    locationText = "${it}"
-                                                }
-                                            }
-                                            .addOnFailureListener { exception ->
-                                                Toast.makeText(context, "Location not fetched: ${exception.message}", Toast.LENGTH_SHORT).show()
-                                            }
-                                    } else {
-                                        Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
-                                    }
+                                    location_extracted.value = location.checkLocationPermissionAndServices(context)
                                 }
                             )  {
-                                if (locationText == "") {
+                                if (location_extracted.value == false) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.vector),
                                         contentDescription = "Location",
@@ -280,7 +326,14 @@ fun LocationPage(navController : NavHostController) {
                 ) {
                     Button(
                         onClick = {
-                            navController.navigate(Routes.PROFILE_PAGE)
+                            if ( selected == "Select your wilaya" || locationText =="" || exact_location == ""){
+                                Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
+                            }
+                            else {
+                                location.wilayaId = wilayas.find { it.name == selected }!!.id
+                                location.address = exact_location
+                                navController.popBackStack()
+                            }
                         } ,
                         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)) ,
                         colors = ButtonDefaults.buttonColors(Primary),
