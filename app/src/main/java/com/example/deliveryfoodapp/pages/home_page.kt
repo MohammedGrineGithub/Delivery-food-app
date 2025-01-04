@@ -421,7 +421,7 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController){
                     )
                     {
                         Image(
-                            painter = painterResource(id = R.drawable.restautantlogo),
+                            painter = painterResource(id = R.drawable.restaurantlogo),
                             contentDescription = "Logo",
                             modifier = Modifier.size((ScreenHeight*0.055f)),
                             contentScale = ContentScale.Crop

@@ -149,7 +149,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
 
                     Row {
                         Icon(
-                            painter = painterResource(id = R.drawable.phone),
+                            painter = painterResource(id = R.drawable.phone_icon),
                             contentDescription = "call",
                             Modifier.size(22.dp),
                             tint = Color.Black

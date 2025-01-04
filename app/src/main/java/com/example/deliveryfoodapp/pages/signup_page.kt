@@ -369,7 +369,7 @@ fun SignupPage(navController : NavHostController) {
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                                 trailingIcon = {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.phone),
+                                        painter = painterResource(id = R.drawable.phone_icon),
                                         contentDescription = "phone",
                                         tint = Secondary,
                                         modifier = Modifier
