@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.models.AppImage
-import com.example.deliveryfoodapp.models.Location
 import com.example.deliveryfoodapp.models.User
+import com.example.deliveryfoodapp.models.UserCart
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.SecondaryFill
 import com.example.deliveryfoodapp.ui.theme.ibmplexsansFontFamily
@@ -57,7 +57,8 @@ fun MyInformationPage(navController: NavHostController) {
             address = "Hydra, Alger" // Update only the address
         },
         photo = AppImage.emptyAppImage(),
-        carts = mutableListOf()
+        carts = mutableListOf(),
+        has_notification = false
     )
 
     // Use the simulated user data in the UI
