@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = Routes.CHANGE_LOCATION_PAGE,
+
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
@@ -57,7 +58,6 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.USER_CART_PAGE){ UserCartPage(navController) }
                     }
                 }
-
             }
         }
     }
