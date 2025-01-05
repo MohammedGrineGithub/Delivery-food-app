@@ -133,6 +133,7 @@ fun LocationPage(navController : NavHostController) {
     var location_extracted = remember {
         mutableStateOf(false)
     }
+    var locationText by remember { mutableStateOf("") }
     Box (
         modifier = Modifier.fillMaxWidth()
     )
@@ -325,7 +326,7 @@ fun LocationPage(navController : NavHostController) {
                 ) {
                     Button(
                         onClick = {
-                            if ( selected == "Select your wilaya" || exact_location == "" || location_extracted.value == false) {
+                            if ( selected == "Select your wilaya" || locationText =="" || exact_location == ""){
                                 Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                             }
                             else {

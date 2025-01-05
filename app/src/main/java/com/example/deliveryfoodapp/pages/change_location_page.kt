@@ -44,7 +44,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.ui.theme.Grey
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 import com.example.deliveryfoodapp.models.Wilaya
@@ -55,7 +54,7 @@ fun ChangeLocationPage(navController : NavHostController) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
-    val topBottomMargin = (screenHeight * 0.035f)
+    val topBottomMargin = (screenHeight * 0.1f)
     val leftRightMargin = (screenWidth * 0.04f)
     val context = LocalContext.current
     val wilayas = listOf(
@@ -118,233 +117,236 @@ fun ChangeLocationPage(navController : NavHostController) {
     Wilaya(57, "El M'Ghair"),
     Wilaya(58, "El Meniaa")
 )
-    var user_location = Location.emptyLocation()
-    user_location.wilayaId = 16
-    user_location.address = "Hydra - Algiers"
     var isExpanded by remember {
         mutableStateOf(false)
     }
     var selected by remember {
-        mutableStateOf(wilayas.find { it.id == user_location.wilayaId }?.name ?: "Select your wilaya")
+        mutableStateOf("Select your wilaya")
     }
     var exact_location by remember {
-        mutableStateOf(user_location.address)
+        mutableStateOf("")
     }
-    var location_extraction by remember {
-        mutableStateOf(false)
+    var fusedLocationClient = remember {
+        LocationServices.getFusedLocationProviderClient(context)
     }
-    Box(
-        modifier = Modifier.fillMaxSize()
+    var locationText by remember { mutableStateOf("") }
+    Box (
+        modifier = Modifier.fillMaxWidth()
     )
     {
-        Box(
-            modifier = Modifier.padding( top = (screenHeight * 0.025f))
-        ){
-            IconButton(
-                onClick = { navController.popBackStack() } ,
-                modifier = Modifier.align(Alignment.TopStart).padding(0.dp)
-            )
-            {
-                Icon(
-                    painter = painterResource(id = R.drawable.back),
-                    contentDescription = "Go Back",
-                    modifier = Modifier.padding(0.dp)
-                )
-            }
-        }
-        Box (
-            modifier = Modifier.fillMaxWidth().padding(
-                start = leftRightMargin,
-                top = topBottomMargin,
-                end = leftRightMargin,
-                bottom = topBottomMargin
-            )
+        IconButton(
+            onClick = { navController.popBackStack() } ,
+            modifier = Modifier.align(Alignment.TopStart)
         )
         {
+            Icon(
+                painter = painterResource(id = R.drawable.back),
+                contentDescription = "Go Back"
+            )
+        }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = leftRightMargin,
+                    top = topBottomMargin,
+                    end = leftRightMargin,
+                    bottom = topBottomMargin
+                )
+        ) {
+            Column  {
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally ,
+                    verticalArrangement = Arrangement.spacedBy(8.dp) ,
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    Text(
+                        text = "Change Location" ,
+                        textAlign = TextAlign.Center ,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Black
+                    )
+                    Text(
+                        text = "you can change your location here" ,
+                        textAlign = TextAlign.Center ,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Light,
+                        color = BlackStroke
+                    )
+                }
+                Column (
 
-            ) {
-                Column  {
-                    Column (
-                        horizontalAlignment = Alignment.CenterHorizontally ,
-                        verticalArrangement = Arrangement.spacedBy((screenHeight * 0.08f)) ,
-                        modifier = Modifier.fillMaxWidth()
-                    ){
-                        Text(
-                            text = "Change Location" ,
-                            textAlign = TextAlign.Center ,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Black
-                        )
-                        Text(
-                            text = "to change the password you need to enter\n" +
-                                    "the old password then the new one" ,
-                            textAlign = TextAlign.Center ,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Light,
-                            color = BlackStroke
-                        )
-                    }
-                    Column (
-
-                        verticalArrangement = Arrangement.spacedBy((screenHeight * 0.06f)) ,
-                        modifier = Modifier.padding(
-                            top = (screenHeight * 0.07f)
-                        )
-                    ){
-                        Box{
-                            Column {
-                                Text(
-                                    text = "Wilaya" ,
-                                    fontSize = 16.sp ,
-                                    color = Black
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                ExposedDropdownMenuBox(
-                                    expanded = isExpanded ,
-                                    onExpandedChange = { isExpanded = !isExpanded }
-                                ) {
-                                    if (selected == "Select your wilaya" ) {
-                                        TextField(
-                                            modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                            value = selected ,
-                                            colors = TextFieldDefaults.colors(
-                                                focusedContainerColor = Grey,
-                                                unfocusedContainerColor = Grey,
-                                                disabledTextColor = Black,
-                                                focusedIndicatorColor = GreyStroke,
-                                                unfocusedIndicatorColor = GreyStroke,
-                                                disabledIndicatorColor = GreyStroke
-                                            ),
-                                            onValueChange = {} ,
-                                            readOnly = true ,
-                                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon( expanded = isExpanded)} ,
-                                            placeholder = { } ,
-                                            singleLine = true
-                                        )
-                                    }
-                                    else {
-                                        TextField(
-                                            modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                            value = selected ,
-                                            colors = TextFieldDefaults.colors(
-                                                focusedContainerColor = Grey,
-                                                unfocusedContainerColor = Grey,
-                                                disabledTextColor = Black,
-                                                focusedIndicatorColor = GreyStroke,
-                                                unfocusedIndicatorColor = GreyStroke,
-                                                disabledIndicatorColor = GreyStroke
-                                            ),
-                                            onValueChange = {} ,
-                                            readOnly = true ,
-                                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon( expanded = isExpanded)} ,
-                                            placeholder = { } ,
-                                            singleLine = true
-                                        )
-                                    }
-                                    ExposedDropdownMenu(
-                                        expanded = isExpanded ,
-                                        onDismissRequest = { isExpanded = false } ,
-                                        modifier = Modifier.heightIn(max = 300.dp).fillMaxWidth().background(color = Grey)
-                                    ) {
-                                        wilayas.forEach { wilaya ->
-                                            DropdownMenuItem(
-                                                text = { Text(text = "${wilaya.id}- ${wilaya.name}") },
-                                                onClick = {
-                                                    selected = wilaya.name
-                                                    isExpanded = false
-                                                },
-                                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                                modifier = Modifier.fillMaxWidth().background(color = Grey)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Box {
-                            Column {
-                                Text(
-                                    text = "Exact Location",
-                                    fontSize = 16.sp ,
-                                    color = Black
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                TextField(
-                                    value = exact_location,
-                                    onValueChange = { exact_location = it },
-                                    placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke) },
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Grey,
-                                        unfocusedContainerColor = Grey,
-                                        disabledTextColor = Black,
-                                        focusedIndicatorColor = GreyStroke,
-                                        unfocusedIndicatorColor = GreyStroke,
-                                        disabledIndicatorColor = GreyStroke
-                                    ),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    singleLine = true
-                                )
-                            }
-                        }
-                        Box {
-                            Column {
-
-                                Text(
-                                    text = "Current Location",
-                                    fontSize = 16.sp,
-                                    color = Black
-                                )
-                                Spacer(Modifier.height(8.dp))
-                                Button(
-                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
-                                    colors = ButtonDefaults.buttonColors(Color.White),
-                                    onClick = {
-                                        location_extraction = user_location.checkLocationPermissionAndServices(context)
-                                    }
-                                )  {
-                                    if (location_extraction == false) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.vector),
-                                            contentDescription = "Location",
-                                            modifier = Modifier.size(32.dp),
-                                            tint = Color.Unspecified
-                                        )
-                                    }
-                                    else{
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.done),
-                                            contentDescription = "Location",
-                                            modifier = Modifier.size(32.dp),
-                                            tint = Color.Unspecified
-                                        )
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                    Column (
-                        horizontalAlignment = Alignment.CenterHorizontally ,
-                        verticalArrangement = Arrangement.Bottom,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        PrincipalButton(
-                            text = "Save changes",
-                            onClick = {
-                                if ( selected == "Select your wilaya" || exact_location == ""){
-                                    Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
+                    verticalArrangement = Arrangement.spacedBy((screenHeight * 0.06f)) ,
+                    modifier = Modifier.padding(
+                        top = (screenHeight * 0.07f)
+                    )
+                ){
+                    Box{
+                        Column {
+                            Text(
+                                text = "Wilaya" ,
+                                fontSize = 16.sp ,
+                                color = Black
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            ExposedDropdownMenuBox(
+                                expanded = isExpanded ,
+                                onExpandedChange = { isExpanded = !isExpanded }
+                            ) {
+                                if (selected == "Select your wilaya" ) {
+                                    TextField(
+                                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                        value = selected ,
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Grey,
+                                            unfocusedContainerColor = Grey,
+                                            disabledTextColor = Black,
+                                            focusedIndicatorColor = GreyStroke,
+                                            unfocusedIndicatorColor = GreyStroke,
+                                            disabledIndicatorColor = GreyStroke
+                                        ),
+                                        onValueChange = {} ,
+                                        readOnly = true ,
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon( expanded = isExpanded)} ,
+                                        placeholder = { } ,
+                                        singleLine = true
+                                    )
                                 }
                                 else {
-                                    navController.popBackStack()
+                                    TextField(
+                                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                        value = selected ,
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Grey,
+                                            unfocusedContainerColor = Grey,
+                                            disabledTextColor = Black,
+                                            focusedIndicatorColor = GreyStroke,
+                                            unfocusedIndicatorColor = GreyStroke,
+                                            disabledIndicatorColor = GreyStroke
+                                        ),
+                                        onValueChange = {} ,
+                                        readOnly = true ,
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon( expanded = isExpanded)} ,
+                                        placeholder = { } ,
+                                        singleLine = true
+                                    )
+                                }
+                                ExposedDropdownMenu(
+                                    expanded = isExpanded ,
+                                    onDismissRequest = { isExpanded = false } ,
+                                    modifier = Modifier.heightIn(max = 300.dp).fillMaxWidth().background(color = Grey)
+                                ) {
+                                    wilayas.forEach { wilaya ->
+                                        DropdownMenuItem(
+                                            text = { Text(text = "${wilaya.id}- ${wilaya.name}") },
+                                            onClick = {
+                                                selected = wilaya.name
+                                                isExpanded = false
+                                            },
+                                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                            modifier = Modifier.fillMaxWidth().background(color = Grey)
+                                        )
+                                    }
                                 }
                             }
-                        )
+                        }
                     }
+                    Box {
+                        Column {
+                            Text(
+                                text = "Exact Location",
+                                fontSize = 16.sp ,
+                                color = Black
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            TextField(
+                                value = exact_location,
+                                onValueChange = { exact_location = it },
+                                placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke) },
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Grey,
+                                    unfocusedContainerColor = Grey,
+                                    disabledTextColor = Black,
+                                    focusedIndicatorColor = GreyStroke,
+                                    unfocusedIndicatorColor = GreyStroke,
+                                    disabledIndicatorColor = GreyStroke
+                                ),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                        }
+                    }
+                    Box {
+                        Column {
+
+                            Text(
+                                text = "Current Location",
+                                fontSize = 16.sp,
+                                color = Black
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Button(
+                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
+                                colors = ButtonDefaults.buttonColors(Color.White),
+                                onClick = {
+                                    if (ContextCompat.checkSelfPermission(
+                                            context,
+                                            android.Manifest.permission.ACCESS_FINE_LOCATION
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                    ) {
+                                        fusedLocationClient.lastLocation
+                                            .addOnSuccessListener { locationObj ->
+                                                locationObj?.let {
+                                                    locationText = "${it}"
+                                                }
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Toast.makeText(context, "Location not fetched: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                    } else {
+                                        Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            )  {
+                                if (locationText == "") {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.vector),
+                                        contentDescription = "Location",
+                                        modifier = Modifier.size(32.dp),
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                                else{
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.done),
+                                        contentDescription = "Location",
+                                        modifier = Modifier.size(32.dp),
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                            }
+                        }
+
+                    }
+                }
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally ,
+                    verticalArrangement = Arrangement.Bottom,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    PrincipalButton(
+                        text = "Save changes",
+                        onClick = {
+                            if ( selected == "Select your wilaya" || locationText =="" || exact_location == ""){
+                                Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
+                            }
+                            else {
+                                navController.popBackStack()
+                            }
+                        }
+                    )
                 }
             }
         }
