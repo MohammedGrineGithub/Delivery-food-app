@@ -18,10 +18,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import com.example.deliveryfoodapp.services.Pref
 import com.example.deliveryfoodapp.utils.*
 
 @Composable
 fun SplashScreenPage(navController: NavHostController) {
+
+
+    val context = LocalContext.current // Get the context
+    Pref.context = context // Initialize SharedPreferences context
+
+    // Determine start destination based on first-time check
+    val startDestination = if (Pref.isFirstTime()) {
+        Pref.setFirstTime(false) // Set to false after the first time
+        Routes.ONBOARDING_PAGE
+    } else {
+        Routes.HOME_PAGE
+    }
 
     val rotation = remember { Animatable(0f) }
     val alpha = remember {
