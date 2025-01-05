@@ -34,7 +34,7 @@ object Pref {
         val pref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
         return pref.getBoolean("isFirstTime", true)
     }
-
+    ///
     // Set that the user has entered the app for the first time
     fun setFirstTime(isFirst: Boolean) {
         val pref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
