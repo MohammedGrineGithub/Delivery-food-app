@@ -1,5 +1,7 @@
 package com.example.deliveryfoodapp.models
 
+import Location
+
 @Suppress("UNCHECKED_CAST")
 data class User(
     var id: Int,
