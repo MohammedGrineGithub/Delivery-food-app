@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,15 +31,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.models.Rating
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.ui.theme.Primary
+import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 import androidx.compose.material3.Text as Text
-
 @Composable
-fun RatingPage(navController : NavHostController) {
-
+fun RatingPage(navController: NavHostController) {
+    // State for the selected rating
     var selectedRating by remember { mutableStateOf(3) }
+
+    // State for the feedback text
+    var feedback by remember { mutableStateOf("Share your feedback") }
+
+    // Function to handle the "Submit" button click
+    fun submitRating() {
+        // Simulate creating a Rating object (backend model)
+        val rating = Rating(
+            id = 1, // Simulate an ID (in a real app, this would come from the backend)
+            reviewersCount = 1, // Simulate a single reviewer (the current user)
+            rating = selectedRating.toDouble() // Convert the selected rating to Double
+        )
+
+        // Simulate sending the rating and feedback to the backend
+
+
+        // Optionally, navigate to another screen or show a success message
+        navController.navigate(Routes.HOME_PAGE) // Example: Navigate to the home page
+    }
 
     Column(
         modifier = Modifier
@@ -60,7 +81,6 @@ fun RatingPage(navController : NavHostController) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "How do you rate the restaurant?",
@@ -84,21 +104,28 @@ fun RatingPage(navController : NavHostController) {
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                SimpleFilledTextFieldSample()
+                // Feedback TextField
+                TextField(
+                    value = feedback,
+                    onValueChange = { feedback = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Share your feedback") }
+                )
             }
             Spacer(modifier = Modifier.height(88.dp))
             // Submit Button
             PrincipalButton(
                 text = "Submit",
-                onClick = {},
+                onClick = { submitRating() }, // Call the submit function
             )
         }
 
-        TextWithClickableLink(onClick = {})
-
+        TextWithClickableLink(onClick = {
+            // Handle the "click here" action
+            navController.navigate(Routes.HOME_PAGE) // Example: Navigate to the home page
+        })
     }
 }
-
 @Composable
 fun CustomRatingBar(rating: Int, onRatingChanged: (Int) -> Unit) {
     Row(horizontalArrangement = Arrangement.Center) {
