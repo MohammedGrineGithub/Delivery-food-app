@@ -2,7 +2,14 @@ package com.example.deliveryfoodapp.pages
 
 
 
+import android.annotation.SuppressLint
+import android.os.Build
+import android.view.MenuItem
+import androidx.annotation.RequiresApi
 import com.example.deliveryfoodapp.R
+import kotlin.random.Random
+import java.time.LocalDateTime
+import java.time.LocalTime
 import androidx.compose.ui.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,13 +56,25 @@ import androidx.compose.material.icons.filled.Search
 import com.example.deliveryfoodapp.utils.Routes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.ui.unit.Dp
+import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
+import com.example.deliveryfoodapp.models.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.text.KeyboardActions
+import android.content.Context
+import android.health.connect.datatypes.ExerciseRoute
+import com.example.deliveryfoodapp.services.Pref.context
+import com.example.deliveryfoodapp.ui.theme.Red
 
-
+@SuppressLint("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController : NavHostController) {
@@ -64,6 +83,8 @@ fun HomePage(navController : NavHostController) {
     val screenWidth = configuration.screenWidthDp.dp
     val topBottomMargin = (screenHeight * 0.02f) // 11.3% of screen height
     val leftRightMargin = (screenWidth * 0.04f) // 22% of screen width
+    val user = User.emptyUser()
+    user.has_notification = true
     var search by remember {
         mutableStateOf("")
     }
@@ -79,8 +100,102 @@ fun HomePage(navController : NavHostController) {
     var cuisine by remember {
         mutableStateOf("Cuisine")
     }
-    val cuisineTypes = listOf( "French", "Italian", "Japanese", "Chinese", "Mexican", "Indian", "Thai", "Spanish", "Greek", "Moroccan" )
-    val wilayas = listOf("Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Béjaïa", "Biskra", "Béchar", "Blida", "Bouira", "Tamanrasset", "Tébessa", "Tlemcen", "Tiaret", "Tizi Ouzou", "Algiers", "Djelfa", "Jijel", "Sétif", "Saïda", "Skikda", "Sidi Bel Abbès", "Annaba", "Guelma", "Constantine", "Médéa", "Mostaganem", "M’Sila", "Mascara", "Ouargla", "Oran", "El Bayadh", "Illizi", "Bordj Bou Arreridj", "Boumerdès", "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela", "Souk Ahras", "Tipaza", "Mila", "Aïn Defla", "Naâma", "Aïn Témouchent", "Ghardaïa", "Relizane", "Timimoun", "Bordj Badji Mokhtar", "Ouled Djellal", "Béni Abbès", "In Salah", "In Guezzam", "Touggourt", "Djanet", "El M'Ghair", "El Meniaa")
+
+    val wilayas = listOf(
+        Wilaya(0, "None"),
+        Wilaya(1, "Adrar"),
+        Wilaya(2, "Chlef"),
+        Wilaya(3, "Laghouat"),
+        Wilaya(4, "Oum El Bouaghi"),
+        Wilaya(5, "Batna"),
+        Wilaya(6, "Béjaïa"),
+        Wilaya(7, "Biskra"),
+        Wilaya(8, "Béchar"),
+        Wilaya(9, "Blida"),
+        Wilaya(10, "Bouira"),
+        Wilaya(11, "Tamanrasset"),
+        Wilaya(12, "Tébessa"),
+        Wilaya(13, "Tlemcen"),
+        Wilaya(14, "Tiaret"),
+        Wilaya(15, "Tizi Ouzou"),
+        Wilaya(16, "Algiers"),
+        Wilaya(17, "Djelfa"),
+        Wilaya(18, "Jijel"),
+        Wilaya(19, "Sétif"),
+        Wilaya(20, "Saïda"),
+        Wilaya(21, "Skikda"),
+        Wilaya(22, "Sidi Bel Abbès"),
+        Wilaya(23, "Annaba"),
+        Wilaya(24, "Guelma"),
+        Wilaya(25, "Constantine"),
+        Wilaya(26, "Médéa"),
+        Wilaya(27, "Mostaganem"),
+        Wilaya(28, "M’Sila"),
+        Wilaya(29, "Mascara"),
+        Wilaya(30, "Ouargla"),
+        Wilaya(31, "Oran"),
+        Wilaya(32, "El Bayadh"),
+        Wilaya(33, "Illizi"),
+        Wilaya(34, "Bordj Bou Arreridj"),
+        Wilaya(35, "Boumerdès"),
+        Wilaya(36, "El Tarf"),
+        Wilaya(37, "Tindouf"),
+        Wilaya(38, "Tissemsilt"),
+        Wilaya(39, "El Oued"),
+        Wilaya(40, "Khenchela"),
+        Wilaya(41, "Souk Ahras"),
+        Wilaya(42, "Tipaza"),
+        Wilaya(43, "Mila"),
+        Wilaya(44, "Aïn Defla"),
+        Wilaya(45, "Naâma"),
+        Wilaya(46, "Aïn Témouchent"),
+        Wilaya(47, "Ghardaïa"),
+        Wilaya(48, "Relizane"),
+        Wilaya(49, "Timimoun"),
+        Wilaya(50, "Bordj Badji Mokhtar"),
+        Wilaya(51, "Ouled Djellal"),
+        Wilaya(52, "Béni Abbès"),
+        Wilaya(53, "In Salah"),
+        Wilaya(54, "In Guezzam"),
+        Wilaya(55, "Touggourt"),
+        Wilaya(56, "Djanet"),
+        Wilaya(57, "El M'Ghair"),
+        Wilaya(58, "El Meniaa")
+    )
+
+    val cuisineTypes = listOf(
+        CuisineType(0, "None") ,
+        CuisineType(1, "Algerian"),
+        CuisineType(2, "Italian"),
+        CuisineType(3, "Chinese"),
+        CuisineType(4, "French"),
+        CuisineType(5, "Japanese"),
+        CuisineType(6, "Indian"),
+        CuisineType(7, "Mexican"),
+        CuisineType(8, "Thai"),
+        CuisineType(9, "Spanish"),
+        CuisineType(10, "Greek")
+    )
+
+    val restaurants = List(10) { index ->
+        Restaurant(
+            id = index + 1,
+            restaurantName = "Restaurant $index",
+            logo = AppImage(index, "https://i.ibb.co/QJcxJdL/restautantlogo.png"),
+            banner = AppImage(index, "https://i.ibb.co/b2cHt8n/image.png"),
+            location = Location.emptyLocation(),
+            cuisineType = cuisineTypes.random(),
+            rating = Rating(index,Random.nextInt(1,58), Random.nextDouble(1.0, 5.0)),
+            phone = "123-456-789$index",
+            email = "restaurant$index@example.com",
+            deliveryPrice = 150,
+            deliveryDuration = 20 ,
+            menu = RestaurantMenu(1, listOf(
+            )), // Assuming an empty menu for simplicity
+            openingTime = LocalTime.of(8,0) ,
+            closingTime = LocalTime.of(23,0)
+        )
+    }
     Box (
         modifier = Modifier.fillMaxSize()
     ) {
@@ -98,12 +213,20 @@ fun HomePage(navController : NavHostController) {
                 modifier = Modifier.align(Alignment.TopEnd).padding(0.dp),
                 colors = ButtonDefaults.buttonColors(Color.Transparent),
             ){
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "notifiactions",
-                    modifier = Modifier.size(34.dp).background(color = Color.Transparent).align(Alignment.Top),
-                    tint = Primary
-                )
+                if (user.has_notification == false){
+                    Icon(
+                        painter = painterResource(id = R.drawable.notification),
+                        contentDescription = "notifiactions",
+                        modifier = Modifier.size(34.dp).background(color = Color.Transparent).align(Alignment.Top),
+                    )
+                }
+                else {
+                    Icon(
+                        painter = painterResource(R.drawable.notification),
+                        contentDescription = "notifiactions",
+                        modifier = Modifier.size(34.dp).background(color = Color.Transparent).align(Alignment.Top),
+                    )
+                }
             }
         }
         Box(
@@ -150,20 +273,37 @@ fun HomePage(navController : NavHostController) {
                             tint = Black,
                             modifier = Modifier.padding(8.dp)
                         )
-                        BasicTextField(
+                        TextField(
                             value = search,
                             onValueChange = { search = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true ,
-                            decorationBox = { innerTextField ->
-                                if (search.isEmpty()) {
-                                    Text(
-                                        text = "Search restaurant",
-                                        color = Color.Gray,
-                                        fontSize = 16.sp
-                                    )
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                disabledTextColor = Black,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            ),
+                            placeholder = { Text("Search") },
+                            modifier = Modifier.weight(1f),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+
                                 }
-                                innerTextField()
+                            ),
+                            trailingIcon = {
+                                if (search.isNotEmpty()) {
+                                    Button(
+                                        onClick = {
+
+                                        } ,
+                                        colors = ButtonDefaults.buttonColors(Color.Transparent),
+                                    ) {
+                                        Icon(Icons.Default.Check, contentDescription = "Search" ,
+                                            tint = Black)
+                                    }
+                                }
                             }
                         )
                     }
@@ -263,16 +403,15 @@ fun HomePage(navController : NavHostController) {
             modifier = Modifier.heightIn(max = 300.dp)
                 .background(color = Grey)
         ) {
-            cuisineTypes.forEachIndexed { index, Cuisine ->
+            cuisineTypes.forEach { CuisineType ->
                 DropdownMenuItem(
-                    text = { Text(text = Cuisine) },
+                    text = { Text(text = "${CuisineType.id}- ${CuisineType.name}") },
                     onClick = {
-                        cuisine = Cuisine
+                        cuisine = CuisineType.name
                         CuisineisExpanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    modifier = Modifier.fillMaxWidth()
-                        .background(color = Grey)
+                    modifier = Modifier.fillMaxWidth().background(color = Grey)
                 )
             }
         }
@@ -346,15 +485,15 @@ fun HomePage(navController : NavHostController) {
             modifier = Modifier.heightIn(max = 300.dp)
                 .background(color = Grey)
         ) {
-            wilayas.forEachIndexed { index, Wilaya ->
+            wilayas.forEach { Wilaya ->
                 DropdownMenuItem(
-                    text = { Text(text = Wilaya) },
+                    text = { Text(text = "${Wilaya.id}- ${Wilaya.name}") },
                     onClick = {
-                        wilaya = Wilaya
+                        wilaya = Wilaya.name
                         WilayaisExpanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    modifier = Modifier.background(color = Grey)
+                    modifier = Modifier.fillMaxWidth().background(color = Grey)
                 )
             }
         }
@@ -362,104 +501,123 @@ fun HomePage(navController : NavHostController) {
 }
                     }
                 }
-                LazyColumn {
-                    item {
-                        Restaurant_Box(ScreenHeight = screenHeight , navController )
+                if ( ( cuisine == "Cuisine" || cuisine == "None" ) && (wilaya == "Wilaya" || wilaya == "None") )
+                {
+                    LazyColumn (
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                    ){
+                        items(restaurants){
+                                restaurant ->
+                            Restaurant_Box(ScreenHeight = screenHeight, navController = navController, restaurant = restaurant)
+                        }
                     }
+                }
+                else {
                 }
             }
         }
     }
 }
 @Composable
-fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController){
+fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restaurant: Restaurant) {
     Box(
-        modifier = Modifier.fillMaxWidth().background(color = CardBackground, shape = RoundedCornerShape(20.dp)).clickable {
+        modifier = Modifier.fillMaxWidth()
+            .background(color = CardBackground, shape = RoundedCornerShape(20.dp)).clickable {
             navController.navigate(Routes.RESTAURANT_DETAILS_PAGE)
         }
-    ){
+    ) {
 
-        Column (
-                verticalArrangement = Arrangement.spacedBy(2.dp) ,
-                horizontalAlignment = Alignment.Start
+        Column(
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.image),
+            AsyncImage(
+                model = restaurant.banner.imagePath,
                 contentDescription = "Banner",
-                modifier = Modifier.height( (ScreenHeight*0.18f) ).fillMaxWidth(),
+                modifier = Modifier.height((ScreenHeight * 0.18f)).fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
             Box(
                 modifier = Modifier.padding(6.dp)
-            ){
-                Row (
+            ) {
+                Row(
 
-                        horizontalArrangement = Arrangement.End ,
-                        verticalAlignment = Alignment.Top ,
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Top,
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                    ){
-                        Text("4.5",
-                            fontSize = 14.sp)
-                        Box(
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        ){
-
-                            Icon(
-                                painter = painterResource(id = R.drawable.rating),
-                                contentDescription = "Location",
-                                modifier = Modifier.size(14.dp).background(color = Color.Transparent).align(Alignment.Center),
-                                tint = Color.Unspecified
-                            )
-                        }
-                    }
-
-                Row (
-                    modifier = Modifier.padding(6.dp).fillMaxWidth()
-                ){
+                ) {
+                    Text(
+                        truncateToOneDecimal(restaurant.rating.rating),
+                        fontSize = 14.sp
+                    )
                     Box(
-                        modifier = Modifier.size((ScreenHeight*0.055f)).background(shape = RoundedCornerShape((ScreenHeight*0.065f)),color = Color.Transparent)
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.rating),
+                            contentDescription = "Rating",
+                            modifier = Modifier.size(14.dp).background(color = Color.Transparent)
+                                .align(Alignment.Center),
+                            tint = Color.Unspecified
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.padding(6.dp).fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier.size((ScreenHeight * 0.055f)).background(
+                            shape = RoundedCornerShape((ScreenHeight * 0.065f)),
+                            color = Color.Transparent
+                        )
                     )
                     {
-                        Image(
-                            painter = painterResource(id = R.drawable.restaurantlogo),
+                        AsyncImage(
+                            model = restaurant.logo.imagePath,
                             contentDescription = "Logo",
-                            modifier = Modifier.size((ScreenHeight*0.055f)),
+                            modifier = Modifier.size((ScreenHeight * 0.055f)),
                             contentScale = ContentScale.Crop
                         )
                     }
-                    Column (
+                    Column(
                         modifier = Modifier.padding(
                             start = 8.dp
                         )
-                    ){
-                        Text(text="American Burger",
-                            fontSize = 14.sp ,
+                    ) {
+                        Text(
+                            text = restaurant.restaurantName,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        Row (
+                        Row(
                             horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.time),
                                 contentDescription = "time",
-                                modifier = Modifier.size(12.dp).background(color = Color.Transparent).align(Alignment.CenterVertically),
+                                modifier = Modifier.size(12.dp)
+                                    .background(color = Color.Transparent)
+                                    .align(Alignment.CenterVertically),
                                 tint = Color.Unspecified
                             )
                             Text(
-                                text = "20-25 min" ,
-                                fontSize = 14.sp ,
+                                text = "${restaurant.deliveryDuration}-${restaurant.deliveryDuration + 5} min",
+                                fontSize = 14.sp,
                             )
                             Spacer(Modifier.width(10.dp))
                             Icon(
                                 painter = painterResource(id = R.drawable.point),
                                 contentDescription = "point",
-                                modifier = Modifier.size(5.dp).background(color = Color.Transparent).align(Alignment.CenterVertically),
+                                modifier = Modifier.size(5.dp).background(color = Color.Transparent)
+                                    .align(Alignment.CenterVertically),
                                 tint = BlackStroke
                             )
                             Spacer(Modifier.width(10.dp))
                             Text(
-                                text = "150 DA" ,
-                                fontSize = 14.sp ,
+                                text = "${restaurant.deliveryPrice} DA",
+                                fontSize = 14.sp,
                             )
                         }
 
@@ -467,5 +625,18 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController){
                 }
             }
         }
+    }
+}
+
+fun truncateToOneDecimal(number: Double): String {
+    val numberString = number.toString()
+    val decimalIndex = numberString.indexOf('.')
+
+    return if (decimalIndex != -1) {
+        // Truncate to one digit after the decimal
+        numberString.substring(0, decimalIndex + 2)
+    } else {
+        // If there's no decimal point, return the original number
+        numberString
     }
 }

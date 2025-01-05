@@ -2,17 +2,7 @@ package com.example.deliveryfoodapp.utils
 
 import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
-import com.example.deliveryfoodapp.models.AppImage
-import com.example.deliveryfoodapp.models.Category
-import com.example.deliveryfoodapp.models.CuisineType
-import com.example.deliveryfoodapp.models.Item
-import com.example.deliveryfoodapp.models.Location
-import com.example.deliveryfoodapp.models.OrderItem
-import com.example.deliveryfoodapp.models.Rating
-import com.example.deliveryfoodapp.models.Restaurant
-import com.example.deliveryfoodapp.models.RestaurantMenu
-import com.example.deliveryfoodapp.models.User
-import com.example.deliveryfoodapp.models.UserCart
+import com.example.deliveryfoodapp.models.*
 import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.Blue
 import com.example.deliveryfoodapp.ui.theme.Primary
@@ -82,8 +72,8 @@ fun createRestaurantForTest() : Restaurant {
     restaurant.location = Location.emptyLocation()
     restaurant.location.address = "Rue Nadjet Slimane, Kouba, Algiers"
     restaurant.cuisineType = CuisineType(id=0, name = "American")
-    restaurant.deliveryDuration = LocalTime.of(14, 30)
-    restaurant.deliveryPrice = 300.0
+    restaurant.deliveryDuration = 30
+    restaurant.deliveryPrice = 300
     restaurant.rating = Rating(id=0, reviewersCount = 209, rating = 4.5)
     restaurant.menu = menu
     return restaurant
@@ -128,7 +118,10 @@ data class OrderTest(
 
 fun createOrdersForTest() : List<OrderTest> {
 
-    val imagePath = "https://th.bing.com/th/id/OIP.M9t7f55K3088Y3ZCGxUATgHaHa?rs=1&pid=ImgDetMain"
+    val imagePath1 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKM4bEp3laJBx99q9bKpyDm_m1uQGF1r0UMg&s"
+    val imagePath2 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3a9bC67pnkc3h7JTXGnooTHeez0qpL6-9nQ&s"
+    val imagePath3 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPuQ1_d2pRT9JOC1_6CbRZoSyeXJGijM7rA&s"
+    val imagePath4 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2OSPi0oehcfsWEsJaCulFc7wU9VIN170d1g&s"
     // A sample list of orders
     val sampleOrders = listOf(
         OrderTest(
@@ -138,7 +131,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "08:30 p.m.",
             orderedAtDate = "08/12/2024",
             status = "On the way",
-            imageUrl = imagePath,
+            imageUrl = imagePath1,
             statusId = Blue
         ),
         OrderTest(
@@ -148,7 +141,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "11:30 a.m.",
             orderedAtDate = "08/12/2024",
             status = "IsPrepared",
-            imageUrl = imagePath,
+            imageUrl = imagePath2,
             statusId = BlackStroke
         ),
         OrderTest(
@@ -158,7 +151,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:00 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Canceled",
-            imageUrl = imagePath,
+            imageUrl = imagePath3,
             statusId = Red
         ),
         OrderTest(
@@ -168,7 +161,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:10 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Delivered",
-            imageUrl = imagePath,
+            imageUrl = imagePath4,
             statusId = Secondary
         ),
         OrderTest(
@@ -178,7 +171,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "08:30 p.m.",
             orderedAtDate = "08/12/2024",
             status = "On the way",
-            imageUrl = imagePath,
+            imageUrl = imagePath1,
             statusId = Blue
         ),
         OrderTest(
@@ -188,7 +181,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "11:30 a.m.",
             orderedAtDate = "08/12/2024",
             status = "IsPrepared",
-            imageUrl = imagePath,
+            imageUrl = imagePath2,
             statusId = BlackStroke
         ),
         OrderTest(
@@ -198,7 +191,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:00 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Canceled",
-            imageUrl = imagePath,
+            imageUrl = imagePath3,
             statusId = Red
         ),
         OrderTest(
@@ -208,7 +201,7 @@ fun createOrdersForTest() : List<OrderTest> {
             orderedAtTime = "12:10 a.m.",
             orderedAtDate = "10/11/2024",
             status = "Delivered",
-            imageUrl = imagePath,
+            imageUrl = imagePath4,
             statusId = Primary
         )
     )

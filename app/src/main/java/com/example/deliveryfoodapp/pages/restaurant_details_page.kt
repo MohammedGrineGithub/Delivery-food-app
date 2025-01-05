@@ -208,7 +208,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     Spacer(Modifier.width(2.dp))
 
                     Text(
-                        text = "${restaurant.deliveryDuration.minute} min",
+                        text = "${restaurant.deliveryDuration} min",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                     )
