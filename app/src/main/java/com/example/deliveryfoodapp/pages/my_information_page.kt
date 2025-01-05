@@ -1,6 +1,7 @@
 package com.example.deliveryfoodapp.pages
 
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,17 +37,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.models.AppImage
+import com.example.deliveryfoodapp.models.Location
+import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.SecondaryFill
 import com.example.deliveryfoodapp.ui.theme.ibmplexsansFontFamily
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
-
 @Composable
-fun MyInformationPage(navController : NavHostController) {
+fun MyInformationPage(navController: NavHostController) {
+    // Simulate user data locally
+    val user = User(
+        id = 1,
+        fullName = "John Doe",
+        email = "john.doe@example.com",
+        phone = "+1234567890",
+        location = Location.emptyLocation().apply {
+            address = "Hydra, Alger" // Update only the address
+        },
+        photo = AppImage.emptyAppImage(),
+        carts = mutableListOf()
+    )
 
-    var text1 by remember { mutableStateOf("Enter your full name") }
-    var text2 by remember { mutableStateOf("Enter your phone number") }
+    // Use the simulated user data in the UI
+    var fullName by remember { mutableStateOf(user.fullName) }
+    var phoneNumber by remember { mutableStateOf(user.phone) }
 
     Column(
         modifier = Modifier
@@ -96,10 +112,10 @@ fun MyInformationPage(navController : NavHostController) {
                 contentScale = ContentScale.Crop
             )
         }
-        Row (
+        Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             Text(
                 text = "Change your profile image",
                 color = Primary, // Light blue
@@ -120,7 +136,6 @@ fun MyInformationPage(navController : NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
 
         // Info Card
-
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = SecondaryFill,
@@ -128,40 +143,39 @@ fun MyInformationPage(navController : NavHostController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                InfoRow(label = "Email", value = "ls_sadaoui@esi.dz")
+                InfoRow(label = "Email", value = user.email)
                 Spacer(modifier = Modifier.height(8.dp))
-                InfoRow(label = "Address", value = "Hydra, Alger, Algeria")
+                InfoRow(label = "Address", value = user.location.address)
             }
         }
-        Column (
+        Column(
             horizontalAlignment = Alignment.Start
-        )
-        {
+        ) {
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = "Full name", fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(10.dp))
             GreenOutlinedTextField(
-                value = text1,
-                onValueChange = { text1 = it },
+                value = fullName,
+                onValueChange = { fullName = it },
             )
 
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = "Phone number", fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(10.dp))
             GreenOutlinedTextField(
-                value = text2,
-                onValueChange = { text2 = it },
+                value = phoneNumber,
+                onValueChange = { phoneNumber = it },
             )
         }
         Spacer(modifier = Modifier.height(150.dp))
         PrincipalButton(
             text = "Save changes",
-            onClick = {},
+            onClick = {
+                // Simulate saving changes (no backend integration)
+            },
         )
-
     }
 }
-
 
 @Composable
 fun GreenOutlinedTextField(
