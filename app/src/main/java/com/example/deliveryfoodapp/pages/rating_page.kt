@@ -2,7 +2,9 @@ package com.example.deliveryfoodapp.pages
 
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -43,7 +46,7 @@ fun RatingPage(navController: NavHostController) {
     var selectedRating by remember { mutableStateOf(3) }
 
     // State for the feedback text
-    var feedback by remember { mutableStateOf("Share your feedback") }
+    var feedback by remember { mutableStateOf("") }
 
     // Function to handle the "Submit" button click
     fun submitRating() {
@@ -128,17 +131,32 @@ fun RatingPage(navController: NavHostController) {
 }
 @Composable
 fun CustomRatingBar(rating: Int, onRatingChanged: (Int) -> Unit) {
-    Row(horizontalArrangement = Arrangement.Center) {
-        for (i in 1..5) {
-            val isSelected = i <= rating
-            Icon(
-                painter = painterResource(id = if (isSelected) R.drawable.star_fill else R.drawable.star_outline),
-                contentDescription = null,
-                tint = if (isSelected) Primary else Primary,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clickable { onRatingChanged(i) }
-            )
+    var currentRating by remember { mutableStateOf(rating) }
+
+    Box(
+        modifier = Modifier
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures { change, dragAmount ->
+                    change.consume() // Consomme l'événement pour éviter les conflits
+                    val newRating = ((change.position.x / size.width) * 5).toInt() + 1
+                    currentRating = newRating.coerceIn(1, 5) // S'assure que la note reste entre 1 et 5
+                    onRatingChanged(currentRating)
+                }
+            }
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            for (i in 1..5) {
+                val isSelected = i <= currentRating
+                Icon(
+                    painter = painterResource(id = if (isSelected) R.drawable.star_fill else R.drawable.star_outline),
+                    contentDescription = null,
+                    tint = if (isSelected) Primary else Primary,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
         }
     }
 }
