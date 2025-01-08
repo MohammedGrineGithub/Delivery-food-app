@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.CHANGE_LOCATION_PAGE,
+                        startDestination = Routes.HOME_SCREEN,
 
                         Modifier.padding(innerPadding)
                     ) {

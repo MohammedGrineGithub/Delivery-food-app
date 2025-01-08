@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -35,22 +34,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.ui.theme.CardBackground
-import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Red
 import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.LogoutDialog
-import okhttp3.Route
-import org.w3c.dom.Text
-import java.nio.file.WatchEvent
 
 @Composable
 fun ProfilePage(navController : NavHostController) {
 
     val fullname by remember { mutableStateOf("Sadaoui Said Abdelwareth") }
-    val photo by remember { mutableStateOf("image") }
-
 
     var showLogoutDialog by remember { mutableStateOf(false) } // État pour afficher la boîte de dialogue
 
@@ -74,17 +67,19 @@ fun ProfilePage(navController : NavHostController) {
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Normal,
                     fontFamily = lemonFontFamily
-                )
+                ),
+                modifier = Modifier.padding(top = 20.dp)
             )
 
-            Spacer(modifier = Modifier.height(59.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
             //Profile image and name
             Column(
-
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
-                    modifier = Modifier.size(76.dp)
+                    modifier = Modifier.size(84.dp)
                         .background(Secondary, CircleShape)
                         .align(Alignment.CenterHorizontally),
                     contentAlignment = Alignment.Center
@@ -98,9 +93,7 @@ fun ProfilePage(navController : NavHostController) {
                         )
                     )
                 }
-
-
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = fullname,
                     style = TextStyle(
@@ -109,7 +102,7 @@ fun ProfilePage(navController : NavHostController) {
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(70.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
             //My Account
 
@@ -132,9 +125,9 @@ fun ProfilePage(navController : NavHostController) {
                         .padding(vertical = 15.dp, horizontal = 20.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    ItemProfil("person", "personel informations", navController)
-                    ItemProfil("lock", "change password", navController)
-                    ItemProfil("maps", "change location", navController)
+                    ItemProfil("person", "Personal information", navController)
+                    ItemProfil("lock", "Change password", navController)
+                    ItemProfil("maps", "Change location", navController)
 
                     Row(
                         modifier = Modifier.fillMaxWidth()
@@ -158,7 +151,7 @@ fun ProfilePage(navController : NavHostController) {
                             Text(
                                 text = "Log out",
                                 style = TextStyle(
-                                    fontSize = 17.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = Red
                                 )
@@ -255,8 +248,8 @@ fun ItemProfil(icon:String,name:String,navController: NavHostController) {
             Text(
                 text = name,
                 style = TextStyle(
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Medium
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal
                 )
             )
 

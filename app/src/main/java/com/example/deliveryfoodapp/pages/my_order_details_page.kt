@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -249,7 +250,6 @@ fun MyOrderDetailsPage(navController: NavHostController) {
 
                     Row(
                         modifier = Modifier
-                            .size(width = 152.dp, height = 43.dp)
                             .border(
                                 width = 1.dp,
                                 shape = RoundedCornerShape(8),
@@ -259,23 +259,29 @@ fun MyOrderDetailsPage(navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically,
 
                         ) {
-                        // TODO change the color of the status according to it value
-                        Icon(
-                            painter = painterResource(id = R.drawable.order_status_icon),
-                            contentDescription = "order status",
-                            modifier = Modifier.size(width = 20.dp, height = 20.dp),
-                            tint = Primary
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = statusArray[order.status],
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Primary
+                        Row(
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
+                                .widthIn(min = 100.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            // TODO change the color of the status according to it value
+                            Icon(
+                                painter = painterResource(id = R.drawable.order_status_icon),
+                                contentDescription = "order status",
+                                modifier = Modifier.size(24.dp),
+                                tint = Primary
                             )
-                        )
-
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = statusArray[order.status],
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Primary
+                                )
+                            )
+                        }
 
                     }
 

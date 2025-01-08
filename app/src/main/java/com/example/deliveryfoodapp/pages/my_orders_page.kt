@@ -1,6 +1,7 @@
 package com.example.deliveryfoodapp.pages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,21 +18,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
@@ -101,7 +105,7 @@ fun OrderCard(order: OrderTest) {
                     painter = rememberAsyncImagePainter(order.imageUrl), // Replace with your image resource
                     contentDescription = "Restaurant Logo",
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -109,7 +113,9 @@ fun OrderCard(order: OrderTest) {
                     text = order.restaurantName,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -125,13 +131,13 @@ fun OrderCard(order: OrderTest) {
                     Text(
                         text = "Total price",
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Black,
+                        fontWeight = FontWeight.Bold,
                         color = Primary
                     )
                     Text(
                         text = order.price,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black
                     )
                 }
@@ -141,42 +147,60 @@ fun OrderCard(order: OrderTest) {
                     Text(
                         text = "Ordered at",
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Black,
+                        fontWeight = FontWeight.Bold,
                         color = Primary
                     )
                     Text(
                         text = order.orderedAtTime,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black
                     )
                     Text(
                         text = order.orderedAtDate,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color.Black
                     )
                 }
 
-                // Button
-                Button(
-                    onClick = { /* Handle the click action */ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = order.statusId, // Button background color
-                        contentColor = Color.White // Text color inside the button
-                    ),
-                    shape = RoundedCornerShape(10.dp), // Rounded corners for the button
+                Row(
                     modifier = Modifier
-                        .width(120.dp) // Set button width
-                        .height(40.dp) // Set button height
-                        .padding(0.dp)
-                ) {
-                    Text(
-                        text = order.status,
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.sp
-                    )
+                        .border(
+                            width = 1.dp,
+                            shape = RoundedCornerShape(8),
+                            color = Primary
+                        ),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+
+                    ) {
+                    Row(
+                        modifier = Modifier.padding(8.dp)
+                            .width(120.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        // TODO change the color of the status according to it value
+                        Icon(
+                            painter = painterResource(id = R.drawable.order_status_icon),
+                            contentDescription = "order status",
+                            modifier = Modifier.size(22.dp),
+                            tint = Primary
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = order.status,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Primary,
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
                 }
             }
         }

@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -67,11 +68,22 @@ import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.utils.createRestaurantForTest
 import com.example.deliveryfoodapp.widgets.InfoAddItemDialog
 import com.example.deliveryfoodapp.widgets.ItemCard
+import java.time.LocalTime
 
 
 @SuppressLint("NewApi")
 @Composable
 fun RestaurantDetailsPage(navController : NavHostController) {
+
+    fun isWithinOperatingHours(openingTime: LocalTime, closingTime: LocalTime): Boolean {
+        return true
+        val currentTime = LocalTime.now()
+        return if (closingTime.isAfter(openingTime) || closingTime == openingTime) {
+            currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime)
+        } else {
+            currentTime.isAfter(openingTime) || currentTime.isBefore(closingTime)
+        }
+    }
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -100,34 +112,37 @@ fun RestaurantDetailsPage(navController : NavHostController) {
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
+
             /** Banner **/
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(screenHeight / 4 + 38.dp)
-            ){
+            ) {
                 AsyncImage(
                     model = restaurant.banner.imagePath,
                     contentDescription = "banner",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(screenHeight / 4),
+                        .height(screenHeight / 4)
+                        .then(
+                            if (!isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) Modifier.blur(16.dp) else Modifier
+                        ),
                     contentScale = ContentScale.FillBounds
                 )
 
-                /** Circle back icon button **/
+                // Circle back icon button
                 Box(
                     modifier = Modifier
                         .padding(top = 12.dp, start = 12.dp)
-                ){
-
+                ) {
                     Box(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(60.dp))
                             .background(White)
                             .padding(all = 16.dp)
-                    ){
+                    ) {
                         IconButton(
                             onClick = { navController.navigateUp() },
                             modifier = Modifier.size(44.dp)
@@ -141,7 +156,27 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                         }
                     }
                 }
+
+                // Overlay with "Closed" text if not within operating hours
+                if (!isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(screenHeight / 4)
+                            .background(Color.Black.copy(alpha = 0.6f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Closed ):",
+                            color = Color.White,
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
+
+
             /** Logo **/
             AsyncImage(
                 model = restaurant.logo.imagePath,
@@ -208,7 +243,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     Spacer(Modifier.width(2.dp))
 
                     Text(
-                        text = "${restaurant.deliveryDuration} min",
+                        text = "${restaurant.deliveryDuration} - ${restaurant.deliveryDuration + 5} min",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                     )
@@ -372,7 +407,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
             }
 
             /** Button of user cart **/
-            if (userCart.value.totalItems() != 0)
+            if (userCart.value.totalItems() != 0 && isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime))
             Button(
                 onClick = {
                     navController.navigate(Routes.USER_CART_PAGE)
@@ -427,7 +462,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
         }
     }
 
-    if (showDialog && selectedItem != null) {
+    if (showDialog && selectedItem != null && isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) {
         InfoAddItemDialog(
             userCart = userCart.value,
             item = selectedItem!!,

@@ -7,6 +7,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
@@ -25,8 +26,11 @@ import com.example.deliveryfoodapp.utils.Routes
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val homeNavController = rememberNavController()
-    val currentBackStackEntry = homeNavController.currentBackStackEntry
-    val currentRoute = currentBackStackEntry?.destination?.route
+
+    // Observe current back stack entry as state
+    val currentRoute = homeNavController.currentBackStackEntryFlow
+        .collectAsState(initial = homeNavController.currentBackStackEntry)
+        .value?.destination?.route
 
     val items = listOf(
         Routes.HOME_PAGE,
@@ -70,6 +74,7 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 }
+
 
 @Composable
 fun CustomNavigationBar(
