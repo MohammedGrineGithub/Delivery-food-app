@@ -7,7 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [UserCart::class, OrderItem::class],
+    entities = [RoomUserCart::class, RoomOrderItem::class],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {

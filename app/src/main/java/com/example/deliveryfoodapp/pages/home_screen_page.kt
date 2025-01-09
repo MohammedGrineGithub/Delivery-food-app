@@ -17,14 +17,50 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.models.AppImage
+import com.example.deliveryfoodapp.models.Item
+import com.example.deliveryfoodapp.models.OrderItem
+import com.example.deliveryfoodapp.models.UserCart
+import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.services.repositories.UserCartRepository
 import com.example.deliveryfoodapp.ui.theme.Black
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.White
 import com.example.deliveryfoodapp.utils.Routes
+import com.example.deliveryfoodapp.services.room.RoomUserCart
 
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+
+    /** Get all user carts from SqlLite into authenticatedUser **/
+    val allUserCarts : List<RoomUserCart> = UserCartRepository.getAllUserCarts().orEmpty()
+
+    authenticatedUser.carts.addAll(
+        allUserCarts.map { u ->
+            val orderItems = OrderItemRepository.getAllOrderItemsForUserCart(u.id).orEmpty()
+            UserCart(
+                id = u.id,
+                orderItems = orderItems.map { o ->
+                    OrderItem(
+                        id = o.id,
+                        item = Item(
+                            id = o.item.itemID,
+                            name = o.item.name,
+                            ingredients = o.item.ingredients,
+                            price = o.item.price,
+                            photo = AppImage(id = o.item.itemID, imagePath = o.item.photo)
+                        ),
+                        note = o.note,
+                        itemQuantity = o.itemQuantity
+                    )
+                }.toMutableList(),
+                restaurantID = u.restaurantID
+            )
+        }
+    )
+
     val homeNavController = rememberNavController()
 
     // Observe current back stack entry as state

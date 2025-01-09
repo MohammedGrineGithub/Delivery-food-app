@@ -1,6 +1,8 @@
 package com.example.deliveryfoodapp.models
 
 import Location
+import com.example.deliveryfoodapp.services.repositories.UserCartRepository
+import com.example.deliveryfoodapp.services.room.RoomUserCart
 
 @Suppress("UNCHECKED_CAST")
 data class User(
@@ -32,9 +34,21 @@ data class User(
 
             userCart = UserCart.emptyUserCart()
 
-            // TODO userCart.id = newCartId  ## here i should create new user cart id in sqlLite and associate it here
+            // if that user cart already exists, get it
+            var roomUserCart : RoomUserCart? = UserCartRepository.getUserCartById(id)
+            if (roomUserCart == null) {
+                // create new user cart in sqlLite and return it ID (because it's auto generated)
+                roomUserCart = RoomUserCart(
+                    restaurantID = restaurantID
+                )
+                val generatedId = UserCartRepository.addUserCart(roomUserCart)
+                userCart.id = generatedId.toInt()
+            }else {
+                userCart.id = roomUserCart.id
+            }
 
             userCart.restaurantID = restaurantID
+
             return userCart
         }
         return userCart

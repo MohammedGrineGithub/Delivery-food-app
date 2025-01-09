@@ -14,15 +14,25 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.pages.*
+import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.services.repositories.UserCartRepository
 import com.example.deliveryfoodapp.ui.theme.DeliveryFoodAppTheme
 import com.example.deliveryfoodapp.utils.*
 
-var authenticatedUser : User = createUserForTest()
+var authenticatedUser : User = User.emptyUser()
+
+var currentRestaurant : Restaurant = Restaurant.emptyRestaurant()
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        // this.deleteDatabase("user_db")
+        // UserCartRepository.clearUserCarts()
+        // OrderItemRepository.clearOrderItems()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {

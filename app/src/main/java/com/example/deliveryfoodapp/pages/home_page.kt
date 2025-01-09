@@ -3,13 +3,7 @@ package com.example.deliveryfoodapp.pages
 
 
 import android.annotation.SuppressLint
-import android.os.Build
-import android.view.MenuItem
-import androidx.annotation.RequiresApi
 import com.example.deliveryfoodapp.R
-import kotlin.random.Random
-import java.time.LocalDateTime
-import java.time.LocalTime
 import androidx.compose.ui.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,31 +42,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import com.example.deliveryfoodapp.ui.theme.Primary
 import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import com.example.deliveryfoodapp.utils.Routes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
-import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.models.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardActions
-import android.content.Context
-import android.health.connect.datatypes.ExerciseRoute
-import com.example.deliveryfoodapp.services.Pref.context
-import com.example.deliveryfoodapp.ui.theme.Red
+import com.example.deliveryfoodapp.currentRestaurant
+import com.example.deliveryfoodapp.utils.createRestaurantForTest
 
 @SuppressLint("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,23 +165,7 @@ fun HomePage(navController : NavHostController) {
     )
 
     val restaurants = List(10) { index ->
-        Restaurant(
-            id = index + 1,
-            restaurantName = "Restaurant $index",
-            logo = AppImage(index, "https://i.ibb.co/QJcxJdL/restautantlogo.png"),
-            banner = AppImage(index, "https://i.ibb.co/b2cHt8n/image.png"),
-            location = Location.emptyLocation(),
-            cuisineType = cuisineTypes.random(),
-            rating = Rating(index,Random.nextInt(1,58), Random.nextDouble(1.0, 5.0)),
-            phone = "123-456-789$index",
-            email = "restaurant$index@example.com",
-            deliveryPrice = 150,
-            deliveryDuration = 20 ,
-            menu = RestaurantMenu(1, listOf(
-            )), // Assuming an empty menu for simplicity
-            openingTime = LocalTime.of(8,0) ,
-            closingTime = LocalTime.of(23,0)
-        )
+        createRestaurantForTest(index = index)
     }
     Box (
         modifier = Modifier.fillMaxSize()
@@ -504,15 +475,13 @@ fun HomePage(navController : NavHostController) {
                 if ( ( cuisine == "Cuisine" || cuisine == "None" ) && (wilaya == "Wilaya" || wilaya == "None") )
                 {
                     LazyColumn (
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ){
                         items(restaurants){
                                 restaurant ->
                             Restaurant_Box(ScreenHeight = screenHeight, navController = navController, restaurant = restaurant)
                         }
                     }
-                }
-                else {
                 }
             }
         }
@@ -523,7 +492,8 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
     Box(
         modifier = Modifier.fillMaxWidth()
             .background(color = CardBackground, shape = RoundedCornerShape(20.dp)).clickable {
-            navController.navigate(Routes.RESTAURANT_DETAILS_PAGE)
+                currentRestaurant = restaurant.copy()
+                navController.navigate(Routes.RESTAURANT_DETAILS_PAGE)
         }
     ) {
 
@@ -534,7 +504,8 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
             AsyncImage(
                 model = restaurant.banner.imagePath,
                 contentDescription = "Banner",
-                modifier = Modifier.height((ScreenHeight * 0.18f)).fillMaxWidth(),
+                modifier = Modifier.height((ScreenHeight * 0.18f)).fillMaxWidth()
+                    .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 0.dp, bottomStart = 0.dp)),
                 contentScale = ContentScale.Crop
             )
             Box(
@@ -577,8 +548,9 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                         AsyncImage(
                             model = restaurant.logo.imagePath,
                             contentDescription = "Logo",
-                            modifier = Modifier.size((ScreenHeight * 0.055f)),
-                            contentScale = ContentScale.Crop
+                            modifier = Modifier.size((ScreenHeight * 0.055f))
+                                .clip(shape = CircleShape),
+                            contentScale = ContentScale.FillBounds
                         )
                     }
                     Column(
@@ -603,7 +575,7 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                                 tint = Color.Unspecified
                             )
                             Text(
-                                text = "${restaurant.deliveryDuration}-${restaurant.deliveryDuration + 5} min",
+                                text = "${restaurant.deliveryDuration} - ${restaurant.deliveryDuration + 5} min",
                                 fontSize = 14.sp,
                             )
                             Spacer(Modifier.width(10.dp))
@@ -611,14 +583,25 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                                 painter = painterResource(id = R.drawable.point),
                                 contentDescription = "point",
                                 modifier = Modifier.size(5.dp).background(color = Color.Transparent)
-                                    .align(Alignment.CenterVertically),
-                                tint = BlackStroke
+                                    .align(Alignment.CenterVertically)
                             )
                             Spacer(Modifier.width(10.dp))
-                            Text(
-                                text = "${restaurant.deliveryPrice} DA",
-                                fontSize = 14.sp,
-                            )
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.moto_icon),
+                                    contentDescription = "delivery",
+                                    modifier = Modifier.size(14.dp)
+                                        .background(color = Color.Transparent)
+                                        .align(Alignment.CenterVertically)
+                                )
+                                Text(
+                                    text = "${restaurant.deliveryPrice} DA",
+                                    fontSize = 14.sp,
+                                )
+                            }
                         }
 
                     }

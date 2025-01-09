@@ -1,5 +1,9 @@
 package com.example.deliveryfoodapp.models
 
+import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.services.room.RoomItem
+import com.example.deliveryfoodapp.services.room.RoomOrderItem
+
 data class UserCart(
     var id: Int,
     var orderItems: MutableList<OrderItem>,
@@ -17,7 +21,29 @@ data class UserCart(
         if (orderItem == null) {
             orderItem = OrderItem.emptyOrderItem()
 
-            // TODO orderItem.id = newOrderItemID  ## here i should create new order item id in sqlLite and associate it here
+            // if that orderItem already exists, get it
+            var roomOrderItem : RoomOrderItem? = OrderItemRepository.getOrderItemByItemID(item.id)
+            if (roomOrderItem == null) {
+
+                // Create new orderItem in sqlLite
+                val roomItem = RoomItem(
+                    itemID = item.id,
+                    name = item.name,
+                    ingredients = item.ingredients,
+                    price = item.price,
+                    photo = item.photo.imagePath
+                )
+                roomOrderItem = RoomOrderItem(
+                    item = roomItem,
+                    note = "",
+                    itemQuantity = 0,
+                    userCartId = id
+                )
+                val generatedId = OrderItemRepository.addOrderItem(roomOrderItem)
+                orderItem.id = generatedId.toInt()
+            }else {
+                orderItem.id = roomOrderItem.id
+            }
 
             orderItem.item = item.copy()
             return  orderItem

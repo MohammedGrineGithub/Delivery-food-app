@@ -1,21 +1,41 @@
 package com.example.deliveryfoodapp.services.repositories
 
 import com.example.deliveryfoodapp.services.room.AppDatabase
-import com.example.deliveryfoodapp.services.room.OrderItem
+import com.example.deliveryfoodapp.services.room.RoomOrderItem
 
 object OrderItemRepository {
 
     // Add an OrderItem
-    suspend fun addOrderItem(orderItem: OrderItem) {
-        AppDatabase.buildDatabase()?.orderItemDao()?.insertOrderItem(orderItem)
+    fun addOrderItem(roomOrderItem: RoomOrderItem):Long{
+        val generatedId = AppDatabase.buildDatabase()?.orderItemDao()?.insertOrderItem(roomOrderItem)
+        return generatedId ?: -1L
+    }
+
+    // Update OrderItem
+    fun updateOrderItem(roomOrderItem: RoomOrderItem) {
+        AppDatabase.buildDatabase()?.orderItemDao()?.updateOrderItem(roomOrderItem)
+    }
+
+    // Get an OrderItem by its ID
+    fun getOrderItemById(orderItemId: Int): RoomOrderItem? {
+        return AppDatabase.buildDatabase()?.orderItemDao()?.getOrderItemByID(orderItemId)
+    }
+
+    // Get an OrderItem by the item id
+    fun getOrderItemByItemID(itemID: Int): RoomOrderItem? {
+        return AppDatabase.buildDatabase()?.orderItemDao()?.getOrderItemByItemID(itemID)
     }
 
     // Get all OrderItems for a specific UserCart
-    suspend fun getAllOrderItemsForUserCart(userCartId: Int) =
+    fun getAllOrderItemsForUserCart(userCartId: Int) =
         AppDatabase.buildDatabase()?.orderItemDao()?.getOrderItemsByUserCartId(userCartId)
 
     // Remove an OrderItem by its ID
-    suspend fun removeOrderItem(orderItem: OrderItem) {
-        AppDatabase.buildDatabase()?.orderItemDao()?.deleteOrderItem(orderItem)
+    fun removeOrderItem(roomOrderItem: RoomOrderItem) {
+        AppDatabase.buildDatabase()?.orderItemDao()?.deleteOrderItem(roomOrderItem)
+    }
+
+    fun clearOrderItems() {
+        AppDatabase.buildDatabase()?.orderItemDao()?.clearOrderItems()
     }
 }

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -27,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
@@ -38,6 +42,7 @@ import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.models.OrderItem
 import com.example.deliveryfoodapp.models.UserCart
+import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.Secondary
@@ -54,6 +59,7 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
     val itemQuantity = remember { mutableIntStateOf(1) }
     val totalPrice = remember { mutableDoubleStateOf(item.price) }
     /** ************************************************************* **/
+    val focusManager = LocalFocusManager.current
 
 
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -189,6 +195,14 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                             .padding(start = 20.dp, end = 20.dp)
                             .height(80.dp),
                         maxLines = 1,
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
                         shape = RoundedCornerShape(
                             topStart = 2.dp,
                             topEnd = 2.dp,
@@ -215,32 +229,9 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                         ) {
                             IconButton(
                                 onClick = {
-                                    itemQuantity.value += 1
-                                    totalPrice.doubleValue *= itemQuantity.intValue
-                                },
-                                modifier = Modifier
-                                    .clip(shape = RoundedCornerShape(60))
-                                    .background(color = Primary)
-                                    .size(40.dp)
-                            ){
-                                Icon(
-                                    painter = painterResource(R.drawable.add_icon),
-                                    contentDescription = "plus",
-                                    modifier = Modifier.size(20.dp),
-                                    tint = White
-                                )
-                            }
-                            Text(
-                                text = "${itemQuantity.intValue}",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            IconButton(
-                                onClick = {
                                     if (itemQuantity.intValue > 1) {
-                                        totalPrice.doubleValue /= itemQuantity.intValue
                                         itemQuantity.value -= 1
+                                        totalPrice.doubleValue -= item.price
                                     }
                                 },
                                 modifier = Modifier
@@ -251,6 +242,28 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                                 Icon(
                                     painter = painterResource(R.drawable.remove_icon),
                                     contentDescription = "minus",
+                                    modifier = Modifier.size(20.dp),
+                                    tint = White
+                                )
+                            }
+                            Text(
+                                text = "${itemQuantity.intValue}",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            IconButton(
+                                onClick = {
+                                    itemQuantity.value += 1
+                                    totalPrice.doubleValue += item.price
+                                },
+                                modifier = Modifier
+                                    .clip(shape = RoundedCornerShape(60))
+                                    .background(color = Primary)
+                                    .size(40.dp)
+                            ){
+                                Icon(
+                                    painter = painterResource(R.drawable.add_icon),
+                                    contentDescription = "plus",
                                     modifier = Modifier.size(20.dp),
                                     tint = White
                                 )
@@ -296,8 +309,12 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                             // update authentication user with that userCart
                             authenticatedUser.updateByUserCart(userCart = userCart)
 
-                            // TODO update user with that userCart in SqlLite
-
+                            // == update userCart in SqlLite => update it order item
+                            val roomOrderItem = OrderItemRepository.getOrderItemById(orderItem.id)
+                                ?.copy(note = orderItem.note, itemQuantity = orderItem.itemQuantity)
+                            if (roomOrderItem != null) {
+                                OrderItemRepository.updateOrderItem(roomOrderItem)
+                            }
 
                             // close the dialog
                             onDismiss()

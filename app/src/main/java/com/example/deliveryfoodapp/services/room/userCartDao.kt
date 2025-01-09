@@ -7,21 +7,28 @@ interface UserCartDao {
 
     // Insert a new UserCart
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUserCart(userCart: UserCart)
+    fun insertUserCart(roomUserCart: RoomUserCart): Long
 
     // Update an existing UserCart
     @Update
-    suspend fun updateUserCart(userCart: UserCart)
+    fun updateUserCart(roomUserCart: RoomUserCart)
 
     // Delete a UserCart
     @Delete
-    suspend fun deleteUserCart(userCart: UserCart)
+    fun deleteUserCart(roomUserCart: RoomUserCart)
 
     // Get a UserCart by ID
     @Query("SELECT * FROM userCarts WHERE id = :id")
-    suspend fun getUserCartById(id: Int): UserCart?
+    fun getUserCartById(id: Int): RoomUserCart?
+
+    // Get a UserCart by restaurantID
+    @Query("SELECT * FROM userCarts WHERE restaurantID = :restaurantID")
+    fun getUserCartByRestaurantID(restaurantID: Int): RoomUserCart?
 
     // Get all UserCarts
     @Query("SELECT * FROM userCarts")
-    suspend fun getAllUserCarts(): List<UserCart>
+    fun getAllUserCarts(): List<RoomUserCart>
+
+    @Query("DELETE FROM userCarts")
+    fun clearUserCarts()
 }

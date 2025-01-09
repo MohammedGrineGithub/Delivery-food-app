@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -36,16 +38,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.currentRestaurant
+import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.services.room.RoomOrderItem
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.PrimaryFill
 import com.example.deliveryfoodapp.ui.theme.Secondary
@@ -64,13 +72,11 @@ fun UserCartPage(navController : NavHostController){
     val screenHeight = configuration.screenHeightDp.dp
 
     /** ********************************************** **/
-    // TODO ab3at restaurantID bin hado les page (men home 7ata lhna)
-    val restaurantID = 1
 
     val userCart = remember {
         mutableStateOf(
             authenticatedUser
-                .getUserCartByRestaurantID(restaurantID = restaurantID)
+                .getUserCartByRestaurantID(restaurantID = currentRestaurant.id)
         )
     }
 
@@ -137,7 +143,9 @@ fun UserCartPage(navController : NavHostController){
                         .height(screenHeight/2),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    itemsIndexed(userCart.value.orderItems, key = { _, item -> item.id }) { index, orderItem ->
+                    itemsIndexed(userCart.value.orderItems, key = { _, item -> item.id }) { index, _ ->
+
+                        val focusManager = LocalFocusManager.current
 
                         var note by remember {
                             mutableStateOf(userCart.value.orderItems[index].note)
@@ -183,6 +191,14 @@ fun UserCartPage(navController : NavHostController){
                                         textDecoration = TextDecoration.Underline,
                                         modifier = Modifier.clickable {
 
+                                            // == remove the orderItem from SqlLite
+                                            val roomOrderItem : RoomOrderItem? = OrderItemRepository.getOrderItemById(
+                                                userCart.value.orderItems[index].id
+                                            )
+                                            if (roomOrderItem != null) {
+                                                OrderItemRepository.removeOrderItem(roomOrderItem)
+                                            }
+
                                             // update userCart
                                             userCart.value = userCart.value.copy(
                                                 orderItems = userCart.value.orderItems.toMutableList().apply {
@@ -196,8 +212,6 @@ fun UserCartPage(navController : NavHostController){
 
                                             // update authenticated user with that userCart
                                             authenticatedUser.updateByUserCart(userCart = userCart.value)
-
-                                            // TODO the userCart of the user in SqlLite with that userCart
                                         }
                                     )
                                 }
@@ -224,43 +238,6 @@ fun UserCartPage(navController : NavHostController){
                                     ) {
                                         IconButton(
                                             onClick = {
-                                                // update itemQuantity state variable to show
-                                                itemQuantity.value += 1
-
-                                                // update the itemQuantity of the order item of the userCart
-                                                userCart.value.orderItems[index].itemQuantity += 1
-
-                                                // update the singleItemTotalPrice state variable of the order item of the user cart
-                                                singleItemTotalPrice.doubleValue = userCart.value.orderItems[index].totalPrice()
-
-                                                // update the totalItemsNumber state variable
-                                                totalItemsNumber.intValue = userCart.value.totalItems()
-
-                                                // update the totalItemsPrice state variable
-                                                totalItemsPrice.doubleValue = userCart.value.totalPrice()
-
-                                                // update authenticated user with that userCart
-                                                authenticatedUser.updateByUserCart(userCart = userCart.value)
-
-                                                // TODO the userCart of the user in SqlLite with that userCart
-
-                                            }
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(R.drawable.add_icon),
-                                                contentDescription = "plus",
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        }
-
-                                        Text(
-                                            text = "${itemQuantity.intValue}",
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Normal
-                                        )
-
-                                        IconButton(
-                                            onClick = {
                                                 if (itemQuantity.intValue > 1) {
 
                                                     // update itemQuantity state variable to show
@@ -281,7 +258,14 @@ fun UserCartPage(navController : NavHostController){
                                                     // update authenticated user with that userCart
                                                     authenticatedUser.updateByUserCart(userCart = userCart.value)
 
-                                                    // TODO the userCart of the user in SqlLite with that userCart
+                                                    // == update that orderItem
+                                                    val roomOrderItem : RoomOrderItem? = OrderItemRepository.getOrderItemById(
+                                                        userCart.value.orderItems[index].id
+                                                    )
+                                                    if (roomOrderItem != null) {
+                                                        roomOrderItem.itemQuantity -= 1
+                                                        OrderItemRepository.updateOrderItem(roomOrderItem)
+                                                    }
 
                                                 }
                                             }
@@ -292,33 +276,99 @@ fun UserCartPage(navController : NavHostController){
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }
+
+                                        Text(
+                                            text = "${itemQuantity.intValue}",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Normal
+                                        )
+
+                                        IconButton(
+                                            onClick = {
+                                                // update itemQuantity state variable to show
+                                                itemQuantity.value += 1
+
+                                                // update the itemQuantity of the order item of the userCart
+                                                userCart.value.orderItems[index].itemQuantity += 1
+
+                                                // update the singleItemTotalPrice state variable of the order item of the user cart
+                                                singleItemTotalPrice.doubleValue = userCart.value.orderItems[index].totalPrice()
+
+                                                // update the totalItemsNumber state variable
+                                                totalItemsNumber.intValue = userCart.value.totalItems()
+
+                                                // update the totalItemsPrice state variable
+                                                totalItemsPrice.doubleValue = userCart.value.totalPrice()
+
+                                                // update authenticated user with that userCart
+                                                authenticatedUser.updateByUserCart(userCart = userCart.value)
+
+                                                // == update that orderItem
+                                                val roomOrderItem : RoomOrderItem? = OrderItemRepository.getOrderItemById(
+                                                    userCart.value.orderItems[index].id
+                                                )
+                                                if (roomOrderItem != null) {
+                                                    roomOrderItem.itemQuantity += 1
+                                                    OrderItemRepository.updateOrderItem(roomOrderItem)
+                                                }
+
+                                            }
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(R.drawable.add_icon),
+                                                contentDescription = "plus",
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
 
-                            Spacer(Modifier.height(16.dp))
+                            if (note!!.isNotEmpty()) {
+                                Spacer(Modifier.height(16.dp))
+                                OutlinedTextField(
+                                    onValueChange = { newNote ->
+                                        note = newNote
+                                        // Update the note of the item in the userCart
+                                        userCart.value.orderItems[index].note = newNote
+                                    },
+                                    value = "$note",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .onFocusChanged { focusState ->
+                                            if (!focusState.isFocused) {
+                                                // update authenticated user with that userCart
+                                                authenticatedUser.updateByUserCart(userCart = userCart.value)
 
-                            OutlinedTextField(
-                                onValueChange = { newNote ->
-                                    note = newNote
-                                    // Update the note of the item in the userCart
-                                    userCart.value.orderItems[index].note = newNote
-                                },
-                                value = "$note",
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                maxLines = 4,
-                                shape = RoundedCornerShape(
-                                    topStart = 2.dp,
-                                    topEnd = 2.dp,
-                                    bottomStart = 16.dp,
-                                    bottomEnd = 16.dp
-                                ),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Secondary.copy(alpha = 0.4f),
-                                    unfocusedBorderColor = GreyStroke
+                                                // Update the database only when focus is lost
+                                                val roomOrderItem = OrderItemRepository.getOrderItemById(userCart.value.orderItems[index].id)
+                                                if (roomOrderItem != null) {
+                                                    roomOrderItem.note = note
+                                                    OrderItemRepository.updateOrderItem(roomOrderItem)
+                                                }
+                                            }
+                                        },
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {
+                                            focusManager.clearFocus()
+                                        }
+                                    ),
+                                    maxLines = 4,
+                                    shape = RoundedCornerShape(
+                                        topStart = 2.dp,
+                                        topEnd = 2.dp,
+                                        bottomStart = 16.dp,
+                                        bottomEnd = 16.dp
+                                    ),
+                                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        focusedBorderColor = Secondary.copy(alpha = 0.4f),
+                                        unfocusedBorderColor = GreyStroke
+                                    )
                                 )
-                            )
+                            }
                         }
 
                         Spacer(Modifier.height(24.dp))
@@ -390,7 +440,6 @@ fun UserCartPage(navController : NavHostController){
         PrincipalButton(
             text = "Continue",
             onClick = {
-                // do some logic (update the userCart)
                 navController.navigate(Routes.VALIDATE_PAYMENT_PAGE){
                 }
             }

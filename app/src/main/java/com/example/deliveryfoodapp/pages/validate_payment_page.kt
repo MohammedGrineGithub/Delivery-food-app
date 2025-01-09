@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,7 +36,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.UserCart
+import com.example.deliveryfoodapp.services.repositories.UserCartRepository
+import com.example.deliveryfoodapp.services.room.RoomUserCart
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.utils.Routes
@@ -44,27 +50,28 @@ import com.example.deliveryfoodapp.widgets.PrincipalButton
 @Composable
 fun ValidatePaymentPage(navController : NavHostController) {
 
+    var userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = currentRestaurant.id)
 
-    // TODO ab3at restaurantID bin hado les page (men home 7ata lhna)
-    val restaurantID = 1
-
-    // TODO ab3at restaurantDeliveryFees bin hado les page (men home 7ata lhna)
-    val restaurantDeliveryFees = 250.0
-
-
-    var userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = restaurantID)
-
-    val address by remember { mutableStateOf("P549+9JQ Bab Ezzouar, Algeria") }
-    val phone by remember { mutableStateOf("0745458965") }
-    var note_To_driver by remember { mutableStateOf("") }
+    val address by remember {
+        mutableStateOf(currentRestaurant.location.address)
+    }
+    val phone by remember {
+        mutableStateOf(authenticatedUser.phone)
+    }
+    var note_To_driver by remember {
+        mutableStateOf("")
+    }
     val Items_total by remember {
-        mutableStateOf(
+        mutableDoubleStateOf(
             userCart.totalPrice()
         )
     }
-    val Delivery_fees by remember { mutableStateOf(restaurantDeliveryFees) }
-    val Service_fees by remember { mutableStateOf(0) }
-    val Total_price by remember { mutableStateOf(Items_total + Delivery_fees + Service_fees) }
+    val Delivery_fees by remember {
+        mutableIntStateOf(currentRestaurant.deliveryPrice)
+    }
+    val Service_fees = 0
+
+    val Total_price by remember { mutableDoubleStateOf(Items_total + Delivery_fees + Service_fees) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -386,18 +393,45 @@ fun ValidatePaymentPage(navController : NavHostController) {
 
                 // TODO Create new order fel backend
 
-                // Delete that cart
+                // Delete that cart from the authenticatedUser
                 authenticatedUser.deleteCart(userCart)
 
-                // Empty userCart of authenticated user
+                // delete that cart from SqlLite (their orderItems will be deleted automatically)
+                val roomUserCart : RoomUserCart? = UserCartRepository.getUserCartById(userCart.id)
+                if (roomUserCart != null) {
+                    UserCartRepository.removeUserCart(roomUserCart)
+                }
+                // Empty userCart variable
                 userCart = UserCart.emptyUserCart()
 
-                // TODO delete that cart from SqlLite
 
                 navController.navigate(Routes.ORDER_PLACED_PAGE){
                     popUpTo(Routes.VALIDATE_PAYMENT_PAGE) { inclusive = true }
                 }
             }
         )
+    }
+
+    BackHandler {
+        // TODO Create new order fel backend
+
+        // Delete that cart from the authenticatedUser
+        authenticatedUser.deleteCart(userCart)
+
+        // delete that cart from SqlLite (their orderItems will be deleted automatically)
+        val roomUserCart : RoomUserCart? = UserCartRepository.getUserCartById(userCart.id)
+        if (roomUserCart != null) {
+            UserCartRepository.removeUserCart(roomUserCart)
+        }
+        // Empty userCart variable
+        userCart = UserCart.emptyUserCart()
+
+        navController.navigate(Routes.ORDER_PLACED_PAGE){
+            popUpTo(Routes.VALIDATE_PAYMENT_PAGE) { inclusive = true }
+        }
+        /*navController.navigate(Routes.HOME_SCREEN) {
+            popUpTo(0) { inclusive = true }
+            launchSingleTop = true
+        }*/
     }
 }

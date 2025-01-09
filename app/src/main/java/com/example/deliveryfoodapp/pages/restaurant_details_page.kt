@@ -54,8 +54,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.Item
-import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.ui.theme.Black
 import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
@@ -65,7 +65,6 @@ import com.example.deliveryfoodapp.ui.theme.Red
 import com.example.deliveryfoodapp.ui.theme.White
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.utils.Routes
-import com.example.deliveryfoodapp.utils.createRestaurantForTest
 import com.example.deliveryfoodapp.widgets.InfoAddItemDialog
 import com.example.deliveryfoodapp.widgets.ItemCard
 import java.time.LocalTime
@@ -93,12 +92,11 @@ fun RestaurantDetailsPage(navController : NavHostController) {
 
     /** ****************************************************************** **/
 
-    val restaurant : Restaurant = createRestaurantForTest()
-
+    /** Get the user cart of that restaurant **/
     val userCart = remember {
         mutableStateOf(
             authenticatedUser
-                .getUserCartByRestaurantID(restaurantID = restaurant.id)
+                .getUserCartByRestaurantID(restaurantID = currentRestaurant.id)
         )
     }
 
@@ -108,7 +106,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        /** Banner photo with restaurant logo **/
+        /** Banner photo with currentRestaurant logo **/
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -120,13 +118,13 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     .height(screenHeight / 4 + 38.dp)
             ) {
                 AsyncImage(
-                    model = restaurant.banner.imagePath,
+                    model = currentRestaurant.banner.imagePath,
                     contentDescription = "banner",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(screenHeight / 4)
                         .then(
-                            if (!isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) Modifier.blur(16.dp) else Modifier
+                            if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) Modifier.blur(16.dp) else Modifier
                         ),
                     contentScale = ContentScale.FillBounds
                 )
@@ -158,7 +156,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                 }
 
                 // Overlay with "Closed" text if not within operating hours
-                if (!isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) {
+                if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -179,7 +177,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
 
             /** Logo **/
             AsyncImage(
-                model = restaurant.logo.imagePath,
+                model = currentRestaurant.logo.imagePath,
                 contentDescription = "logo",
                 modifier = Modifier
                     .size(88.dp)
@@ -200,7 +198,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
         ) {
             /** Restaurant name **/
             Text(
-                text = restaurant.restaurantName,
+                text = currentRestaurant.restaurantName,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -220,7 +218,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                 Spacer(Modifier.width(2.dp))
 
                 Text(
-                    text = restaurant.location.address,
+                    text = currentRestaurant.location.address,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Light,
                 )
@@ -243,18 +241,30 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     Spacer(Modifier.width(2.dp))
 
                     Text(
-                        text = "${restaurant.deliveryDuration} - ${restaurant.deliveryDuration + 5} min",
+                        text = "${currentRestaurant.deliveryDuration} - ${currentRestaurant.deliveryDuration + 5} min",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                     )
                 }
 
                 /** price **/
-                Text(
-                    text = "${restaurant.deliveryPrice} DA",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Icon(
+                        painter = painterResource(R.drawable.moto_icon),
+                        contentDescription = "delivery",
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Spacer(Modifier.width(2.dp))
+
+                    Text(
+                        text = "${currentRestaurant.deliveryPrice} DA",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
 
                 /** reviewers + icon **/
                 Row(
@@ -269,7 +279,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     Spacer(Modifier.width(2.dp))
 
                     Text(
-                        text = restaurant.rating.reviewersCount.toString(),
+                        text = currentRestaurant.rating.reviewersCount.toString(),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                     )
@@ -289,7 +299,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     Spacer(Modifier.width(2.dp))
 
                     Text(
-                        text = restaurant.rating.rating.toString(),
+                        text = currentRestaurant.rating.rating.toString(),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                     )
@@ -334,7 +344,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            text = restaurant.cuisineType.name,
+                            text = currentRestaurant.cuisineType.name,
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center,
                             color = Primary,
@@ -353,7 +363,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(36.dp)
                 ) {
-                    itemsIndexed(restaurant.menu.categories) { index, category ->
+                    itemsIndexed(currentRestaurant.menu.categories) { index, category ->
                         CategoryItem(
                             categoryName = category.name,
                             isSelected = index == selectedIndex,
@@ -387,7 +397,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                         modifier = Modifier.fillMaxHeight(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        itemsIndexed(restaurant.menu.categories[targetIndex].items) { _, item ->
+                        itemsIndexed(currentRestaurant.menu.categories[targetIndex].items) { _, item ->
                             ItemCard(
                                 item = item,
                                 modifier = Modifier
@@ -407,7 +417,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
             }
 
             /** Button of user cart **/
-            if (userCart.value.totalItems() != 0 && isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime))
+            if (userCart.value.totalItems() != 0 && isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime))
             Button(
                 onClick = {
                     navController.navigate(Routes.USER_CART_PAGE)
@@ -462,7 +472,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
         }
     }
 
-    if (showDialog && selectedItem != null && isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) {
+    if (showDialog && selectedItem != null && isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
         InfoAddItemDialog(
             userCart = userCart.value,
             item = selectedItem!!,
