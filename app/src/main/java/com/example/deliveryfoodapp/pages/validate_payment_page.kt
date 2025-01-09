@@ -411,27 +411,4 @@ fun ValidatePaymentPage(navController : NavHostController) {
             }
         )
     }
-
-    BackHandler {
-        // TODO Create new order fel backend
-
-        // Delete that cart from the authenticatedUser
-        authenticatedUser.deleteCart(userCart)
-
-        // delete that cart from SqlLite (their orderItems will be deleted automatically)
-        val roomUserCart : RoomUserCart? = UserCartRepository.getUserCartById(userCart.id)
-        if (roomUserCart != null) {
-            UserCartRepository.removeUserCart(roomUserCart)
-        }
-        // Empty userCart variable
-        userCart = UserCart.emptyUserCart()
-
-        navController.navigate(Routes.ORDER_PLACED_PAGE){
-            popUpTo(Routes.VALIDATE_PAYMENT_PAGE) { inclusive = true }
-        }
-        /*navController.navigate(Routes.HOME_SCREEN) {
-            popUpTo(0) { inclusive = true }
-            launchSingleTop = true
-        }*/
-    }
 }

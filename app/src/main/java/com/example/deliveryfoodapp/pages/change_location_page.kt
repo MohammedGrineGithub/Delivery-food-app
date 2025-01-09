@@ -328,6 +328,9 @@ fun ChangeLocationPage(navController : NavHostController) {
                     PrincipalButton(
                         text = "Save changes",
                         onClick = {
+
+                            // TODO : Save the changes in backend and in autheticatedUser
+
                             if ( exact_location == ""){
                                 Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                             }

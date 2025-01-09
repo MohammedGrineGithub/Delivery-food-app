@@ -172,7 +172,9 @@ fun MyInformationPage(navController: NavHostController) {
         PrincipalButton(
             text = "Save changes",
             onClick = {
-                // Simulate saving changes (no backend integration)
+                // TODO : Save changes in authenticatedUser and in backend
+
+                navController.popBackStack()
             },
         )
     }

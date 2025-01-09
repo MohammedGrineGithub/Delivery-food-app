@@ -192,7 +192,13 @@ fun ProfilePage(navController : NavHostController) {
                 onConfirm = {
                     // Action de déconnexion
                     showLogoutDialog = false
-                    // Ajoutez ici la logique pour déconnecter l'utilisateur
+
+                    // TODO : add logout logic for user
+
+                    navController.navigate(Routes.LOGIN_PAGE){
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }

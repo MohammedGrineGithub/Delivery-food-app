@@ -61,7 +61,10 @@ fun RatingPage(navController: NavHostController) {
 
 
         // Optionally, navigate to another screen or show a success message
-        navController.navigate(Routes.HOME_PAGE) // Example: Navigate to the home page
+        navController.navigate(Routes.HOME_SCREEN){
+            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+            launchSingleTop = true
+        }
     }
 
     Column(
@@ -125,7 +128,7 @@ fun RatingPage(navController: NavHostController) {
 
         TextWithClickableLink(onClick = {
             // Handle the "click here" action
-            navController.navigate(Routes.HOME_PAGE) // Example: Navigate to the home page
+            navController.popBackStack()
         })
     }
 }
