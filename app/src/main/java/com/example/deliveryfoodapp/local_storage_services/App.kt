@@ -1,7 +1,7 @@
-package com.example.deliveryfoodapp.services
+package com.example.deliveryfoodapp.local_storage_services
 
 import android.app.Application
-import com.example.deliveryfoodapp.services.room.AppDatabase
+import com.example.deliveryfoodapp.local_storage_services.room.AppDatabase
 
 class App:Application() {
     override fun onCreate() {

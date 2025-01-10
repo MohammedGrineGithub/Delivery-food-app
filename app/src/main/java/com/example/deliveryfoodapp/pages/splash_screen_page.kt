@@ -19,7 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import com.example.deliveryfoodapp.services.Pref
+import com.example.deliveryfoodapp.local_storage_services.Pref
 import com.example.deliveryfoodapp.utils.*
 
 @Composable

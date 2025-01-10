@@ -1,7 +1,7 @@
-package com.example.deliveryfoodapp.services.repositories
+package com.example.deliveryfoodapp.local_storage_services.repositories
 
-import com.example.deliveryfoodapp.services.room.AppDatabase
-import com.example.deliveryfoodapp.services.room.RoomUserCart
+import com.example.deliveryfoodapp.local_storage_services.room.AppDatabase
+import com.example.deliveryfoodapp.local_storage_services.room.RoomUserCart
 
 object UserCartRepository {
 

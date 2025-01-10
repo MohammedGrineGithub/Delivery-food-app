@@ -18,7 +18,7 @@
         android:roundIcon="@drawable/ic_launcher_background"
         android:supportsRtl="true"
         android:theme="@style/Theme.DeliveryFoodApp"
-        android:name=".services.App"
+        android:name=".local_storage_services.App"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"

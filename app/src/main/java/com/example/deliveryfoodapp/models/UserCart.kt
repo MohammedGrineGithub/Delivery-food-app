@@ -1,8 +1,8 @@
 package com.example.deliveryfoodapp.models
 
-import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
-import com.example.deliveryfoodapp.services.room.RoomItem
-import com.example.deliveryfoodapp.services.room.RoomOrderItem
+import com.example.deliveryfoodapp.local_storage_services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.local_storage_services.room.RoomItem
+import com.example.deliveryfoodapp.local_storage_services.room.RoomOrderItem
 
 data class UserCart(
     var id: Int,

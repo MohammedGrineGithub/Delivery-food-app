@@ -22,14 +22,14 @@ import com.example.deliveryfoodapp.models.AppImage
 import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.models.OrderItem
 import com.example.deliveryfoodapp.models.UserCart
-import com.example.deliveryfoodapp.services.Pref
-import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
-import com.example.deliveryfoodapp.services.repositories.UserCartRepository
+import com.example.deliveryfoodapp.local_storage_services.Pref
+import com.example.deliveryfoodapp.local_storage_services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.local_storage_services.repositories.UserCartRepository
 import com.example.deliveryfoodapp.ui.theme.Black
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.White
 import com.example.deliveryfoodapp.utils.Routes
-import com.example.deliveryfoodapp.services.room.RoomUserCart
+import com.example.deliveryfoodapp.local_storage_services.room.RoomUserCart
 
 
 @Composable

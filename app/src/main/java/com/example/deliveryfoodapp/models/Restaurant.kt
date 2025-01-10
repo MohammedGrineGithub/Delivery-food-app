@@ -19,7 +19,9 @@ data class Restaurant(
     var deliveryDuration: Int,
     var menu: RestaurantMenu,
     var openingTime: LocalTime,
-    var closingTime: LocalTime
+    var closingTime: LocalTime,
+    var deliveryPersons : MutableList<DeliveryPerson> = mutableListOf(),
+    var socialMediaLinks : MutableList<SocialMediaLink> = mutableListOf()
 ) {
 
     @SuppressLint("NewApi")
@@ -38,8 +40,15 @@ data class Restaurant(
             "deliveryDuration" to deliveryDuration,
             "menu" to menu.toMap(),
             "openingTime" to openingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            "closingTime" to closingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            "closingTime" to closingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            "deliveryPersons" to deliveryPersons.map { it.toMap() },
+            "socialMediaLinks" to socialMediaLinks.map { it.toMap() }
         )
+    }
+
+    fun getDeliveryPersonByItID(deliveryPersonID : Int) : DeliveryPerson {
+        val deliveryPerson : DeliveryPerson? = deliveryPersons.find { it.id == deliveryPersonID }
+        return deliveryPerson ?: DeliveryPerson.emptyDeliveryPerson()
     }
 
 
@@ -61,10 +70,17 @@ data class Restaurant(
             val menu = RestaurantMenu.fromMap(map["menu"] as? Map<String, Any> ?: emptyMap())
             val openingTime = LocalTime.parse(map["openingTime"] as? String ?: "2000-01-01T00:00:00")
             val closingTime = LocalTime.parse(map["closingTime"] as? String ?: "2000-01-01T00:00:00")
+            val deliveryPersons = (map["deliveryPersons"] as? List<Map<String, Any>>)?.map {
+                DeliveryPerson.fromMap(it)
+            }?.toMutableList() ?: mutableListOf()
+            val socialMediaLinks = (map["socialMediaLinks"] as? List<Map<String, Any>>)?.map {
+                SocialMediaLink.fromMap(it)
+            }?.toMutableList() ?: mutableListOf()
 
             return Restaurant(
                 id, restaurantName, logo, bannerLogo, location, cuisineType, rating, phone, email,
-                deliveryPrice, deliveryDuration, menu, openingTime, closingTime
+                deliveryPrice, deliveryDuration, menu, openingTime, closingTime, deliveryPersons,
+                socialMediaLinks
             )
         }
 

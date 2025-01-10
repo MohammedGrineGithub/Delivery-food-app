@@ -18,8 +18,8 @@ data class Location(
     var id : Int,
     var address: String,
     var wilayaId: Int,
-    var latitude: Double,
-    var longitude: Double
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
@@ -75,9 +75,9 @@ data class Location(
     fun showEnableLocationServicesDialog(context: Context) {
         AlertDialog.Builder(context)
             .setTitle("Enable Location Services")
-            .setMessage("Location services are required to use this feature. Please enable them in settings.")
+            .setMessage("Location local_storage_services are required to use this feature. Please enable them in settings.")
             .setPositiveButton("Settings") { dialog: DialogInterface, which: Int ->
-                // Open settings to enable location services
+                // Open settings to enable location local_storage_services
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 context.startActivity(intent)
             }

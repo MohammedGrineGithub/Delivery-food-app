@@ -1,4 +1,4 @@
-package com.example.deliveryfoodapp.services
+package com.example.deliveryfoodapp.local_storage_services
 
 import android.annotation.SuppressLint
 import android.content.Context

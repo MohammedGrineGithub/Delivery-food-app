@@ -1,4 +1,4 @@
-package com.example.deliveryfoodapp.services.room
+package com.example.deliveryfoodapp.local_storage_services.room
 
 import androidx.room.Embedded
 import androidx.room.Entity

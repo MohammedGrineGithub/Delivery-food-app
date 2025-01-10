@@ -37,7 +37,7 @@ import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.models.User
-import com.example.deliveryfoodapp.services.Pref
+import com.example.deliveryfoodapp.local_storage_services.Pref
 import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.Red
 import com.example.deliveryfoodapp.ui.theme.Secondary

@@ -1,8 +1,8 @@
 package com.example.deliveryfoodapp.models
 
 import Location
-import com.example.deliveryfoodapp.services.repositories.UserCartRepository
-import com.example.deliveryfoodapp.services.room.RoomUserCart
+import com.example.deliveryfoodapp.local_storage_services.repositories.UserCartRepository
+import com.example.deliveryfoodapp.local_storage_services.room.RoomUserCart
 
 @Suppress("UNCHECKED_CAST")
 data class User(
@@ -13,7 +13,9 @@ data class User(
     var location: Location,
     var photo: AppImage,
     var has_notification: Boolean,
-    var carts: MutableList<UserCart>
+    var carts: MutableList<UserCart>,
+    var notifications : MutableList<Notification> = mutableListOf(),
+    var userOrders : MutableList<UserOrder> = mutableListOf()
 ) {
 
     fun toMap(): Map<String, Any> = mapOf(
@@ -24,7 +26,9 @@ data class User(
         "location" to location.toMap(),
         "photo" to photo.toMap(),
         "has_notification" to has_notification,
-        "carts" to carts.map { it.toMap() }
+        "carts" to carts.map { it.toMap() },
+        "notifications" to notifications.map { it.toMap() },
+        "userOrders" to userOrders.map { it.toMap() }
     )
 
     fun getUserCartByRestaurantID(restaurantID: Int): UserCart {
@@ -86,6 +90,12 @@ data class User(
             has_notification = map["has_notification"] as? Boolean ?: false,
             carts = (map["carts"] as? List<Map<String, Any>>)?.map {
                 UserCart.fromMap(it)
+            }?.toMutableList() ?: mutableListOf(),
+            notifications = (map["notifications"] as? List<Map<String, Any>>)?.map {
+                Notification.fromMap(it)
+            }?.toMutableList() ?: mutableListOf(),
+            userOrders = (map["userOrders"] as? List<Map<String, Any>>)?.map {
+                UserOrder.fromMap(it)
             }?.toMutableList() ?: mutableListOf()
         )
 
@@ -98,7 +108,8 @@ data class User(
                 location = Location.emptyLocation(),
                 photo = AppImage.emptyAppImage(),
                 has_notification = false,
-                carts = mutableListOf()
+                carts = mutableListOf(),
+                notifications = mutableListOf()
             )
         }
     }

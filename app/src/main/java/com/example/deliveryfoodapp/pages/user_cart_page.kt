@@ -52,8 +52,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.currentRestaurant
-import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
-import com.example.deliveryfoodapp.services.room.RoomOrderItem
+import com.example.deliveryfoodapp.local_storage_services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.local_storage_services.room.RoomOrderItem
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.PrimaryFill
 import com.example.deliveryfoodapp.ui.theme.Secondary

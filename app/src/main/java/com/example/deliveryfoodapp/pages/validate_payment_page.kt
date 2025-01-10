@@ -1,6 +1,5 @@
 package com.example.deliveryfoodapp.pages
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,8 +37,8 @@ import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.UserCart
-import com.example.deliveryfoodapp.services.repositories.UserCartRepository
-import com.example.deliveryfoodapp.services.room.RoomUserCart
+import com.example.deliveryfoodapp.local_storage_services.repositories.UserCartRepository
+import com.example.deliveryfoodapp.local_storage_services.room.RoomUserCart
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.utils.Routes

@@ -42,7 +42,7 @@ import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.models.OrderItem
 import com.example.deliveryfoodapp.models.UserCart
-import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
+import com.example.deliveryfoodapp.local_storage_services.repositories.OrderItemRepository
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.Secondary
