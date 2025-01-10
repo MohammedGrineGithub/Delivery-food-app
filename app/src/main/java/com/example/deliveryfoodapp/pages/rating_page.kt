@@ -112,7 +112,8 @@ fun RatingPage(navController: NavHostController) {
                     value = feedback,
                     onValueChange = { feedback = it },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Share your feedback") }
+                    placeholder = { Text("Share your feedback") },
+                    singleLine = true
                 )
             }
             Spacer(modifier = Modifier.height(88.dp))
@@ -133,33 +134,27 @@ fun RatingPage(navController: NavHostController) {
 fun CustomRatingBar(rating: Int, onRatingChanged: (Int) -> Unit) {
     var currentRating by remember { mutableStateOf(rating) }
 
-    Box(
-        modifier = Modifier
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures { change, dragAmount ->
-                    change.consume() // Consomme l'événement pour éviter les conflits
-                    val newRating = ((change.position.x / size.width) * 5).toInt() + 1
-                    currentRating = newRating.coerceIn(1, 5) // S'assure que la note reste entre 1 et 5
-                    onRatingChanged(currentRating)
-                }
-            }
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            for (i in 1..5) {
-                val isSelected = i <= currentRating
-                Icon(
-                    painter = painterResource(id = if (isSelected) R.drawable.star_fill else R.drawable.star_outline),
-                    contentDescription = null,
-                    tint = if (isSelected) Primary else Primary,
-                    modifier = Modifier.size(40.dp)
-                )
-            }
+        for (i in 1..5) {
+            val isSelected = i <= currentRating
+            Icon(
+                painter = painterResource(id = if (isSelected) R.drawable.star_fill else R.drawable.star_outline),
+                contentDescription = null,
+                tint = if (isSelected) Primary else Primary,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        currentRating = i
+                        onRatingChanged(currentRating)
+                    }
+            )
         }
     }
 }
+
 
 @Composable
 fun TextWithClickableLink(onClick: () -> Unit) {
