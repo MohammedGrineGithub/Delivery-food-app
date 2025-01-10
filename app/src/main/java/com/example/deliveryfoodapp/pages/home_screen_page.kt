@@ -1,15 +1,21 @@
 package com.example.deliveryfoodapp.pages
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -18,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.models.AppImage
 import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.models.OrderItem
@@ -35,9 +42,25 @@ import com.example.deliveryfoodapp.local_storage_services.room.RoomUserCart
 @Composable
 fun HomeScreen(navController: NavHostController) {
 
+    val context = LocalContext.current
+    val isLoading = remember { mutableStateOf(true) } // Track loading state
+
+    // Get user id from local storage
     val userID = Pref.getUserID()
     authenticatedUser.id = userID
-    // TODO : Get the user data from the backend using userID and affect it into authenticatedUser
+
+    // Fetch user data from backend when the composable is first displayed
+    LaunchedEffect(userID) {
+        try {
+            val user = UserEndpoints.fetchUserById(userID)
+            authenticatedUser = user
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to get the user", Toast.LENGTH_LONG).show()
+        } finally {
+            isLoading.value = false
+        }
+    }
+
 
     /** Get all user carts from SqlLite into authenticatedUser **/
     val allUserCarts : List<RoomUserCart> = UserCartRepository.getAllUserCarts().orEmpty()
@@ -85,33 +108,41 @@ fun HomeScreen(navController: NavHostController) {
     )
     val titles = listOf("Home", "My Orders", "Profile")
 
-    Scaffold(
-        bottomBar = {
-            CustomNavigationBar(
-                items = items,
-                icons = icons,
-                titles = titles,
-                currentRoute = currentRoute,
-                onItemClick = { route ->
-                    homeNavController.navigate(route) {
-                        popUpTo(homeNavController.graph.startDestinationId) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-            )
+    if (isLoading.value) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ){
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
-    ) { innerPadding ->
-        NavHost(
-            navController = homeNavController,
-            startDestination = Routes.HOME_PAGE,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Routes.HOME_PAGE) { HomePage(navController) }
-            composable(Routes.MY_ORDERS_PAGE) { MyOrdersPage(navController) }
-            composable(Routes.PROFILE_PAGE) { ProfilePage(navController) }
+    } else {
+        Scaffold(
+            bottomBar = {
+                CustomNavigationBar(
+                    items = items,
+                    icons = icons,
+                    titles = titles,
+                    currentRoute = currentRoute,
+                    onItemClick = { route ->
+                        homeNavController.navigate(route) {
+                            popUpTo(homeNavController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            NavHost(
+                navController = homeNavController,
+                startDestination = Routes.HOME_PAGE,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(Routes.HOME_PAGE) { HomePage(navController) }
+                composable(Routes.MY_ORDERS_PAGE) { MyOrdersPage(navController) }
+                composable(Routes.PROFILE_PAGE) { ProfilePage(navController) }
+            }
         }
     }
 }
