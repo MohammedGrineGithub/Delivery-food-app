@@ -26,15 +26,19 @@ import com.example.deliveryfoodapp.utils.*
 fun SplashScreenPage(navController: NavHostController) {
 
 
-    val context = LocalContext.current // Get the context
-    Pref.context = context // Initialize SharedPreferences context
+    val context = LocalContext.current
+    Pref.context = context
 
-    // Determine start destination based on first-time check
-    val startDestination = if (Pref.isFirstTime()) {
-        Pref.setFirstTime(false) // Set to false after the first time
-        Routes.ONBOARDING_PAGE
+    var startDestination = ""
+    if (Pref.isFirstTime()) {
+        Pref.setFirstTime(false)
+        startDestination = Routes.ONBOARDING_PAGE
     } else {
-        Routes.HOME_PAGE
+        startDestination = if (Pref.getUserID() == -1) {
+            Routes.LOGIN_PAGE
+        }else {
+            Routes.HOME_SCREEN
+        }
     }
 
     val rotation = remember { Animatable(0f) }
@@ -49,7 +53,7 @@ fun SplashScreenPage(navController: NavHostController) {
             animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
         )
         kotlinx.coroutines.delay(300)
-        navController.navigate(Routes.ONBOARDING_PAGE){
+        navController.navigate(startDestination){
             popUpTo(Routes.SPLASH_SCREEN_PAGE) { inclusive = true }
         }
     }

@@ -33,6 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.currentRestaurant
+import com.example.deliveryfoodapp.models.Restaurant
+import com.example.deliveryfoodapp.models.User
+import com.example.deliveryfoodapp.services.Pref
 import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.Red
 import com.example.deliveryfoodapp.ui.theme.Secondary
@@ -188,16 +193,18 @@ fun ProfilePage(navController : NavHostController) {
 
         if (showLogoutDialog) {
             LogoutDialog(
-                onDismiss = { showLogoutDialog = false }, // Fermer la boîte de dialogue
+                onDismiss = { showLogoutDialog = false },
                 onConfirm = {
-                    // Action de déconnexion
                     showLogoutDialog = false
 
-                    // TODO : add logout logic for user
+                    // logout logic
+                    Pref.clearUserToken()
+                    Pref.clearUserID()
+                    authenticatedUser = User.emptyUser()
+                    currentRestaurant = Restaurant.emptyRestaurant()
 
-                    navController.navigate(Routes.LOGIN_PAGE){
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                        launchSingleTop = true
+                    navController.navigate(Routes.LOGIN_PAGE) {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )

@@ -7,8 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,8 +15,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.pages.*
-import com.example.deliveryfoodapp.services.repositories.OrderItemRepository
-import com.example.deliveryfoodapp.services.repositories.UserCartRepository
 import com.example.deliveryfoodapp.ui.theme.DeliveryFoodAppTheme
 import com.example.deliveryfoodapp.utils.*
 
@@ -29,10 +25,6 @@ var currentRestaurant : Restaurant = Restaurant.emptyRestaurant()
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        // this.deleteDatabase("user_db")
-        // UserCartRepository.clearUserCarts()
-        // OrderItemRepository.clearOrderItems()
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -41,11 +33,10 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.HOME_SCREEN,
+                        startDestination = Routes.SPLASH_SCREEN_PAGE,
 
                         Modifier.padding(innerPadding)
                     ) {
-                        composable(Routes.MAIN_APP) { MainApp(modifier = Modifier.padding(innerPadding), navController = navController) }
                         composable(Routes.ONBOARDING_PAGE) { OnboardingPage(navController) }
                         composable(Routes.SPLASH_SCREEN_PAGE) { SplashScreenPage(navController) }
                         composable(Routes.LOGIN_PAGE) { LoginPage(navController) }
@@ -71,12 +62,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-@Composable
-fun MainApp(navController : NavHostController, modifier: Modifier = Modifier) {
-
-    // here we get the token and check if the user is authenticated or not
-    // It has the global bottom navigation bar
-        Text("main page" )
 }

@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import com.example.deliveryfoodapp.ui.theme.*
@@ -95,7 +93,16 @@ fun LoginPage(navController : NavHostController) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ){
                 OutlinedButton(
-                    onClick = {  },
+                    onClick = {
+                        // TODO : Call google login function from the backend
+                        // TODO : save the userID
+                        // TODO : save the token
+
+                        // navigate to home screen
+                        navController.navigate(Routes.HOME_SCREEN){
+                            popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
+                        }
+                    },
                     modifier = Modifier
                         .padding(top = 12.dp, bottom = 12.dp)
                         .fillMaxWidth()
@@ -225,7 +232,15 @@ fun LoginPage(navController : NavHostController) {
                                 Toast.LENGTH_SHORT).show()
                         }
                         if (isValidEmail(email) && email.isNotEmpty() && password.length >= 8){
-                            println("Login with email/password function")
+
+                            // TODO : Call email/password login function from the backend
+                            // TODO : save the userID
+                            // TODO : save the token
+
+                            // navigate to home screen
+                            navController.navigate(Routes.HOME_SCREEN){
+                                popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
+                            }
                         }
                     }
                 )
@@ -243,7 +258,9 @@ fun LoginPage(navController : NavHostController) {
             Spacer(Modifier.width(10.dp))
             Text(
                 modifier = Modifier.clickable {
-                    navController.navigate(Routes.SIGNUP_PAGE)
+                    navController.navigate(Routes.SIGNUP_PAGE){
+                        popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
+                    }
 
                 },
                 text = "Sign Up",

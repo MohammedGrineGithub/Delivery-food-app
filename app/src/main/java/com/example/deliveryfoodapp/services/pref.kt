@@ -24,54 +24,32 @@ object Pref {
         return userID
     }
 
-    fun clearID() {
+    fun clearUserID() {
         val pref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
         pref.edit {
             remove("userID")
         }
     }
 
-    /** ********************** User Email/Password authentication Token ********************** **/
+    /** ********************** User Authentication Token ********************** **/
 
-    fun saveUserEmailPasswordToken(userEmailPasswordToken:String) {
+    fun saveUserToken(userToken:String) {
         val pref = context.getSharedPreferences("user_pref",Context.MODE_PRIVATE)
         pref.edit {
-            putString("userEmailPasswordToken",userEmailPasswordToken)
+            putString("userToken",userToken)
         }
     }
 
-    fun getUserEmailPasswordToken():String? {
+    fun getUserToken():String? {
         val pref = context.getSharedPreferences("user_pref",Context.MODE_PRIVATE)
-        val userEmailPasswordToken = pref.getString("userEmailPasswordToken","")
-        return userEmailPasswordToken
+        val userToken = pref.getString("userToken","")
+        return userToken
     }
 
-    fun clearUserEmailPasswordToken() {
+    fun clearUserToken() {
         val pref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
         pref.edit {
-            remove("userEmailPasswordToken")
-        }
-    }
-
-    /** ********************** User Google authentication Token ********************** **/
-
-    fun saveUserGoogleToken(userGoogleToken:String) {
-        val pref = context.getSharedPreferences("user_pref",Context.MODE_PRIVATE)
-        pref.edit {
-            putString("userGoogleToken",userGoogleToken)
-        }
-    }
-
-    fun getUserGoogleToken():String? {
-        val pref = context.getSharedPreferences("user_pref",Context.MODE_PRIVATE)
-        val userGoogleToken = pref.getString("userGoogleToken","")
-        return userGoogleToken
-    }
-
-    fun clearUserGoogleToken() {
-        val pref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
-        pref.edit {
-            remove("userGoogleToken")
+            remove("userToken")
         }
     }
 
@@ -90,12 +68,4 @@ object Pref {
             putBoolean("isFirstTime", isFirst)
         }
     }
-
-    fun clearFirstTime() {
-        val pref = context.getSharedPreferences("user_pref", Context.MODE_PRIVATE)
-        pref.edit {
-            remove("isFirstTime")
-        }
-    }
-
 }

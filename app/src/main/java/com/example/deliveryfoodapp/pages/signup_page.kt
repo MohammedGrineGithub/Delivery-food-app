@@ -69,7 +69,7 @@ fun SignupPage(navController : NavHostController) {
 
     var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("filled just to test") }
+    val location by remember { mutableStateOf("filled just to test") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -115,7 +115,17 @@ fun SignupPage(navController : NavHostController) {
 
                 /** Sign up with google Button **/
                 OutlinedButton(
-                    onClick = {  },
+                    onClick = {
+                        // TODO : Call google sigun function from the backend
+                        // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
+                        // TODO : save the userID
+                        // TODO : save the token
+
+                        // navigate to home screen
+                        navController.navigate(Routes.HOME_SCREEN){
+                            popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
@@ -182,7 +192,10 @@ fun SignupPage(navController : NavHostController) {
                                         next = false
                                     },
                                     border = BorderStroke(1.dp, Secondary),
-                                    shape = RoundedCornerShape(8.dp)
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Secondary.copy(alpha = 0.07f)
+                                    ),
                                 ) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically
@@ -190,7 +203,7 @@ fun SignupPage(navController : NavHostController) {
                                         Icon(
                                             imageVector = Icons.Default.ArrowBack,
                                             contentDescription = "back",
-                                            tint = Secondary.copy(alpha = 0.7f),
+                                            tint = Primary,
                                             modifier = Modifier
                                                 .width(24.dp)
                                                 .height(24.dp)
@@ -200,9 +213,9 @@ fun SignupPage(navController : NavHostController) {
 
                                         Text(
                                             text = "Back",
-                                            fontWeight = FontWeight.Light,
+                                            fontWeight = FontWeight.Normal,
                                             fontSize = 16.sp,
-                                            color = Secondary
+                                            color = Primary
                                         )
 
                                     }
@@ -299,7 +312,16 @@ fun SignupPage(navController : NavHostController) {
                                             Toast.LENGTH_SHORT).show()
                                     }
                                     if (password.length >= 8 && confirmPassword == password){
-                                        println("Signup with email/password function")
+
+                                        // TODO : Call email/password signup function from the backend
+                                        // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
+                                        // TODO : save the userID
+                                        // TODO : save the token
+
+                                        // navigate to home screen
+                                        navController.navigate(Routes.HOME_SCREEN){
+                                            popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
+                                        }
                                     }
                                 }
                             )
@@ -399,9 +421,7 @@ fun SignupPage(navController : NavHostController) {
                                         painter = painterResource(id = R.drawable.maps),
                                         contentDescription = "location",
                                         tint = Secondary,
-                                        modifier = Modifier
-                                            .width(26.dp)
-                                            .height(26.dp)
+                                        modifier = Modifier.size(30.dp)
                                     )
                                 },
                                 singleLine = true,
@@ -461,7 +481,7 @@ fun SignupPage(navController : NavHostController) {
                                         }
 
                                         if (fullName.isNotEmpty() && email.isNotEmpty() && isValidEmail(email) && phone.isNotEmpty() && isValidPhoneNumber(phone) && location.isNotEmpty()){
-                                        next = true
+                                            next = true
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
@@ -487,7 +507,6 @@ fun SignupPage(navController : NavHostController) {
                                                 .width(26.dp)
                                                 .height(26.dp)
                                         )
-
                                     }
                                 }
                             }
@@ -511,7 +530,9 @@ fun SignupPage(navController : NavHostController) {
             Spacer(Modifier.width(10.dp))
             Text(
                 modifier = Modifier.clickable {
-                    navController.popBackStack()
+                    navController.navigate(Routes.LOGIN_PAGE){
+                        popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
+                    }
                 },
                 text = "Log In",
                 fontWeight = FontWeight.Bold,

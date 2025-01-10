@@ -405,8 +405,8 @@ fun ValidatePaymentPage(navController : NavHostController) {
                 userCart = UserCart.emptyUserCart()
 
 
-                navController.navigate(Routes.ORDER_PLACED_PAGE){
-                    popUpTo(Routes.VALIDATE_PAYMENT_PAGE) { inclusive = true }
+                navController.navigate(Routes.ORDER_PLACED_PAGE) {
+                    popUpTo(0) { inclusive = true } // Clear the entire back stack
                 }
             }
         )

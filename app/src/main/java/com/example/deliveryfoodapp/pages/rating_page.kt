@@ -61,10 +61,7 @@ fun RatingPage(navController: NavHostController) {
 
 
         // Optionally, navigate to another screen or show a success message
-        navController.navigate(Routes.HOME_SCREEN){
-            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-            launchSingleTop = true
-        }
+        navController.popBackStack()
     }
 
     Column(
@@ -181,16 +178,5 @@ fun TextWithClickableLink(onClick: () -> Unit) {
             // Handle the click action here
             onClick()
         }
-    )
-}
-
-
-@Composable
-fun SimpleFilledTextFieldSample() {
-    var text by remember { mutableStateOf("Share your feedback") }
-
-    TextField(
-        value = text,
-        onValueChange = { text = it }
     )
 }

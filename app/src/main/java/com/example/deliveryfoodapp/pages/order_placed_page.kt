@@ -31,7 +31,6 @@ fun OrderPlacedPage(navController : NavHostController) {
     BackHandler {
         navController.navigate(Routes.HOME_SCREEN) {
             popUpTo(0) { inclusive = true }
-            launchSingleTop = true
         }
     }
 
@@ -93,9 +92,8 @@ fun OrderPlacedPage(navController : NavHostController) {
         PrincipalButton(
             text = "Back to Home",
             onClick = {
-                navController.navigate(Routes.HOME_SCREEN){
-                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                    launchSingleTop = true
+                navController.navigate(Routes.HOME_SCREEN) {
+                    popUpTo(0) { inclusive = true } // Clear the entire back stack
                 }
             }
         )
