@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import coil.compose.rememberAsyncImagePainter
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.models.AppImage
 import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.models.UserCart
@@ -62,8 +64,8 @@ fun MyInformationPage(navController: NavHostController) {
     )
 
     // Use the simulated user data in the UI
-    var fullName by remember { mutableStateOf(user.fullName) }
-    var phoneNumber by remember { mutableStateOf(user.phone) }
+    var fullName by remember { mutableStateOf(authenticatedUser.fullName) }
+    var phoneNumber by remember { mutableStateOf(authenticatedUser.phone) }
 
     Column(
         modifier = Modifier
@@ -104,14 +106,7 @@ fun MyInformationPage(navController: NavHostController) {
             contentAlignment = Alignment.Center,
             modifier = Modifier.size(100.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ex_profile), // Replace with your drawable resource
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+            ProfileImage(url = "https://t4.ftcdn.net/jpg/02/14/74/61/360_F_214746128_31JkeaP6rU0NzzzdFC4khGkmqc8noe6h.jpg")
         }
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -144,9 +139,9 @@ fun MyInformationPage(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                InfoRow(label = "Email", value = user.email)
+                InfoRow(label = "Email", value = authenticatedUser.email)
                 Spacer(modifier = Modifier.height(8.dp))
-                InfoRow(label = "Address", value = user.location.address)
+                InfoRow(label = "Address", value = authenticatedUser.location.address)
             }
         }
         Column(
@@ -178,6 +173,18 @@ fun MyInformationPage(navController: NavHostController) {
             },
         )
     }
+}
+
+@Composable
+fun ProfileImage(url: String) {
+    Image(
+        painter = rememberAsyncImagePainter(url),
+        contentDescription = "Profile Picture",
+        modifier = Modifier
+            .size(100.dp)
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop
+    )
 }
 
 @Composable

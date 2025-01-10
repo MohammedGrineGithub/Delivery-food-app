@@ -169,7 +169,7 @@ fun OrderCard(order: OrderTest) {
                         .border(
                             width = 1.dp,
                             shape = RoundedCornerShape(8),
-                            color = Primary
+                            color = order.statusId
                         ),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -186,7 +186,7 @@ fun OrderCard(order: OrderTest) {
                             painter = painterResource(id = R.drawable.order_status_icon),
                             contentDescription = "order status",
                             modifier = Modifier.size(22.dp),
-                            tint = Primary
+                            tint = order.statusId
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
@@ -194,7 +194,7 @@ fun OrderCard(order: OrderTest) {
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Primary,
+                                color = order.statusId,
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

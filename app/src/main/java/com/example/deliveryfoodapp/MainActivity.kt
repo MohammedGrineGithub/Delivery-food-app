@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = Routes.RATING_PAGE,
-
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.ONBOARDING_PAGE) { OnboardingPage(navController) }
