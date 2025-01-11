@@ -52,7 +52,7 @@ fun OnboardingPage(navController: NavHostController) {
         Text(
             "Welcome to MAKLAEXPRESS, the best delivery food app in Algeria. You can order food from any restaurant you want, place orders with a variety of items, and explore the best, fast, and efficient delivery service.",
             modifier = Modifier.padding(bottom = 30.dp),
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Light,
             fontSize = 14.sp,
             textAlign = TextAlign.Center // Center the text within the column,
 
