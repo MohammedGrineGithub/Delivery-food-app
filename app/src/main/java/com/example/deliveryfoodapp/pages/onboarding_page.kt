@@ -42,7 +42,7 @@ fun OnboardingPage(navController: NavHostController) {
 
         // 2. Onboarding Image
         Image(
-            painter = painterResource(id = R.drawable.onboarding_logo),
+            painter = painterResource(id = R.drawable.delivery_photo),
             contentDescription = "App Logo",
             modifier = Modifier
                 .size(400.dp) // Set the image size
