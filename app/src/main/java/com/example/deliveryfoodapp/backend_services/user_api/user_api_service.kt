@@ -11,10 +11,4 @@ interface UserApiService {
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Map<String, Any?>
-
-    @GET("restaurant/comments/{id}/")
-    suspend fun getCommentsByRestaurantID(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int
-    ) : MutableList<Map<String, Any?>>
 }
