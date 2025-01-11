@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import Location
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,13 +16,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -30,12 +32,75 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.models.AppImage
+import com.example.deliveryfoodapp.models.CuisineType
+import com.example.deliveryfoodapp.models.DeliveryPerson
+import com.example.deliveryfoodapp.models.Rating
+import com.example.deliveryfoodapp.models.Restaurant
+import com.example.deliveryfoodapp.models.RestaurantMenu
+import com.example.deliveryfoodapp.models.SocialMediaLink
 import com.example.deliveryfoodapp.ui.theme.Primary
-import com.example.deliveryfoodapp.utils.Routes
+import java.time.LocalTime
 
 @Composable
 fun PlusInfoPage(navController : NavHostController) {
+
+    val feedbackList = listOf(
+        "I like it very much",
+        "they don't have pizza, but they are the best",
+        "It's always the best place",
+        "I like it very much",
+        "they don't have pizza, but they are the best",
+        "It's always the best place",
+        "I like it very much",
+        "they don't have pizza, but they are the best",
+        "It's always the best place"
+    )
+
+    val restaurant = Restaurant(
+        id = 1,
+        restaurantName = "American Burger",
+        logo = AppImage(id = 1 ,imagePath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPuQ1_d2pRT9JOC1_6CbRZoSyeXJGijM7rA&s"),
+        banner = AppImage(id = 2 ,imagePath = "https://media-cdn.tripadvisor.com/media/photo-p/2b/75/91/18/american-burger-the-best.jpg"),
+        location = Location(
+            id = 1,
+            address = "Rue Nadjet Slimane, Kouba, Algiers",
+            wilayaId = 16,
+            latitude = 36.752887,
+            longitude = 3.042048,
+        ),
+        cuisineType = CuisineType(
+            id = 1,
+            name = "fast food"
+        ),
+        rating = Rating(
+            id = 1,
+            reviewersCount = 209,
+            rating = 4.7
+        ),
+        phone = "0661 85 47 96",
+        email = "americanburgerkouba@gmail.com",
+        deliveryPrice = 500,
+        deliveryDuration = 25,
+        menu = RestaurantMenu(
+            id = 1,
+            categories = listOf()
+        ),
+        openingTime = LocalTime.of(9,0),
+        closingTime = LocalTime.of(23,0),
+        deliveryPersons = mutableListOf(
+            DeliveryPerson(id = 1, fullName = "John Doe", phone = "0662 123 456"),
+            DeliveryPerson(id = 2,fullName = "Jane Smith", phone = "0663 654 321")
+        ),
+        socialMediaLinks = mutableListOf(
+            SocialMediaLink(id = 1 ,name = "Facebook", url = "American Burger"),
+            SocialMediaLink(id = 2 ,name = "Instagram", url = "american.burger_")
+        )
+    )
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,8 +109,8 @@ fun PlusInfoPage(navController : NavHostController) {
         Box {
             // Top Image
             Image(
-                painter = painterResource(id = R.drawable.banner_photo),
-                contentDescription = "Restaurant",
+                painter = rememberAsyncImagePainter(restaurant.banner.imagePath), // Load image from the URL
+                contentDescription = "Restaurant Banner",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
@@ -59,19 +124,17 @@ fun PlusInfoPage(navController : NavHostController) {
                     .padding(24.dp)
                     .size(32.dp)
                     .align(Alignment.TopStart)
-                    .clickable {}
+                    .clickable {navController.popBackStack()}
             )
             // Bottom Circle Image
             Image(
-                painter = painterResource(id = R.drawable.restaurantlogo),
-                contentDescription = "Logo",
+                painter = rememberAsyncImagePainter(restaurant.logo.imagePath), // Load image from the URL
+                contentDescription = "Restaurant Banner",
                 modifier = Modifier
                     .size(70.dp)
-                    //.clip(CircleShape)
                     .align(Alignment.BottomCenter)
-                   // .background(Color.White) // Optional border effect
-                    //.border(2.dp, Color.White, CircleShape)
-                    .offset(y = 35.dp) // Adjust position below the image
+                    .offset(y = 35.dp)
+                    .clip(CircleShape),
             )
         }
 
@@ -85,12 +148,12 @@ fun PlusInfoPage(navController : NavHostController) {
         ) {
             // Title and Address
             Text(
-                text = "American Burger",
+                text = "${restaurant.restaurantName}",
                 fontWeight = FontWeight.Bold
             )
-            IconText(icon = R.drawable.position_icon, text = "Rue Nadjet Slimane, Kouba, Algiers",0.dp)
+            IconText(icon = R.drawable.position_icon, text = "${restaurant.location.address}",0.dp)
             Text(
-                text = "fast food",
+                text = "${restaurant.cuisineType.name}",
                 color = Color.Black,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center
@@ -103,13 +166,13 @@ fun PlusInfoPage(navController : NavHostController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconText(icon = R.drawable.timer_icon, text = "20-25 min",0.dp)
+                IconText(icon = R.drawable.timer_icon, text = "${restaurant.deliveryDuration} min",0.dp)
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "150 DA",fontWeight = FontWeight.Medium)
+                Text(text = "${restaurant.deliveryPrice} DA",fontWeight = FontWeight.Medium)
                 Spacer(modifier = Modifier.width(16.dp))
-                IconText(icon = R.drawable.eye_icon, text = "209",0.dp)
+                IconText(icon = R.drawable.eye_icon, text = "${restaurant.rating.reviewersCount}",0.dp)
                 Spacer(modifier = Modifier.width(16.dp))
-                IconText(icon = R.drawable.star_icon, text = "4.7",0.dp)
+                IconText(icon = R.drawable.star_icon, text = "${restaurant.rating.rating}",0.dp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -118,12 +181,12 @@ fun PlusInfoPage(navController : NavHostController) {
             InfoSection(
                 icon = R.drawable.phone_icon,
                 title = "Phone",
-               info =  { Text(text = "0661 85 47 96",fontWeight = FontWeight.Medium,modifier = Modifier.padding(start = 20.dp)) }
+               info =  { Text(text = "${restaurant.phone}",fontWeight = FontWeight.Medium,modifier = Modifier.padding(start = 20.dp)) }
             )
             InfoSection(
                 icon = R.drawable.mail_icon,
                 title = "E-mail",
-                info = { Text(text = "example@gmail.com",fontWeight = FontWeight.Medium,modifier = Modifier.padding(start = 20.dp)) }
+                info = { Text(text = "${restaurant.email}",fontWeight = FontWeight.Medium,modifier = Modifier.padding(start = 20.dp)) }
             )
 
             // Social Media
@@ -132,11 +195,42 @@ fun PlusInfoPage(navController : NavHostController) {
                 icon = R.drawable.social_icon,
                 title = "Social Media",
                 info = {
-                    IconText(icon = R.drawable.fb_icon, text = "American Burger",20.dp)
-                    IconText(icon = R.drawable.insta_icon, text = "American Burger",20.dp)
+                    Column(modifier = Modifier.padding(start = 20.dp)) {
+                        restaurant.socialMediaLinks.forEach { link ->
+                            Text(
+                                text = "${link.name}: ${link.url}",
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
 
             )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item {
+                    InfoSection(
+                        icon = R.drawable.done, // Replace with your desired icon
+                        title = "Restaurant feedbacks",
+                        info = {
+                            Column(modifier = Modifier.padding(start = 20.dp)) {
+                                feedbackList.forEach { infoText ->
+                                    Text(
+                                        text = infoText,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(vertical = 4.dp)
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+
+
         }
     }
 }
