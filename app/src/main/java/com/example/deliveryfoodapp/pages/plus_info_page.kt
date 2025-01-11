@@ -1,9 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
-import Location
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,40 +9,68 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.R
-import com.example.deliveryfoodapp.models.AppImage
-import com.example.deliveryfoodapp.models.CuisineType
-import com.example.deliveryfoodapp.models.DeliveryPerson
-import com.example.deliveryfoodapp.models.Rating
-import com.example.deliveryfoodapp.models.Restaurant
-import com.example.deliveryfoodapp.models.RestaurantMenu
+import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.SocialMediaLink
+import com.example.deliveryfoodapp.ui.theme.Blue
+import com.example.deliveryfoodapp.ui.theme.GreyStroke
+import com.example.deliveryfoodapp.ui.theme.Orange
 import com.example.deliveryfoodapp.ui.theme.Primary
+import com.example.deliveryfoodapp.ui.theme.Red
+import com.example.deliveryfoodapp.ui.theme.White
+import com.example.deliveryfoodapp.utils.Routes
+import com.example.deliveryfoodapp.utils.createRestaurantForTest
 import java.time.LocalTime
 
 @Composable
 fun PlusInfoPage(navController : NavHostController) {
+
+    fun isWithinOperatingHours(openingTime: LocalTime, closingTime: LocalTime): Boolean {
+        return true
+        val currentTime = LocalTime.now()
+        return if (closingTime.isAfter(openingTime) || closingTime == openingTime) {
+            currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime)
+        } else {
+            currentTime.isAfter(openingTime) || currentTime.isBefore(closingTime)
+        }
+    }
+    // TODO : Get socialMediaLinks from backend
+    var socialMediaLinks : MutableList<SocialMediaLink> = mutableListOf()
+    socialMediaLinks.add(
+        SocialMediaLink(id = 1, name = "Facebook", url = "https://Amerrican_Burger.facebook.com")
+    )
+
+    // TODO : delete it later
+    currentRestaurant = createRestaurantForTest(1)
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
 
     val feedbackList = listOf(
         "I like it very much",
@@ -59,134 +84,237 @@ fun PlusInfoPage(navController : NavHostController) {
         "It's always the best place"
     )
 
-    val restaurant = Restaurant(
-        id = 1,
-        restaurantName = "American Burger",
-        logo = AppImage(id = 1 ,imagePath = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPuQ1_d2pRT9JOC1_6CbRZoSyeXJGijM7rA&s"),
-        banner = AppImage(id = 2 ,imagePath = "https://media-cdn.tripadvisor.com/media/photo-p/2b/75/91/18/american-burger-the-best.jpg"),
-        location = Location(
-            id = 1,
-            address = "Rue Nadjet Slimane, Kouba, Algiers",
-            wilayaId = 16,
-            latitude = 36.752887,
-            longitude = 3.042048,
-        ),
-        cuisineType = CuisineType(
-            id = 1,
-            name = "fast food"
-        ),
-        rating = Rating(
-            id = 1,
-            reviewersCount = 209,
-            rating = 4.7
-        ),
-        phone = "0661 85 47 96",
-        email = "americanburgerkouba@gmail.com",
-        deliveryPrice = 500,
-        deliveryDuration = 25,
-        menu = RestaurantMenu(
-            id = 1,
-            categories = listOf()
-        ),
-        openingTime = LocalTime.of(9,0),
-        closingTime = LocalTime.of(23,0),
-        deliveryPersons = mutableListOf(
-            DeliveryPerson(id = 1, fullName = "John Doe", phone = "0662 123 456"),
-            DeliveryPerson(id = 2,fullName = "Jane Smith", phone = "0663 654 321")
-        ),
-        socialMediaLinks = mutableListOf(
-            SocialMediaLink(id = 1 ,name = "Facebook", url = "American Burger"),
-            SocialMediaLink(id = 2 ,name = "Instagram", url = "american.burger_")
-        )
-    )
-
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Light gray background
-    ) {
-        Box {
-            // Top Image
-            Image(
-                painter = rememberAsyncImagePainter(restaurant.banner.imagePath), // Load image from the URL
-                contentDescription = "Restaurant Banner",
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        /** Banner photo with currentRestaurant logo **/
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            /** Banner **/
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop
-            )
-            // Back Arrow
-            Image(
-                painter = painterResource(id = R.drawable.back_button),
-                contentDescription = "Back",
+                    .height(screenHeight / 4 + 38.dp)
+            ) {
+                AsyncImage(
+                    model = currentRestaurant.banner.imagePath,
+                    contentDescription = "banner",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(screenHeight / 4)
+                        .then(
+                            if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) Modifier.blur(16.dp) else Modifier
+                        ),
+                    contentScale = ContentScale.FillBounds
+                )
+
+                // Circle back icon button
+                Box(
+                    modifier = Modifier
+                        .padding(top = 12.dp, start = 12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(60.dp))
+                            .background(White)
+                            .padding(all = 16.dp)
+                    ) {
+                        IconButton(
+                            onClick = { navController.navigateUp() },
+                            modifier = Modifier.size(44.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.back),
+                                contentDescription = "back",
+                                tint = Color.Unspecified,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Overlay with "Closed" text if not within operating hours
+                if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(screenHeight / 4)
+                            .background(Color.Black.copy(alpha = 0.6f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Closed ):",
+                            color = Color.White,
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+
+            /** Logo **/
+            AsyncImage(
+                model = currentRestaurant.logo.imagePath,
+                contentDescription = "logo",
                 modifier = Modifier
-                    .padding(24.dp)
-                    .size(32.dp)
-                    .align(Alignment.TopStart)
-                    .clickable {navController.popBackStack()}
-            )
-            // Bottom Circle Image
-            Image(
-                painter = rememberAsyncImagePainter(restaurant.logo.imagePath), // Load image from the URL
-                contentDescription = "Restaurant Banner",
-                modifier = Modifier
-                    .size(70.dp)
+                    .size(88.dp)
                     .align(Alignment.BottomCenter)
-                    .offset(y = 35.dp)
-                    .clip(CircleShape),
+                    .clip(shape = CircleShape),
+                contentScale = ContentScale.FillBounds
             )
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
+        /** Restaurant details with text of plus info **/
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(top = 4.dp, start = 20.dp, end = 20.dp, bottom = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Title and Address
+            /** Restaurant name **/
             Text(
-                text = "${restaurant.restaurantName}",
-                fontWeight = FontWeight.Bold
-            )
-            IconText(icon = R.drawable.position_icon, text = "${restaurant.location.address}",0.dp)
-            Text(
-                text = "${restaurant.cuisineType.name}",
-                color = Color.Black,
-                fontWeight = FontWeight.Medium,
+                text = currentRestaurant.restaurantName,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            /** Restaurant location with location icon **/
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+            ){
+                Icon(
+                    painter = painterResource(R.drawable.position_icon),
+                    contentDescription = "position",
+                    modifier = Modifier.size(18.dp),
+                    tint = Red
+                )
 
-            // Details Row
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconText(icon = R.drawable.timer_icon, text = "${restaurant.deliveryDuration} min",0.dp)
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "${restaurant.deliveryPrice} DA",fontWeight = FontWeight.Medium)
-                Spacer(modifier = Modifier.width(16.dp))
-                IconText(icon = R.drawable.eye_icon, text = "${restaurant.rating.reviewersCount}",0.dp)
-                Spacer(modifier = Modifier.width(16.dp))
-                IconText(icon = R.drawable.star_icon, text = "${restaurant.rating.rating}",0.dp)
+                Spacer(Modifier.width(2.dp))
+
+                Text(
+                    text = currentRestaurant.location.address,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Light,
+                )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            /** delivery time + price + reviewers + rating **/
+            Row (
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ){
+                /** delivery time + icon **/
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.timer_icon),
+                        contentDescription = "time",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(2.dp))
 
+                    Text(
+                        text = "${currentRestaurant.deliveryDuration} - ${currentRestaurant.deliveryDuration + 5} min",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+
+                /** price **/
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Icon(
+                        painter = painterResource(R.drawable.moto_icon),
+                        contentDescription = "delivery",
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Spacer(Modifier.width(2.dp))
+
+                    Text(
+                        text = "${currentRestaurant.deliveryPrice} DA",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+
+                /** reviewers + icon **/
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Icon(
+                        painter = painterResource(R.drawable.eye_icon),
+                        contentDescription = "reviewers",
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Spacer(Modifier.width(2.dp))
+
+                    Text(
+                        text = currentRestaurant.rating.reviewersCount.toString(),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+
+                /** rating + icon **/
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.rating),
+                        contentDescription = "rating",
+                        modifier = Modifier.size(18.dp),
+                        tint = Orange
+                    )
+
+                    Spacer(Modifier.width(2.dp))
+
+                    Text(
+                        text = currentRestaurant.rating.rating.toString(),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+
+            }
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, start = 20.dp, end = 20.dp, bottom = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             // Contact Information
             InfoSection(
                 icon = R.drawable.phone_icon,
                 title = "Phone",
-               info =  { Text(text = "${restaurant.phone}",fontWeight = FontWeight.Medium,modifier = Modifier.padding(start = 20.dp)) }
+                info =  { Text(
+                    text = "${currentRestaurant.phone}",
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 20.dp)
+                ) }
             )
             InfoSection(
                 icon = R.drawable.mail_icon,
                 title = "E-mail",
-                info = { Text(text = "${restaurant.email}",fontWeight = FontWeight.Medium,modifier = Modifier.padding(start = 20.dp)) }
+                info = { Text(text = "${currentRestaurant.email}",
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(start = 20.dp)
+                ) }
             )
 
             // Social Media
@@ -196,12 +324,24 @@ fun PlusInfoPage(navController : NavHostController) {
                 title = "Social Media",
                 info = {
                     Column(modifier = Modifier.padding(start = 20.dp)) {
-                        restaurant.socialMediaLinks.forEach { link ->
-                            Text(
-                                text = "${link.name}: ${link.url}",
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(vertical = 4.dp)
-                            )
+                        socialMediaLinks.forEach { link ->
+                            Column (
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.Start
+                            ){
+                                Text(
+                                    text = "${link.name} : ",
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 14.sp,
+                                )
+                                Text(
+                                    text = link.url,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 14.sp,
+                                    color = Blue,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -213,24 +353,34 @@ fun PlusInfoPage(navController : NavHostController) {
             ) {
                 item {
                     InfoSection(
-                        icon = R.drawable.done, // Replace with your desired icon
+                        icon = R.drawable.feedback_icon,
                         title = "Restaurant feedbacks",
                         info = {
-                            Column(modifier = Modifier.padding(start = 20.dp)) {
+                            Column(
+                                modifier = Modifier.padding(start = 20.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
                                 feedbackList.forEach { infoText ->
-                                    Text(
-                                        text = infoText,
-                                        fontWeight = FontWeight.Medium,
-                                        modifier = Modifier.padding(vertical = 4.dp)
-                                    )
+
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(1.dp)
+                                    ){
+                                        Text(
+                                            text = infoText,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp,
+                                            modifier = Modifier.padding(vertical = 4.dp)
+                                        )
+                                        HorizontalDivider(color = GreyStroke.copy(alpha = 0.5f))
+                                    }
+
                                 }
                             }
                         }
                     )
                 }
             }
-
-
         }
     }
 }
