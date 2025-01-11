@@ -4,11 +4,17 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
 
-interface ApiService {
+interface UserApiService {
 
-    @GET("users/{id}")
+    @GET("user/details/{id}/")
     suspend fun getUserById(
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Map<String, Any?>
+
+    @GET("restaurant/comments/{id}/")
+    suspend fun getCommentsByRestaurantID(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ) : MutableList<Map<String, Any?>>
 }

@@ -23,7 +23,7 @@ data class Order(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = Order(
-            id = map["id"] as? Int ?: -1,
+            id = (map["id"] as Double).toInt(),
             userId = map["userId"] as Int,
             restaurantId = map["restaurantId"] as Int,
             totalPrice = map["totalPrice"] as Double,

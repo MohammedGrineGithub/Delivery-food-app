@@ -13,7 +13,7 @@ data class Category(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = Category(
-            id = map["id"] as? Int ?: -1,
+            id = (map["id"] as Double).toInt(),
             name = map["name"] as? String ?: "",
             items = (map["items"] as? List<Map<String, Any>>)?.map {
                 Item.fromMap(it)

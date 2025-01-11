@@ -47,15 +47,17 @@ fun HomeScreen(navController: NavHostController) {
 
     // Get user id from local storage
     val userID = Pref.getUserID()
-    authenticatedUser.id = userID
+    authenticatedUser.id = if (userID != -1) userID else 1 // later remove that 1
 
-    // Fetch user data from backend when the composable is first displayed
-    LaunchedEffect(userID) {
+    val u = remember { mutableStateOf(authenticatedUser) }
+
+    LaunchedEffect(1) {
         try {
-            val user = UserEndpoints.fetchUserById(userID)
-            authenticatedUser = user
+            val user = UserEndpoints.fetchUserById(authenticatedUser.id)
+            u.value = user
+            Toast.makeText(context, u.value.fullName, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed to get the user", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
         } finally {
             isLoading.value = false
         }
@@ -66,10 +68,10 @@ fun HomeScreen(navController: NavHostController) {
     val allUserCarts : List<RoomUserCart> = UserCartRepository.getAllUserCarts().orEmpty()
 
     authenticatedUser.carts.addAll(
-        allUserCarts.map { u ->
-            val orderItems = OrderItemRepository.getAllOrderItemsForUserCart(u.id).orEmpty()
+        allUserCarts.map { cart ->
+            val orderItems = OrderItemRepository.getAllOrderItemsForUserCart(cart.id).orEmpty()
             UserCart(
-                id = u.id,
+                id = cart.id,
                 orderItems = orderItems.map { o ->
                     OrderItem(
                         id = o.id,
@@ -84,7 +86,7 @@ fun HomeScreen(navController: NavHostController) {
                         itemQuantity = o.itemQuantity
                     )
                 }.toMutableList(),
-                restaurantID = u.restaurantID
+                restaurantID = cart.restaurantID
             )
         }
     )
@@ -114,7 +116,8 @@ fun HomeScreen(navController: NavHostController) {
         ){
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
-    } else {
+    }
+    else {
         Scaffold(
             bottomBar = {
                 CustomNavigationBar(

@@ -19,7 +19,7 @@ data class OrderItem(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = OrderItem(
-            id = map["id"] as? Int ?: -1,
+            id = (map["id"] as Double).toInt(),
             item = Item.fromMap(map["item"] as? Map<String, Any> ?: emptyMap()),
             note = map["note"] as? String,
             itemQuantity = map["itemQuantity"] as? Int ?: 0

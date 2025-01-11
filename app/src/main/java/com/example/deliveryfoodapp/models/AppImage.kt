@@ -5,13 +5,13 @@ data class AppImage(
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
-        "imagePath" to imagePath
+        "url" to imagePath
     )
 
     companion object {
         fun fromMap(map: Map<String, Any>) = AppImage(
-            id = map["id"] as? Int ?: -1,
-            imagePath = map["imagePath"] as String
+            id = (map["id"] as Double).toInt() ?: 0,
+            imagePath = map["url"] as String
         )
         fun emptyAppImage() : AppImage {
             return AppImage(id =  0, imagePath = "")

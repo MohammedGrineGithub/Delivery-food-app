@@ -13,22 +13,21 @@ data class User(
     var location: Location,
     var photo: AppImage,
     var has_notification: Boolean,
-    var carts: MutableList<UserCart>,
-    var notifications : MutableList<Notification> = mutableListOf(),
-    var userOrders : MutableList<UserOrder> = mutableListOf()
+    var carts: MutableList<UserCart> = mutableListOf(),
 ) {
+
+    override fun toString(): String {
+        return "User(id=$id, fullName='$fullName', email='$email', phone='$phone', location=$location, photo=$photo, has_notification=$has_notification)"
+    }
 
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
-        "fullName" to fullName,
+        "full_name" to fullName,
         "email" to email,
         "phone" to phone,
         "location" to location.toMap(),
         "photo" to photo.toMap(),
         "has_notification" to has_notification,
-        "carts" to carts.map { it.toMap() },
-        "notifications" to notifications.map { it.toMap() },
-        "userOrders" to userOrders.map { it.toMap() }
     )
 
     fun getUserCartByRestaurantID(restaurantID: Int): UserCart {
@@ -81,22 +80,13 @@ data class User(
 
     companion object {
         fun fromMap(map: Map<String, Any?>) = User(
-            id = map["id"] as? Int ?: -1,
-            fullName = map["fullName"] as? String ?: "",
+            id = (map["id"] as Double).toInt(),
+            fullName = map["full_name"] as? String ?: "",
             email = map["email"] as? String ?: "",
             phone = map["phone"] as? String ?: "",
             location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap()),
             photo = AppImage.fromMap(map["photo"] as? Map<String, Any> ?: emptyMap()),
-            has_notification = map["has_notification"] as? Boolean ?: false,
-            carts = (map["carts"] as? List<Map<String, Any>>)?.map {
-                UserCart.fromMap(it)
-            }?.toMutableList() ?: mutableListOf(),
-            notifications = (map["notifications"] as? List<Map<String, Any>>)?.map {
-                Notification.fromMap(it)
-            }?.toMutableList() ?: mutableListOf(),
-            userOrders = (map["userOrders"] as? List<Map<String, Any>>)?.map {
-                UserOrder.fromMap(it)
-            }?.toMutableList() ?: mutableListOf()
+            has_notification = map["has_notification"] as? Boolean ?: false
         )
 
         fun emptyUser(): User {
@@ -109,7 +99,6 @@ data class User(
                 photo = AppImage.emptyAppImage(),
                 has_notification = false,
                 carts = mutableListOf(),
-                notifications = mutableListOf()
             )
         }
     }

@@ -2,6 +2,7 @@ package com.example.deliveryfoodapp.models
 
 import Location
 import android.annotation.SuppressLint
+import com.example.deliveryfoodapp.utils.CuisineTypes
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 @Suppress("UNCHECKED_CAST")
@@ -10,7 +11,7 @@ data class Restaurant(
     var restaurantName: String,
     var logo: AppImage,
     var banner: AppImage,
-    var location: Location ,
+    var location: Location,
     var cuisineType: CuisineType,
     var rating: Rating,
     var phone: String,
@@ -28,19 +29,19 @@ data class Restaurant(
     fun toMap(): Map<String, Any> {
         return mapOf(
             "id" to id,
-            "restaurantName" to restaurantName,
+            "restaurant_name" to restaurantName,
             "logo" to logo.toMap(),
-            "bannerLogo" to banner.toMap(),
+            "banner_logo" to banner.toMap(),
             "location" to location.toMap(),
-            "cuisineType" to cuisineType.toMap(),
+            "cuisine_type" to cuisineType.toMap(),
             "rating" to rating.toMap(),
             "phone" to phone,
             "email" to email,
-            "deliveryPrice" to deliveryPrice,
-            "deliveryDuration" to deliveryDuration,
+            "delivery_price" to deliveryPrice,
+            "delivery_duration" to deliveryDuration,
             "menu" to menu.toMap(),
-            "openingTime" to openingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            "closingTime" to closingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            "opening_time" to openingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            "closing_time" to closingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             "deliveryPersons" to deliveryPersons.map { it.toMap() },
             "socialMediaLinks" to socialMediaLinks.map { it.toMap() }
         )
@@ -54,33 +55,34 @@ data class Restaurant(
 
     companion object {
 
+        // TODO : When i cast the map into double than user to int, make a test if i can cast it into a double, then if i can i will cast it
+
         @SuppressLint("NewApi")
-        fun fromMap(map: Map<String, Any>): Restaurant {
-            val id = map["id"] as? Int ?: -1
-            val restaurantName = map["restaurantName"] as? String ?: ""
+        fun fromMap(map: Map<String, Any?>): Restaurant {
+            val id = (map["id"] as Double).toInt() ?: 0
+            val restaurantName = map["restaurant_name"] as? String ?: ""
             val logo = AppImage.fromMap(map["logo"] as? Map<String, Any> ?: emptyMap())
-            val bannerLogo = AppImage.fromMap(map["bannerLogo"] as? Map<String, Any> ?: emptyMap())
+            val bannerLogo = AppImage.fromMap(map["banner_logo"] as? Map<String, Any> ?: emptyMap())
             val location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap())
-            val cuisineType = CuisineType.fromMap(map["cuisineType"] as? Map<String, Any> ?: emptyMap())
+            val cuisineType = CuisineTypes.getCuisineTypeByCuisineTypeID((map["cuisine_type"] as Double).toInt() ?: 0)
             val rating = Rating.fromMap(map["rating"] as? Map<String, Any> ?: emptyMap())
             val phone = map["phone"] as? String ?: ""
             val email = map["email"] as? String ?: ""
-            val deliveryPrice = map["deliveryPrice"] as? Int ?: 0
-            val deliveryDuration = map["deliveryDuration"] as? Int ?: 0
-            val menu = RestaurantMenu.fromMap(map["menu"] as? Map<String, Any> ?: emptyMap())
-            val openingTime = LocalTime.parse(map["openingTime"] as? String ?: "2000-01-01T00:00:00")
-            val closingTime = LocalTime.parse(map["closingTime"] as? String ?: "2000-01-01T00:00:00")
-            val deliveryPersons = (map["deliveryPersons"] as? List<Map<String, Any>>)?.map {
-                DeliveryPerson.fromMap(it)
-            }?.toMutableList() ?: mutableListOf()
-            val socialMediaLinks = (map["socialMediaLinks"] as? List<Map<String, Any>>)?.map {
-                SocialMediaLink.fromMap(it)
-            }?.toMutableList() ?: mutableListOf()
+            val deliveryPrice = map["delivery_price"] as? Int ?: 0
+            val deliveryDuration = map["delivery_duration"] as? Int ?: 0
+            /*
+            val deliveryPrice = (map["delivery_price"] as Double).toInt()
+            val deliveryDuration = (map["delivery_price"] as Double).toInt()
+             */
+            val menuMap : MutableMap<String, Any?> = mutableMapOf()
+            menuMap["id"] = (map["menu"] as Double).toInt()
+            val menu = RestaurantMenu.fromMap(menuMap)
+            val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "2000-01-01T00:00:00")
+            val closingTime = LocalTime.parse(map["closing_time"] as? String ?: "2000-01-01T00:00:00")
 
             return Restaurant(
                 id, restaurantName, logo, bannerLogo, location, cuisineType, rating, phone, email,
-                deliveryPrice, deliveryDuration, menu, openingTime, closingTime, deliveryPersons,
-                socialMediaLinks
+                deliveryPrice, deliveryDuration, menu, openingTime, closingTime
             )
         }
 

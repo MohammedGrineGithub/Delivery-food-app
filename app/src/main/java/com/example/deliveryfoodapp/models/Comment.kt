@@ -9,8 +9,8 @@ data class Comment(
     )
 
     companion object {
-        fun fromMap(map: Map<String, Any>) = Comment(
-            id = map["id"] as? Int ?: -1,
+        fun fromMap(map: Map<String, Any?>) = Comment(
+            id = (map["id"] as Double).toInt(),
             comment = map["comment"] as String,
         )
         fun emptyComment() : Comment {

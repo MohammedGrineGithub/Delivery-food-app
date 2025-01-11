@@ -10,7 +10,7 @@ data class CuisineType(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = CuisineType(
-            id = map["id"] as? Int ?: -1,
+            id = (map["id"] as Double).toInt(),
             name = map["name"] as String
         )
         fun emptyCuisineType() : CuisineType {
