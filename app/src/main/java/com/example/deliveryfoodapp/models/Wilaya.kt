@@ -13,9 +13,14 @@ data class Wilaya(
     }
     companion object {
         fun fromMap(map: Map<String, Any>): Wilaya {
-            val id = map["id"] as? Int ?: -1
+            val id = (map["id"] as Double).toInt()
             val name = map["name"] as? String ?: "-1"
             return Wilaya(id, name)
         }
+
+        fun emptyWilaya() : Wilaya {
+            return Wilaya(id = 0, name = "")
+        }
+
     }
 }

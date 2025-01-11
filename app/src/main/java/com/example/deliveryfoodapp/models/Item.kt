@@ -17,7 +17,7 @@ data class Item(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = Item(
-            id = map["id"] as? Int ?: -1,
+            id = (map["id"] as Double).toInt(),
             name = map["name"] as? String ?: "",
             ingredients = map["ingredients"] as? String ?: "",
             price = map["price"] as? Double ?: 0.0,

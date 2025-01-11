@@ -12,8 +12,8 @@ data class DeliveryPerson(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = DeliveryPerson(
-            id = map["id"] as? Int ?: -1,
-            fullName = map["fullName"] as String,
+            id = (map["id"] as Double).toInt(),
+            fullName = map["full_name"] as String,
             phone = map["phone"] as String,
         )
 

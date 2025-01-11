@@ -38,7 +38,7 @@ data class UserOrder(
         fun fromMap(map: Map<String, Any?>): UserOrder {
             val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
             return UserOrder(
-                id = map["id"] as Int,
+                id = (map["id"] as Double).toInt(),
                 restaurant = Restaurant.fromMap(map["restaurant"] as? Map<String, Any> ?: emptyMap()),
                 createdAt = LocalDateTime.parse(map["createdAt"] as String, formatter),
                 status = map["status"] as Int,

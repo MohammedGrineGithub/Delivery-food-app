@@ -53,19 +53,10 @@ fun NotificationsPage(navController: NavHostController) {
     //notification list from the Notification_page_EndPoint( content message and localeDate ) //the message of notification will be update it with status fields from the Order models
     // notification list will be return it with user_id and order_id
     var notification_list = listOf(
-        Notification(1, 1, 1, "Your order now is waiting", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order now is picked up", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order now is on way", LocalDateTime.of(2024, 12, 26, 6, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-        Notification(1, 1, 1, "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30)),
-
+        Notification(1, "r",  "Your order now is waiting", LocalDateTime.of(2024, 12, 26, 15, 30)),
+        Notification(1, "1", "Your order now is picked up", LocalDateTime.of(2024, 12, 26, 15, 30)),
+        Notification(1, "1",  "Your order now is on way", LocalDateTime.of(2024, 12, 26, 6, 30)),
+        Notification(1, "1", "Your order no is canceled", LocalDateTime.of(2024, 12, 26, 15, 30))
         )
 
     var order1 = Order(1, 1, 1, 1450.0, "26/12/2024 15:30 pm", 0, "dont put olive", 1)

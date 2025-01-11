@@ -7,12 +7,12 @@ data class SocialMediaLink(
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
         "name" to name,
-        "url" to url,
+        "url" to url
     )
 
     companion object {
         fun fromMap(map: Map<String, Any>) = SocialMediaLink(
-            id = map["id"] as? Int ?: -1,
+            id = (map["id"] as Double).toInt(),
             name = map["name"] as String,
             url = map["url"] as String,
         )

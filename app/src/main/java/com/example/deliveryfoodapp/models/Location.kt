@@ -24,7 +24,7 @@ data class Location(
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
         "address" to address,
-        "wilayaId" to wilayaId,
+        "wilaya" to wilayaId,
         "latitude" to latitude,
         "longitude" to longitude
     )
@@ -102,11 +102,11 @@ data class Location(
     }
     companion object {
         fun fromMap(map: Map<String, Any>) = Location(
-            id = map["id"] as? Int ?: -1,
+            id = (map["id"] as Double).toInt() ?: 0,
             address = map["address"] as? String ?: "",
-            wilayaId = map["wilayaId"] as Int,
-            latitude = map["latitude"] as Double,
-            longitude = map["longitude"] as Double
+            wilayaId = (map["wilaya"] as Double).toInt() ?: 0,
+            latitude = map["latitude"] as Double ?: 0.0,
+            longitude = map["longitude"] as Double ?: 0.0
         )
         fun emptyLocation() : Location {
             return Location(
