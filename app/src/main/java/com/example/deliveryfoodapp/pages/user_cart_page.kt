@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
@@ -64,6 +65,7 @@ import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserCartPage(navController : NavHostController){
@@ -129,7 +131,7 @@ fun UserCartPage(navController : NavHostController){
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "${totalItemsPrice.doubleValue} DA",
+                        text = "${String.format("%.1f",totalItemsPrice.doubleValue)} DA",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -221,7 +223,7 @@ fun UserCartPage(navController : NavHostController){
                                 ) {
 
                                     Text(
-                                        text = "${singleItemTotalPrice.doubleValue} DA",
+                                        text = "${String.format("%.1f",singleItemTotalPrice.doubleValue)} DA",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Normal
                                     )

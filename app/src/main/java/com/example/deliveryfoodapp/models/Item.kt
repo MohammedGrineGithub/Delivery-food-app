@@ -20,7 +20,7 @@ data class Item(
             id = (map["id"] as Double).toInt(),
             name = map["name"] as? String ?: "",
             ingredients = map["ingredients"] as? String ?: "",
-            price = map["price"] as? Double ?: 0.0,
+            price = map["price"] as Double,
             photo = (map["photo"] as? Map<String, Any>)?.let { AppImage.fromMap(it) }
                 ?: AppImage.emptyAppImage()
         )

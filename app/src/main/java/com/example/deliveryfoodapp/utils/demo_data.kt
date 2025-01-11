@@ -82,7 +82,7 @@ fun createRestaurantForTest(index : Int) : Restaurant {
     restaurant.deliveryDuration = 30
     restaurant.deliveryPrice = 300
     restaurant.rating = Rating(id=index, reviewersCount = 209, rating = 4.5)
-    restaurant.menu = createRestaurantMenuForTest(index = index)
+    restaurant.menu = index
     restaurant.email = "american_burger@gmail.com"
     restaurant.phone = "0774552233"
     return restaurant

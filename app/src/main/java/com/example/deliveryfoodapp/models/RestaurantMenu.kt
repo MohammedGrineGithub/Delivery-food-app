@@ -12,7 +12,7 @@ data class RestaurantMenu(
     companion object {
         fun fromMap(map: Map<String, Any?>): RestaurantMenu {
             return RestaurantMenu(
-                id = (map["id"] as Double).toInt() ?: 0,
+                id = (map["id"] as Double).toInt(),
                 categories = (map["categories"] as? List<Map<String, Any>>)?.map {
                     Category.fromMap(it)
                 } ?: emptyList()

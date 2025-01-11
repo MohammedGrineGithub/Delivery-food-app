@@ -10,7 +10,7 @@ data class OrderItem(
         "id" to id,
         "item" to item.toMap(),
         "note" to (note ?: ""),
-        "itemQuantity" to itemQuantity
+        "item_quantity" to itemQuantity
     )
 
     fun totalPrice() : Double {
@@ -22,7 +22,7 @@ data class OrderItem(
             id = (map["id"] as Double).toInt(),
             item = Item.fromMap(map["item"] as? Map<String, Any> ?: emptyMap()),
             note = map["note"] as? String,
-            itemQuantity = map["itemQuantity"] as? Int ?: 0
+            itemQuantity = (map["item_quantity"] as Double).toInt()
         )
 
         fun emptyOrderItem() : OrderItem{

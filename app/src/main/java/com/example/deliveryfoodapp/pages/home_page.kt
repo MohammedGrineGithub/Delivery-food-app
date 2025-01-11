@@ -169,10 +169,6 @@ fun HomePage(navController : NavHostController) {
         CuisineType(10, "Greek")
     )
 
-    /*val restaurants = List(10) { index ->
-        createRestaurantForTest(index = index)
-    }*/
-
     val restaurants = remember {
         mutableStateOf(mutableListOf<Restaurant>())
     }
@@ -181,7 +177,6 @@ fun HomePage(navController : NavHostController) {
         try {
             val res : MutableList<Restaurant> = RestaurantEndpoints.fetchAllRestaurants()
             restaurants.value = res
-            Toast.makeText(context, "It works", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
         } finally {

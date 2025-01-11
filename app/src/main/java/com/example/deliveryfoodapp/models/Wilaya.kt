@@ -14,7 +14,7 @@ data class Wilaya(
     companion object {
         fun fromMap(map: Map<String, Any>): Wilaya {
             val id = (map["id"] as Double).toInt()
-            val name = map["name"] as? String ?: "-1"
+            val name = map["name"] as? String ?: "None"
             return Wilaya(id, name)
         }
 

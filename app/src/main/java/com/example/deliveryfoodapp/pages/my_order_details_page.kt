@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -463,6 +464,7 @@ fun MyOrderDetailsPage(navController: NavHostController) {
 
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun Order_Item(orderItem: OrderItem) {
     // item : reelement apartir de itemid recuperer item , item vas etre fetchée dans le composable Order_Item
@@ -483,7 +485,7 @@ fun Order_Item(orderItem: OrderItem) {
                         fontWeight = FontWeight.Medium
                     )
                 )
-                Spacer(modifier = Modifier.width(13.dp))
+                Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = "(${orderItem.itemQuantity})",
                     style = TextStyle(
@@ -494,7 +496,7 @@ fun Order_Item(orderItem: OrderItem) {
                 )
             }
             Text(
-                text = "${orderItem.item.price.toInt()} DA",
+                text = "${String.format("%.1f",orderItem.item.price)} DA",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -547,6 +549,7 @@ fun Order_Item(orderItem: OrderItem) {
 }
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun BillingComponent(
     totalPrice: Double,
@@ -606,7 +609,7 @@ fun BillingComponent(
                 )
 
                 Text(
-                    text = "${totalPrice.toInt()} DA",
+                    text = "${String.format("%.1f",totalPrice)} DA",
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold
@@ -671,7 +674,7 @@ fun BillingComponent(
                 )
 
                 Text(
-                    text = "${Total_price.toInt()} DA",
+                    text = "${String.format("%.1f",Total_price)} DA",
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,

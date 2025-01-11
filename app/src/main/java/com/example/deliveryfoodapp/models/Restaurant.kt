@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import com.example.deliveryfoodapp.utils.CuisineTypes
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+
 @Suppress("UNCHECKED_CAST")
 data class Restaurant(
     var id : Int,
@@ -18,7 +19,7 @@ data class Restaurant(
     var email: String,
     var deliveryPrice: Int,
     var deliveryDuration: Int,
-    var menu: RestaurantMenu,
+    var menu: Int,
     var openingTime: LocalTime,
     var closingTime: LocalTime,
     var deliveryPersons : MutableList<DeliveryPerson> = mutableListOf(),
@@ -39,7 +40,7 @@ data class Restaurant(
             "email" to email,
             "delivery_price" to deliveryPrice,
             "delivery_duration" to deliveryDuration,
-            "menu" to menu.toMap(),
+            "menu" to menu,
             "opening_time" to openingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             "closing_time" to closingTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             "deliveryPersons" to deliveryPersons.map { it.toMap() },
@@ -59,26 +60,38 @@ data class Restaurant(
 
         @SuppressLint("NewApi")
         fun fromMap(map: Map<String, Any?>): Restaurant {
-            val id = (map["id"] as Double).toInt() ?: 0
+            println("Enter to fromMap")
+            val id = (map["id"] as Double).toInt()
+            println("id ++")
             val restaurantName = map["restaurant_name"] as? String ?: ""
+            println("restaurant_name ++")
             val logo = AppImage.fromMap(map["logo"] as? Map<String, Any> ?: emptyMap())
+            println("logo ++")
             val bannerLogo = AppImage.fromMap(map["banner_logo"] as? Map<String, Any> ?: emptyMap())
+            println("banner_logo ++")
             val location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap())
+            println("location ++")
             val cuisineType = CuisineTypes.getCuisineTypeByCuisineTypeID((map["cuisine_type"] as Double).toInt() ?: 0)
+            println("cuisine_type ++")
             val rating = Rating.fromMap(map["rating"] as? Map<String, Any> ?: emptyMap())
+            println("rating ++")
             val phone = map["phone"] as? String ?: ""
+            println("phone ++")
             val email = map["email"] as? String ?: ""
-            val deliveryPrice = map["delivery_price"] as? Int ?: 0
-            val deliveryDuration = map["delivery_duration"] as? Int ?: 0
-            /*
+            println("email ++")
+
             val deliveryPrice = (map["delivery_price"] as Double).toInt()
-            val deliveryDuration = (map["delivery_price"] as Double).toInt()
-             */
-            val menuMap : MutableMap<String, Any?> = mutableMapOf()
-            menuMap["id"] = (map["menu"] as Double).toInt()
-            val menu = RestaurantMenu.fromMap(menuMap)
+            println("delivery_price = $deliveryPrice")
+
+            val deliveryDuration = (map["delivery_duration"] as Double).toInt()
+            println("delivery_duration = $deliveryDuration")
+
+            val menu = (map["menu"] as Double).toInt()
+            println("menu ++")
             val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "2000-01-01T00:00:00")
+            println("opening_time ++")
             val closingTime = LocalTime.parse(map["closing_time"] as? String ?: "2000-01-01T00:00:00")
+            println("closing_time ++\n")
 
             return Restaurant(
                 id, restaurantName, logo, bannerLogo, location, cuisineType, rating, phone, email,
@@ -100,7 +113,7 @@ data class Restaurant(
                 email = "",
                 deliveryPrice = 0,
                 deliveryDuration = 0,
-                menu = RestaurantMenu.emptyRestaurantMenu(),
+                menu = 0,
                 openingTime = LocalTime.MIN,
                 closingTime = LocalTime.MIN
             )

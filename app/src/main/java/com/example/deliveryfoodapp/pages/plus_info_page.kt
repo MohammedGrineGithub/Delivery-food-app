@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +49,7 @@ import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.utils.createRestaurantForTest
 import java.time.LocalTime
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun PlusInfoPage(navController : NavHostController) {
 
@@ -65,9 +67,6 @@ fun PlusInfoPage(navController : NavHostController) {
     socialMediaLinks.add(
         SocialMediaLink(id = 1, name = "Facebook", url = "https://Amerrican_Burger.facebook.com")
     )
-
-    // TODO : delete it later
-    currentRestaurant = createRestaurantForTest(1)
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -282,7 +281,7 @@ fun PlusInfoPage(navController : NavHostController) {
                     Spacer(Modifier.width(2.dp))
 
                     Text(
-                        text = currentRestaurant.rating.rating.toString(),
+                        text = String.format("%.1f", currentRestaurant.rating.rating),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                     )

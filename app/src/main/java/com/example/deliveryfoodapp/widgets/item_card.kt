@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.widgets
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.models.Item
 import com.example.deliveryfoodapp.ui.theme.Primary
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ItemCard(item : Item, modifier: Modifier) {
 
@@ -74,7 +76,7 @@ fun ItemCard(item : Item, modifier: Modifier) {
                     modifier = Modifier.width(screenWidth / 2)
                 ) {
                     Text(
-                        text = "${item.price} DA",
+                        text = "${String.format("%.1f",item.price)} DA",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Primary

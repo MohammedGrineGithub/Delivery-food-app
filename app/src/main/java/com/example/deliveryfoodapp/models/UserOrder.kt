@@ -24,12 +24,12 @@ data class UserOrder(
         return mapOf(
             "id" to id,
             "restaurant" to restaurant.toMap(),
-            "createdAt" to createdAt.format(formatter),
+            "created_at" to createdAt.format(formatter),
             "status" to status,
-            "itemsTotalPrice" to itemsTotalPrice,
-            "deliveryNote" to deliveryNote,
-            "deliveryPersonID" to deliveryPersonID,
-            "orderItems" to orderItems.map { it.toMap() }
+            "items_total_price" to itemsTotalPrice,
+            "delivery_note" to deliveryNote,
+            "delivery_person_id" to deliveryPersonID,
+            "order_items" to orderItems.map { it.toMap() }
         )
     }
 
@@ -40,12 +40,12 @@ data class UserOrder(
             return UserOrder(
                 id = (map["id"] as Double).toInt(),
                 restaurant = Restaurant.fromMap(map["restaurant"] as? Map<String, Any> ?: emptyMap()),
-                createdAt = LocalDateTime.parse(map["createdAt"] as String, formatter),
-                status = map["status"] as Int,
-                itemsTotalPrice = map["itemsTotalPrice"] as Double,
-                deliveryNote = map["deliveryNote"] as String?,
-                deliveryPersonID = map["deliveryPersonID"] as Int,
-                orderItems = (map["orderItems"] as? List<Map<String, Any>>)?.map {
+                createdAt = LocalDateTime.parse(map["created_at"] as String, formatter),
+                status = (map["status"] as Double).toInt(),
+                itemsTotalPrice = map["items_total_price"] as Double,
+                deliveryNote = map["delivery_note"] as String?,
+                deliveryPersonID = (map["delivery_person_id"] as Double).toInt(),
+                orderItems = (map["order_items"] as? List<Map<String, Any>>)?.map {
                     OrderItem.fromMap(it)
                 }?.toMutableList() ?: mutableListOf()
             )

@@ -49,13 +49,10 @@ fun HomeScreen(navController: NavHostController) {
     val userID = Pref.getUserID()
     authenticatedUser.id = if (userID != -1) userID else 1 // later remove that 1
 
-    val u = remember { mutableStateOf(authenticatedUser) }
-
     LaunchedEffect(1) {
         try {
             val user = UserEndpoints.fetchUserById(authenticatedUser.id)
-            u.value = user
-            Toast.makeText(context, u.value.fullName, Toast.LENGTH_LONG).show()
+            authenticatedUser = user
         } catch (e: Exception) {
             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
         } finally {

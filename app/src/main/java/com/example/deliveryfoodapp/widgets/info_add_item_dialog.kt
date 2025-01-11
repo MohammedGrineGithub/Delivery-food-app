@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.widgets
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
@@ -48,6 +50,7 @@ import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.ui.theme.White
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
@@ -132,12 +135,14 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                     ) {
                         Text(
                             text = item.name,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "${item.price} DA / Piece",
-                            fontSize = 16.sp,
+                            text = "${String.format("%.1f",item.price)} DA",
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -286,7 +291,7 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "${totalPrice.doubleValue} DA",
+                            text = "${String.format("%.1f",totalPrice.doubleValue)} DA",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
                         )

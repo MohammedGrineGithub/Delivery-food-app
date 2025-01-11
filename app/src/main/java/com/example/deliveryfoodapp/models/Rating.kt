@@ -7,15 +7,15 @@ data class Rating(
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
-        "reviewersCount" to reviewersCount,
+        "reviewers_count" to reviewersCount,
         "rating" to rating
     )
 
     companion object {
         fun fromMap(map: Map<String, Any>) = Rating(
-            id = (map["id"] as Double).toInt() ?: 0,
-            reviewersCount = map["reviewersCount"] as? Int ?: 0,
-            rating = map["rating"] as Double ?: 0.0
+            id = (map["id"] as Double).toInt(),
+            reviewersCount = (map["reviewers_count"] as Double).toInt(),
+            rating = map["rating"] as Double
         )
         fun emptyRating() : Rating {
             return Rating(id = 0, reviewersCount = 0, rating = 0.0)

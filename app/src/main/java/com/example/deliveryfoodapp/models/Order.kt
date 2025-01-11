@@ -12,25 +12,25 @@ data class Order(
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
-        "userId" to userId,
-        "restaurantId" to restaurantId,
-        "totalPrice" to totalPrice,
-        "createdAt" to createdAt,
+        "user_id" to userId,
+        "restaurant_id" to restaurantId,
+        "total_price" to totalPrice,
+        "created_at" to createdAt,
         "status" to status,
-        "deliveryNote" to (deliveryNote ?: ""),
-        "deliveryPersonId" to (deliveryPersonId ?: -1)
+        "delivery_note" to (deliveryNote ?: ""),
+        "delivery_person_id" to (deliveryPersonId ?: -1)
     )
 
     companion object {
         fun fromMap(map: Map<String, Any>) = Order(
             id = (map["id"] as Double).toInt(),
-            userId = map["userId"] as Int,
-            restaurantId = map["restaurantId"] as Int,
-            totalPrice = map["totalPrice"] as Double,
-            createdAt = map["createdAt"] as String,
-            status = map["status"] as Int,
-            deliveryNote = map["deliveryNote"] as? String,
-            deliveryPersonId = map["deliveryPersonId"] as? Int
+            userId = (map["user_id"] as Double).toInt(),
+            restaurantId = (map["restaurant_id"] as Double).toInt(),
+            totalPrice = map["total_price"] as Double,
+            createdAt = map["created_at"] as String,
+            status = (map["status"] as Double).toInt(),
+            deliveryNote = map["delivery_note"] as? String,
+            deliveryPersonId = (map["delivery_person_id"] as Double).toInt()
         )
     }
 }
