@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.RATING_PAGE,
+                        startDestination = Routes.PLUS_INFO_PAGE,
                         Modifier.padding(innerPadding)
                     ) {
                         composable(Routes.ONBOARDING_PAGE) { OnboardingPage(navController) }
