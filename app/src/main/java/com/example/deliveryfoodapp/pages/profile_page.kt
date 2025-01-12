@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,12 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.currentRestaurant
@@ -48,9 +51,9 @@ import com.example.deliveryfoodapp.widgets.LogoutDialog
 @Composable
 fun ProfilePage(navController : NavHostController) {
 
-    val fullname by remember { mutableStateOf("Sadaoui Said Abdelwareth") }
-
-    var showLogoutDialog by remember { mutableStateOf(false) } // État pour afficher la boîte de dialogue
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    val fullName by remember { mutableStateOf(authenticatedUser.fullName) }
+    val imagePath by remember { mutableStateOf(authenticatedUser.photo.imagePath) }
 
 
     Box(
@@ -83,24 +86,37 @@ fun ProfilePage(navController : NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    modifier = Modifier.size(84.dp)
-                        .background(Secondary, CircleShape)
-                        .align(Alignment.CenterHorizontally),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = fullname.first().toString().uppercase(),
-                        style = TextStyle(
-                            fontSize = 50.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White
+
+                if (imagePath.isEmpty()) {
+                    Box(
+                        modifier = Modifier.size(100.dp)
+                            .background(Secondary, CircleShape)
+                            .align(Alignment.CenterHorizontally),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = fullName.first().toString().uppercase(),
+                            style = TextStyle(
+                                fontSize = 50.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
                         )
+                    }
+                }else {
+                    AsyncImage(
+                        model = imagePath,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
                     )
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = fullname,
+                    text = authenticatedUser.fullName,
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium

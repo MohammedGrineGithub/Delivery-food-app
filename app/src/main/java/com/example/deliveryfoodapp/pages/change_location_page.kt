@@ -31,106 +31,45 @@ import androidx.compose.ui.unit.sp
 import com.example.deliveryfoodapp.ui.theme.Black
 import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
-import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.currentCompositionLocalContext
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.core.content.ContextCompat
-import com.google.android.gms.location.LocationServices
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import com.example.deliveryfoodapp.models.Wilaya
+import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.ui.theme.Grey
+import com.example.deliveryfoodapp.utils.Wilayas
 import com.example.deliveryfoodapp.widgets.PrincipalButton
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangeLocationPage(navController : NavHostController) {
+
+    val scope = rememberCoroutineScope()
+    val isLoading = remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
     val topBottomMargin = (screenHeight * 0.04f)
     val leftRightMargin = (screenWidth * 0.04f)
     val context = LocalContext.current
-    var location = Location.emptyLocation()
-    location.address = "Hydra - Algiers"
-    location.wilayaId = 16
-    location.latitude = 36.7372
-    location.longitude = 3.0822
-    val wilayas = listOf(
-        Wilaya(1, "Adrar"),
-        Wilaya(2, "Chlef"),
-        Wilaya(3, "Laghouat"),
-        Wilaya(4, "Oum El Bouaghi"),
-        Wilaya(5, "Batna"),
-        Wilaya(6, "Béjaïa"),
-        Wilaya(7, "Biskra"),
-        Wilaya(8, "Béchar"),
-        Wilaya(9, "Blida"),
-        Wilaya(10, "Bouira"),
-        Wilaya(11, "Tamanrasset"),
-        Wilaya(12, "Tébessa"),
-        Wilaya(13, "Tlemcen"),
-        Wilaya(14, "Tiaret"),
-        Wilaya(15, "Tizi Ouzou"),
-        Wilaya(16, "Algiers"),
-        Wilaya(17, "Djelfa"),
-        Wilaya(18, "Jijel"),
-        Wilaya(19, "Sétif"),
-        Wilaya(20, "Saïda"),
-        Wilaya(21, "Skikda"),
-        Wilaya(22, "Sidi Bel Abbès"),
-        Wilaya(23, "Annaba"),
-        Wilaya(24, "Guelma"),
-        Wilaya(25, "Constantine"),
-        Wilaya(26, "Médéa"),
-        Wilaya(27, "Mostaganem"),
-        Wilaya(28, "M’Sila"),
-        Wilaya(29, "Mascara"),
-        Wilaya(30, "Ouargla"),
-        Wilaya(31, "Oran"),
-        Wilaya(32, "El Bayadh"),
-        Wilaya(33, "Illizi"),
-        Wilaya(34, "Bordj Bou Arreridj"),
-        Wilaya(35, "Boumerdès"),
-        Wilaya(36, "El Tarf"),
-        Wilaya(37, "Tindouf"),
-        Wilaya(38, "Tissemsilt"),
-        Wilaya(39, "El Oued"),
-        Wilaya(40, "Khenchela"),
-        Wilaya(41, "Souk Ahras"),
-        Wilaya(42, "Tipaza"),
-        Wilaya(43, "Mila"),
-        Wilaya(44, "Aïn Defla"),
-        Wilaya(45, "Naâma"),
-        Wilaya(46, "Aïn Témouchent"),
-        Wilaya(47, "Ghardaïa"),
-        Wilaya(48, "Relizane"),
-        Wilaya(49, "Timimoun"),
-        Wilaya(50, "Bordj Badji Mokhtar"),
-        Wilaya(51, "Ouled Djellal"),
-        Wilaya(52, "Béni Abbès"),
-        Wilaya(53, "In Salah"),
-        Wilaya(54, "In Guezzam"),
-        Wilaya(55, "Touggourt"),
-        Wilaya(56, "Djanet"),
-        Wilaya(57, "El M'Ghair"),
-        Wilaya(58, "El Meniaa")
-    )
+
     var isExpanded by remember {
         mutableStateOf(false)
     }
     var selected by remember {
-        mutableStateOf(wilayas.find { it.id == location.wilayaId }!!.name)
+        mutableStateOf(Wilayas.ALL_WILAYAS.find { it.id == authenticatedUser.location.wilayaId }!!.name)
     }
     var exact_location by remember {
-        mutableStateOf(location.address)
+        mutableStateOf(authenticatedUser.location.address)
     }
     var location_extracted by remember {
         mutableStateOf(false )
@@ -243,7 +182,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                                     onDismissRequest = { isExpanded = false } ,
                                     modifier = Modifier.heightIn(max = 300.dp).fillMaxWidth().background(color = Grey)
                                 ) {
-                                    wilayas.forEach { wilaya ->
+                                    Wilayas.ALL_WILAYAS.forEach { wilaya ->
                                     DropdownMenuItem(
                                         text = { Text(text = "${wilaya.id}- ${wilaya.name}") },
                                         onClick = {
@@ -269,7 +208,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                             TextField(
                                 value = exact_location,
                                 onValueChange = { exact_location = it },
-                                placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke) },
+                                placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke, fontSize = 12.sp) },
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = Grey,
                                     unfocusedContainerColor = Grey,
@@ -296,7 +235,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
                                 colors = ButtonDefaults.buttonColors(Color.White),
                                 onClick = {
-                                   location_extracted = location.checkLocationPermissionAndServices(context)
+                                   location_extracted = authenticatedUser.location.checkLocationPermissionAndServices(context)
                                 }
                             )  {
                                 if (location_extracted == false) {
@@ -325,22 +264,40 @@ fun ChangeLocationPage(navController : NavHostController) {
                     verticalArrangement = Arrangement.Bottom,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    PrincipalButton(
-                        text = "Save changes",
-                        onClick = {
-
-                            // TODO : Save the changes in backend and in autheticatedUser
-
-                            if ( exact_location == ""){
-                                Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
-                            }
-                            else {
-                                location.wilayaId = wilayas.find { it.name == selected }!!.id
-                                location.address = exact_location
-                                navController.popBackStack()
-                            }
+                    if (isLoading.value) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                        ){
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                         }
-                    )
+                    }else {
+                        PrincipalButton(
+                            text = "Save changes",
+                            onClick = {
+                                isLoading.value = true
+                                scope.launch {
+                                    try {
+                                        if ( exact_location == ""){
+                                            Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
+                                        }
+                                        else {
+                                            authenticatedUser.location.wilayaId = Wilayas.ALL_WILAYAS.find { it.name == selected }!!.id
+                                            authenticatedUser.location.address = exact_location
+                                            navController.popBackStack()
+                                            UserEndpoints.updateUserInformation(authenticatedUser)
+                                            Toast.makeText(context, "Works !!!!", Toast.LENGTH_LONG).show()
+                                        }
+
+                                    } catch (e: Exception) {
+                                        Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                                    } finally {
+                                        isLoading.value = false
+                                        navController.popBackStack()
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }

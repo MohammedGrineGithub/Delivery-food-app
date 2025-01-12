@@ -22,12 +22,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +42,7 @@ import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.backend_services.restaurant_api.RestaurantEndpoints
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.UserCart
 import com.example.deliveryfoodapp.local_storage_services.repositories.UserCartRepository
@@ -51,6 +52,7 @@ import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
+import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +61,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
 
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     var userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = currentRestaurant.id)
 
@@ -407,10 +410,16 @@ fun ValidatePaymentPage(navController : NavHostController) {
             PrincipalButton(
                 text = "Place the order",
                 onClick = {
-
-                    // TODO Create new order fel backend
                     isLoading.value = true
-                    // TODO : Call the backend function, and then when it complete with sucess, turn isLoading into false
+                    scope.launch {
+                        try {
+                            // TODO Call backend function to Create new order in backend
+                        } catch (e: Exception) {
+                            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                        } finally {
+                            isLoading.value = false
+                        }
+                    }
 
                     // Delete that cart from the authenticatedUser
                     authenticatedUser.deleteCart(userCart)

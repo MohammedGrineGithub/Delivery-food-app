@@ -88,9 +88,9 @@ data class Restaurant(
 
             val menu = (map["menu"] as Double).toInt()
             println("menu ++")
-            val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "2000-01-01T00:00:00")
+            val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "00:00:00")
             println("opening_time ++")
-            val closingTime = LocalTime.parse(map["closing_time"] as? String ?: "2000-01-01T00:00:00")
+            val closingTime = LocalTime.parse(map["closing_time"] as? String ?: "00:00:00")
             println("closing_time ++\n")
 
             return Restaurant(

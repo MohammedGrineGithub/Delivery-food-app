@@ -60,25 +60,31 @@ import com.example.deliveryfoodapp.models.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalContext
+import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.backend_services.restaurant_api.RestaurantEndpoints
 import com.example.deliveryfoodapp.currentRestaurant
+import com.example.deliveryfoodapp.ui.theme.GreyStroke
+import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.utils.CuisineTypes
 import com.example.deliveryfoodapp.utils.Wilayas
+import java.time.LocalTime
 
 @SuppressLint("NewApi", "MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController : NavHostController) {
+
     val configuration = LocalConfiguration.current
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(true) }
+
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
     val topBottomMargin = (screenHeight * 0.02f) // 11.3% of screen height
     val leftRightMargin = (screenWidth * 0.04f) // 22% of screen width
-    val user = User.emptyUser()
-    user.has_notification = true
+
     var search by remember {
         mutableStateOf("")
     }
@@ -98,6 +104,7 @@ fun HomePage(navController : NavHostController) {
     val restaurants = remember {
         mutableStateOf(mutableListOf<Restaurant>())
     }
+    val hasNotification = remember { mutableStateOf(authenticatedUser.has_notification) }
 
     LaunchedEffect(1) {
         try {
@@ -134,17 +141,19 @@ fun HomePage(navController : NavHostController) {
                     modifier = Modifier.align(Alignment.TopEnd).padding(0.dp),
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
                 ){
-                    if (user.has_notification == false){
+                    if (!hasNotification.value){
                         Icon(
                             painter = painterResource(id = R.drawable.notification),
-                            contentDescription = "notifiactions",
+                            contentDescription = "has notification",
+                            tint = GreyStroke,
                             modifier = Modifier.size(34.dp).background(color = Color.Transparent).align(Alignment.Top),
                         )
                     }
                     else {
                         Icon(
-                            painter = painterResource(R.drawable.notification),
-                            contentDescription = "notifiactions",
+                            painter = painterResource(R.drawable.notification_on),
+                            contentDescription = "no notification",
+                            tint = Primary,
                             modifier = Modifier.size(34.dp).background(color = Color.Transparent).align(Alignment.Top),
                         )
                     }
@@ -439,35 +448,87 @@ fun HomePage(navController : NavHostController) {
     }
 
 }
+
 @Composable
-fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restaurant: Restaurant) {
+fun Restaurant_Box(ScreenHeight: Dp, navController: NavHostController, restaurant: Restaurant) {
+
+    fun isWithinOperatingHours(openingTime: LocalTime, closingTime: LocalTime): Boolean {
+        val currentTime = LocalTime.now()
+        return if (closingTime.isAfter(openingTime) || closingTime == openingTime) {
+            currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime)
+        } else {
+            currentTime.isAfter(openingTime) || currentTime.isBefore(closingTime)
+        }
+    }
+
     Box(
-        modifier = Modifier.fillMaxWidth()
-            .background(color = CardBackground, shape = RoundedCornerShape(20.dp)).clickable {
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = CardBackground, shape = RoundedCornerShape(20.dp))
+            .clickable {
                 currentRestaurant = restaurant.copy()
                 navController.navigate(Routes.RESTAURANT_DETAILS_PAGE)
-        }
+            }
     ) {
-
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            AsyncImage(
-                model = restaurant.banner.imagePath,
-                contentDescription = "Banner",
-                modifier = Modifier.height((ScreenHeight * 0.18f)).fillMaxWidth()
-                    .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomEnd = 0.dp, bottomStart = 0.dp)),
-                contentScale = ContentScale.Crop
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(ScreenHeight * 0.18f)
+            ) {
+                AsyncImage(
+                    model = restaurant.banner.imagePath,
+                    contentDescription = "Banner",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(
+                            shape = RoundedCornerShape(
+                                topStart = 16.dp, topEnd = 16.dp, bottomEnd = 0.dp, bottomStart = 0.dp
+                            )
+                        )
+                        .then(
+                            if (!isWithinOperatingHours(
+                                    restaurant.openingTime,
+                                    restaurant.closingTime
+                                )
+                            ) Modifier.blur(16.dp) else Modifier
+                        ),
+                    contentScale = ContentScale.Crop
+                )
+                if (!isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(
+                                shape = RoundedCornerShape(
+                                    topStart = 16.dp, topEnd = 16.dp, bottomEnd = 0.dp, bottomStart = 0.dp
+                                )
+                            )
+                            .background(Color.Black.copy(alpha = 0.6f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Closed ):",
+                            color = Color.White,
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+            // Add the rest of the UI below this, unchanged.
             Box(
                 modifier = Modifier.padding(6.dp)
             ) {
                 Row(
-
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.Top,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
                 ) {
                     Text(
                         truncateToOneDecimal(restaurant.rating.rating),
@@ -476,11 +537,12 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                     Box(
                         modifier = Modifier.align(Alignment.CenterVertically)
                     ) {
-
                         Icon(
                             painter = painterResource(id = R.drawable.rating),
                             contentDescription = "Rating",
-                            modifier = Modifier.size(14.dp).background(color = Color.Transparent)
+                            modifier = Modifier
+                                .size(14.dp)
+                                .background(color = Color.Transparent)
                                 .align(Alignment.Center),
                             tint = Color.Unspecified
                         )
@@ -488,19 +550,23 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                 }
 
                 Row(
-                    modifier = Modifier.padding(6.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .fillMaxWidth()
                 ) {
                     Box(
-                        modifier = Modifier.size((ScreenHeight * 0.055f)).background(
-                            shape = RoundedCornerShape((ScreenHeight * 0.065f)),
-                            color = Color.Transparent
-                        )
-                    )
-                    {
+                        modifier = Modifier
+                            .size((ScreenHeight * 0.055f))
+                            .background(
+                                shape = RoundedCornerShape((ScreenHeight * 0.065f)),
+                                color = Color.Transparent
+                            )
+                    ) {
                         AsyncImage(
                             model = restaurant.logo.imagePath,
                             contentDescription = "Logo",
-                            modifier = Modifier.size((ScreenHeight * 0.055f))
+                            modifier = Modifier
+                                .size((ScreenHeight * 0.055f))
                                 .clip(shape = CircleShape),
                             contentScale = ContentScale.FillBounds
                         )
@@ -521,7 +587,8 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                             Icon(
                                 painter = painterResource(id = R.drawable.time),
                                 contentDescription = "time",
-                                modifier = Modifier.size(12.dp)
+                                modifier = Modifier
+                                    .size(12.dp)
                                     .background(color = Color.Transparent)
                                     .align(Alignment.CenterVertically),
                                 tint = Color.Unspecified
@@ -534,7 +601,9 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                             Icon(
                                 painter = painterResource(id = R.drawable.point),
                                 contentDescription = "point",
-                                modifier = Modifier.size(5.dp).background(color = Color.Transparent)
+                                modifier = Modifier
+                                    .size(5.dp)
+                                    .background(color = Color.Transparent)
                                     .align(Alignment.CenterVertically)
                             )
                             Spacer(Modifier.width(10.dp))
@@ -545,7 +614,8 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                                 Icon(
                                     painter = painterResource(id = R.drawable.moto_icon),
                                     contentDescription = "delivery",
-                                    modifier = Modifier.size(14.dp)
+                                    modifier = Modifier
+                                        .size(14.dp)
                                         .background(color = Color.Transparent)
                                         .align(Alignment.CenterVertically)
                                 )
@@ -555,13 +625,13 @@ fun Restaurant_Box(ScreenHeight : Dp, navController : NavHostController , restau
                                 )
                             }
                         }
-
                     }
                 }
             }
         }
     }
 }
+
 
 fun truncateToOneDecimal(number: Double): String {
     val numberString = number.toString()

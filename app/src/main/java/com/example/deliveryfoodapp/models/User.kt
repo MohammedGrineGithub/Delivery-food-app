@@ -20,10 +20,18 @@ data class User(
         return "User(id=$id, fullName='$fullName', email='$email', phone='$phone', location=$location, photo=$photo, has_notification=$has_notification)"
     }
 
-    fun toMap(): Map<String, Any> = mapOf(
+    fun toMapToInsert(): Map<String, Any> = mapOf(
         "id" to id,
         "full_name" to fullName,
         "email" to email,
+        "phone" to phone,
+        "location" to location.toMap(),
+        "photo" to photo.toMap(),
+        "has_notification" to has_notification,
+    )
+    fun toMapToUpdate(): Map<String, Any> = mapOf(
+        "id" to id,
+        "full_name" to fullName,
         "phone" to phone,
         "location" to location.toMap(),
         "photo" to photo.toMap(),

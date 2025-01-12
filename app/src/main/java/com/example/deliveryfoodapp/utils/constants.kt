@@ -2,6 +2,10 @@ package com.example.deliveryfoodapp.utils
 
 import com.example.deliveryfoodapp.models.CuisineType
 import com.example.deliveryfoodapp.models.Wilaya
+import androidx.compose.ui.graphics.Color
+import com.example.deliveryfoodapp.ui.theme.GreyStroke
+import com.example.deliveryfoodapp.ui.theme.Primary
+import com.example.deliveryfoodapp.ui.theme.Red
 
 class OrderStatuses {
     companion object {
@@ -20,7 +24,7 @@ class OrderStatuses {
         private const val DELIVERED_VALUE = "Delivered"
         private const val CANCELED_VALUE = "Canceled"
 
-        val STATUS_VALUE_LIST = listOf(
+        private val STATUS_VALUE_LIST = listOf(
             IS_WAITING_VALUE,
             IS_PREPARED_VALUE,
             PICKED_UP_VALUE,
@@ -29,8 +33,34 @@ class OrderStatuses {
             CANCELED_VALUE
         )
 
+        private val STATUS_COLOR_LIST = listOf(
+            GreyStroke,        // Waiting
+            Color.Magenta,      // Prepared
+            Color.Cyan,        // Picked Up
+            Color.Blue,        // On Way
+            Primary,           // Delivered
+            Red                // Canceled
+        )
+
+        fun getStatusColor(status: Int): Color {
+            return STATUS_COLOR_LIST.getOrElse(status) { Color.Black }
+        }
+        fun getStatusValue(status: Int): String {
+            return STATUS_VALUE_LIST.getOrElse(status) { "Unknown Status" }
+        }
+        fun getStatusColorFromValue(statusValue: String): Color {
+            val index = STATUS_VALUE_LIST.indexOf(statusValue)
+            return if (index != -1) {
+                STATUS_COLOR_LIST.getOrElse(index) { Color.Black }
+            } else {
+                Color.Black
+            }
+        }
+
+
     }
 }
+
 
 class CuisineTypes {
     companion object {
@@ -74,7 +104,7 @@ class Wilayas {
             Wilaya(13, "Tlemcen"),
             Wilaya(14, "Tiaret"),
             Wilaya(15, "Tizi Ouzou"),
-            Wilaya(16, "Algiers"),
+            Wilaya(16, "Alger"),
             Wilaya(17, "Djelfa"),
             Wilaya(18, "Jijel"),
             Wilaya(19, "Sétif"),

@@ -82,7 +82,6 @@ import java.time.LocalTime
 fun RestaurantDetailsPage(navController : NavHostController) {
 
     fun isWithinOperatingHours(openingTime: LocalTime, closingTime: LocalTime): Boolean {
-        return true
         val currentTime = LocalTime.now()
         return if (closingTime.isAfter(openingTime) || closingTime == openingTime) {
             currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime)
@@ -179,7 +178,6 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                         }
                     }
 
-                    // Overlay with "Closed" text if not within operating hours
                     if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
                         Box(
                             modifier = Modifier
