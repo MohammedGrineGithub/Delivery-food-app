@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
+import com.example.deliveryfoodapp.local_storage_services.Pref
 import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
@@ -74,16 +76,15 @@ fun LoginPage(navController : NavHostController) {
                 // TODO : save the userID
                 // TODO : save the token
 
+                // navigate to home screen
+                navController.navigate(Routes.HOME_SCREEN){
+                    popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
+                }
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             } finally {
                 isLoading.value = false
                 updateTrigger.value = false
-
-                // navigate to home screen
-                navController.navigate(Routes.HOME_SCREEN){
-                    popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
-                }
             }
         }
     }
@@ -117,8 +118,18 @@ fun LoginPage(navController : NavHostController) {
                 if (isValidEmail(email) && email.isNotEmpty() && password.length >= 8){
 
                     // TODO : Call email/password login function from the backend
+                    val userID = UserEndpoints.userLogin(
+                        email = email,
+                        password = password
+                    )
                     // TODO : save the userID
+                    Pref.saveUserID(userID)
                     // TODO : save the token
+
+                    // navigate to home screen
+                    navController.navigate(Routes.HOME_SCREEN){
+                        popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
+                    }
 
                 }
             } catch (e: Exception) {
@@ -126,10 +137,7 @@ fun LoginPage(navController : NavHostController) {
             } finally {
                 isLoading.value = false
                 updateTrigger.value = false
-                // navigate to home screen
-                navController.navigate(Routes.HOME_SCREEN){
-                    popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
-                }
+
             }
         }
     }

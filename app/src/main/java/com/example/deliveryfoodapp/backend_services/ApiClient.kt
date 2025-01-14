@@ -8,4 +8,9 @@ object ApiClient {
         .baseUrl(ENV.NGROK_API_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+
+    val imageUrlRetrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(ENV.NETWORK_IMAGE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 }

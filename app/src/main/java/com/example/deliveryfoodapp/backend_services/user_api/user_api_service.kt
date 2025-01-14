@@ -9,6 +9,18 @@ import retrofit2.http.Path
 
 interface UserApiService {
 
+    /** ***************************** User Sign Up ******************************** **/
+    @POST("user/register")
+    suspend fun userRegister(
+        @Body body: Map<String, @JvmSuppressWildcards Any>
+    ) : Map<String, @JvmSuppressWildcards Any>
+
+    /** ***************************** User Log In ******************************** **/
+    @POST("user/login")
+    suspend fun userLogin(
+        @Body body: Map<String, @JvmSuppressWildcards Any>
+    ) : Map<String, @JvmSuppressWildcards Any>
+
     /** ***************************** Get user information ******************************** **/
     @GET("user/details/{id}/")
     suspend fun getUserById(

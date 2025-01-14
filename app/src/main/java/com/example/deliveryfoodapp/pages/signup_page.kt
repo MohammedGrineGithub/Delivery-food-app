@@ -54,6 +54,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
+import com.example.deliveryfoodapp.local_storage_services.Pref
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -92,16 +94,16 @@ fun SignupPage(navController : NavHostController) {
                 // TODO : save the userID
                 // TODO : save the token
 
+                // navigate to home screen
+                navController.navigate(Routes.HOME_SCREEN){
+                    popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
+                }
+
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             } finally {
                 isLoading.value = false
                 updateTrigger.value = false
-
-                // navigate to home screen
-                navController.navigate(Routes.HOME_SCREEN){
-                    popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
-                }
             }
         }
     }
@@ -130,20 +132,28 @@ fun SignupPage(navController : NavHostController) {
                 if (password.length >= 8 && confirmPassword == password){
 
                     // TODO : Call email/password signup function from the backend
-                    // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
-                    // TODO : save the userID
+                    val userID = UserEndpoints.userRegister(
+                        fullName = fullName,
+                        email = email,
+                        phone = phone,
+                        location = authenticatedUser.location,
+                        password = password
+                    )
+                    // Save the userID in Shared preferences
+                    Pref.saveUserID(userID)
+                    // TODO : Get the user token
                     // TODO : save the token
+
+                    // navigate to home screen
+                    navController.navigate(Routes.HOME_SCREEN){
+                        popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
+                    }
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             } finally {
                 isLoading.value = false
                 updateTrigger.value = false
-
-                // navigate to home screen
-                navController.navigate(Routes.HOME_SCREEN){
-                    popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
-                }
             }
         }
     }

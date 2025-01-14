@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.backend_services.user_api
 
+import Location
 import com.example.deliveryfoodapp.backend_services.ApiClient
 import com.example.deliveryfoodapp.local_storage_services.Pref
 import com.example.deliveryfoodapp.models.Notification
@@ -11,6 +12,36 @@ object UserEndpoints {
     private val apiService = ApiClient.retrofit.create(UserApiService::class.java)
     private val token = Pref.getUserToken() ?: ""
 
+    /** ***************************** User Sign Up ******************************** **/
+    suspend fun userRegister(
+        fullName: String,
+        email: String,
+        phone: String,
+        location: Location,
+        password: String
+    ): Int {
+        val userID = apiService.userRegister(
+            body = mapOf(
+                "full_name" to fullName,
+                "email" to email,
+                "phone" to phone,
+                "location" to location.toMap(),
+                "password" to password
+            )
+        )
+        return (userID["user_id"] as Double).toInt()
+    }
+
+    /** ***************************** User Log In ******************************** **/
+    suspend fun userLogin(email: String, password: String): Int {
+        val userID = apiService.userLogin(
+            body = mapOf(
+                "email" to email,
+                "password" to password
+            )
+        )
+        return (userID["user_id"] as Double).toInt()
+    }
 
     /** ***************************** Get user information ******************************** **/
     suspend fun fetchUserById(id: Int): User {

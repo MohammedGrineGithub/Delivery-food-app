@@ -35,6 +35,8 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.backend_services.ENV
+import com.example.deliveryfoodapp.backend_services.network_images_api.NetworkImagesEndpoints
 import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.Secondary
@@ -47,9 +49,12 @@ import java.io.InputStream
 @Composable
 fun MyInformationPage(navController: NavHostController) {
 
+    authenticatedUser.fullName = "Grine Mohammed"
+
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(false) }
     val updateTrigger = remember { mutableStateOf(false) }
+    val imageIsChanged = remember { mutableStateOf(false) }
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var base64Image by remember { mutableStateOf<String?>(null) }
@@ -60,6 +65,7 @@ fun MyInformationPage(navController: NavHostController) {
             imageUri = it
             val base64 = convertImageToBase64(context, it)
             base64?.let { base64Image = it }
+            imageIsChanged.value = true
         }
     }
 
@@ -72,11 +78,19 @@ fun MyInformationPage(navController: NavHostController) {
                 authenticatedUser.fullName = fullName
                 authenticatedUser.phone = phoneNumber
 
-                // TODO : try to save the image as binary then send it via api, else send it base64 via api and get the image url then affect that url
-
                 /*base64Image?.let { base64 ->
                     authenticatedUser.photo.imagePath = base64
                 }*/
+                // Call the image api
+                if (imageIsChanged.value){
+                    val imageUrl = NetworkImagesEndpoints.uploadImageAsBase64(
+                        ENV.NETWORK_IMAGE_API_KEY,
+                        base64Image
+                    )
+                    if (imageUrl != null){
+                        authenticatedUser.photo.imagePath = imageUrl
+                    }
+                }
                 // Save changes in backend
                 UserEndpoints.updateUserInformation(authenticatedUser)
             } catch (e: Exception) {
