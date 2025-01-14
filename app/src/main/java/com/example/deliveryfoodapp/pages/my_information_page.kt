@@ -78,9 +78,6 @@ fun MyInformationPage(navController: NavHostController) {
                 authenticatedUser.fullName = fullName
                 authenticatedUser.phone = phoneNumber
 
-                /*base64Image?.let { base64 ->
-                    authenticatedUser.photo.imagePath = base64
-                }*/
                 // Call the image api
                 if (imageIsChanged.value){
                     val imageUrl = NetworkImagesEndpoints.uploadImageAsBase64(
