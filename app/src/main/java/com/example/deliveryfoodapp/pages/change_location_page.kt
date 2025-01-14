@@ -37,7 +37,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -47,20 +47,19 @@ import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.ui.theme.Grey
 import com.example.deliveryfoodapp.utils.Wilayas
 import com.example.deliveryfoodapp.widgets.PrincipalButton
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangeLocationPage(navController : NavHostController) {
 
-    val scope = rememberCoroutineScope()
+    val updateTrigger = remember { mutableStateOf(false) }
     val isLoading = remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
     val topBottomMargin = (screenHeight * 0.04f)
     val leftRightMargin = (screenWidth * 0.04f)
-    val context = LocalContext.current
 
     var isExpanded by remember {
         mutableStateOf(false)
@@ -68,12 +67,34 @@ fun ChangeLocationPage(navController : NavHostController) {
     var selected by remember {
         mutableStateOf(Wilayas.ALL_WILAYAS.find { it.id == authenticatedUser.location.wilayaId }!!.name)
     }
-    var exact_location by remember {
+    var exactLocation by remember {
         mutableStateOf(authenticatedUser.location.address)
     }
-    var location_extracted by remember {
+    var currentLocation by remember {
         mutableStateOf(false )
     }
+
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                if ( exactLocation == ""){
+                    Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    authenticatedUser.location.wilayaId = Wilayas.ALL_WILAYAS.find { it.name == selected }!!.id
+                    authenticatedUser.location.address = exactLocation
+                    UserEndpoints.updateUserInformation(authenticatedUser)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+                navController.popBackStack()
+            }
+        }
+    }
+
     Box (
         modifier = Modifier.fillMaxWidth()
     )
@@ -206,8 +227,8 @@ fun ChangeLocationPage(navController : NavHostController) {
                             )
                             Spacer(Modifier.height(8.dp))
                             TextField(
-                                value = exact_location,
-                                onValueChange = { exact_location = it },
+                                value = exactLocation,
+                                onValueChange = { exactLocation = it },
                                 placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke, fontSize = 12.sp) },
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = Grey,
@@ -235,10 +256,10 @@ fun ChangeLocationPage(navController : NavHostController) {
                                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
                                 colors = ButtonDefaults.buttonColors(Color.White),
                                 onClick = {
-                                   location_extracted = authenticatedUser.location.checkLocationPermissionAndServices(context)
+                                   currentLocation = authenticatedUser.location.checkLocationPermissionAndServices(context)
                                 }
                             )  {
-                                if (location_extracted == false) {
+                                if (!currentLocation) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.vector),
                                         contentDescription = "Location",
@@ -275,26 +296,7 @@ fun ChangeLocationPage(navController : NavHostController) {
                             text = "Save changes",
                             onClick = {
                                 isLoading.value = true
-                                scope.launch {
-                                    try {
-                                        if ( exact_location == ""){
-                                            Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
-                                        }
-                                        else {
-                                            authenticatedUser.location.wilayaId = Wilayas.ALL_WILAYAS.find { it.name == selected }!!.id
-                                            authenticatedUser.location.address = exact_location
-                                            navController.popBackStack()
-                                            UserEndpoints.updateUserInformation(authenticatedUser)
-                                            Toast.makeText(context, "Works !!!!", Toast.LENGTH_LONG).show()
-                                        }
-
-                                    } catch (e: Exception) {
-                                        Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-                                    } finally {
-                                        isLoading.value = false
-                                        navController.popBackStack()
-                                    }
-                                }
+                                updateTrigger.value = true
                             }
                         )
                     }

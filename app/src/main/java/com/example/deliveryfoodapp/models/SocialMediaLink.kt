@@ -11,7 +11,7 @@ data class SocialMediaLink(
     )
 
     companion object {
-        fun fromMap(map: Map<String, Any>) = SocialMediaLink(
+        fun fromMap(map: Map<String, Any?>) = SocialMediaLink(
             id = (map["id"] as Double).toInt(),
             name = map["name"] as String,
             url = map["url"] as String,

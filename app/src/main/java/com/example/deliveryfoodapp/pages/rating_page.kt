@@ -1,8 +1,8 @@
 package com.example.deliveryfoodapp.pages
 
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,17 +13,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -34,34 +35,47 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
-import com.example.deliveryfoodapp.models.Rating
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
+import com.example.deliveryfoodapp.currentOrderID
+import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.ui.theme.Primary
-import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 import androidx.compose.material3.Text as Text
+
 @Composable
 fun RatingPage(navController: NavHostController) {
+
+    val context = LocalContext.current
+    val isLoading = remember { mutableStateOf(false) }
+    val updateTrigger = remember { mutableStateOf(false) }
+
     // State for the selected rating
-    var selectedRating by remember { mutableStateOf(3) }
+    val selectedRating = remember { mutableDoubleStateOf(3.0) }
 
     // State for the feedback text
-    var feedback by remember { mutableStateOf("") }
+    val feedback = remember { mutableStateOf("") }
 
-    // Function to handle the "Submit" button click
-    fun submitRating() {
-        // Simulate creating a Rating object (backend model)
-        val rating = Rating(
-            id = 1, // Simulate an ID (in a real app, this would come from the backend)
-            reviewersCount = 1, // Simulate a single reviewer (the current user)
-            rating = selectedRating.toDouble() // Convert the selected rating to Double
-        )
-
-        // Simulate sending the rating and feedback to the backend
-
-
-        // Optionally, navigate to another screen or show a success message
-        navController.popBackStack()
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                println("******************************************")
+                println("order_id = ${currentOrderID}")
+                println("******************************************")
+                UserEndpoints.rateRestaurant(
+                    restaurantID = currentRestaurant.id,
+                    rating = selectedRating.doubleValue,
+                    comment = feedback.value,
+                    orderID = currentOrderID
+                )
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+                navController.popBackStack()
+            }
+        }
     }
 
     Column(
@@ -91,9 +105,9 @@ fun RatingPage(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 CustomRatingBar(
-                    rating = selectedRating,
+                    rating = selectedRating.doubleValue,
                     onRatingChanged = { newRating ->
-                        selectedRating = newRating // Update the rating state
+                        selectedRating.doubleValue = newRating
                     }
                 )
                 Spacer(modifier = Modifier.height(48.dp))
@@ -109,8 +123,8 @@ fun RatingPage(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(8.dp))
                 // Feedback TextField
                 TextField(
-                    value = feedback,
-                    onValueChange = { feedback = it },
+                    value = feedback.value,
+                    onValueChange = { feedback.value = it },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Share your feedback") },
                     singleLine = true
@@ -118,28 +132,38 @@ fun RatingPage(navController: NavHostController) {
             }
             Spacer(modifier = Modifier.height(88.dp))
             // Submit Button
-            PrincipalButton(
-                text = "Submit",
-                onClick = { submitRating() }, // Call the submit function
-            )
+            if (isLoading.value) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }else {
+                PrincipalButton(
+                    text = "Submit",
+                    onClick = {
+                        isLoading.value = true
+                        updateTrigger.value = true
+                    },
+                )
+            }
         }
 
         TextWithClickableLink(onClick = {
-            // Handle the "click here" action
             navController.popBackStack()
         })
     }
 }
 @Composable
-fun CustomRatingBar(rating: Int, onRatingChanged: (Int) -> Unit) {
-    var currentRating by remember { mutableStateOf(rating) }
+fun CustomRatingBar(rating: Double, onRatingChanged: (Double) -> Unit) {
+    val currentRating = remember { mutableDoubleStateOf(rating) }
 
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxWidth()
     ) {
         for (i in 1..5) {
-            val isSelected = i <= currentRating
+            val isSelected = i <= currentRating.doubleValue
             Icon(
                 painter = painterResource(id = if (isSelected) R.drawable.star_fill else R.drawable.star_outline),
                 contentDescription = null,
@@ -147,8 +171,8 @@ fun CustomRatingBar(rating: Int, onRatingChanged: (Int) -> Unit) {
                 modifier = Modifier
                     .size(40.dp)
                     .clickable {
-                        currentRating = i
-                        onRatingChanged(currentRating)
+                        currentRating.doubleValue = i.toDouble()
+                        onRatingChanged(currentRating.doubleValue)
                     }
             )
         }

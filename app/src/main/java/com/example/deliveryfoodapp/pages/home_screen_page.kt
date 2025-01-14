@@ -49,7 +49,7 @@ fun HomeScreen(navController: NavHostController) {
     val userID = Pref.getUserID()
     authenticatedUser.id = if (userID != -1) userID else 1 // later remove that 1
 
-    LaunchedEffect(1) {
+    LaunchedEffect(Unit) {
         try {
             val user = UserEndpoints.fetchUserById(authenticatedUser.id)
             authenticatedUser = user

@@ -20,13 +20,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -34,8 +37,9 @@ import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.models.Notification
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
-import com.example.deliveryfoodapp.ui.theme.Primary
+import com.example.deliveryfoodapp.ui.theme.Red
 import com.example.deliveryfoodapp.ui.theme.Secondary
+import com.example.deliveryfoodapp.utils.DateTimeManipulation
 import com.example.deliveryfoodapp.utils.OrderStatuses.Companion.getStatusColorFromValue
 import com.example.deliveryfoodapp.widgets.CustomAppBar
 
@@ -49,9 +53,14 @@ fun NotificationsPage(navController: NavHostController) {
     val notifications = remember {
         mutableStateOf(mutableListOf<Notification>())
     }
+    val secondUppercaseIndex = remember { mutableIntStateOf(-1) }
+    val normalPart = remember { mutableStateOf("") }
+    val statusValue = remember { mutableStateOf("") }
+    val statusColor = remember { mutableStateOf(Red) }
 
-    LaunchedEffect(1) {
+    LaunchedEffect(Unit) {
         try {
+
             notifications.value = UserEndpoints.fetchAllUserNotificationsByUserID(authenticatedUser.id)
             if (authenticatedUser.has_notification){
                 authenticatedUser.has_notification = false
@@ -101,18 +110,41 @@ fun NotificationsPage(navController: NavHostController) {
             }
 
             /** List of notifications **/
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                state = scrollState
+            if (notifications.value.isNotEmpty()){
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    state = scrollState
 
-            ) {
-                item {
-                    Spacer(modifier = Modifier.height(51.dp))
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(51.dp))
+                    }
+                    items(notifications.value)
+                    { notification ->
+                        secondUppercaseIndex.intValue = notification.message.indexOfFirst { it.isUpperCase() && it != notification.message[0] }
+                        normalPart.value = notification.message.substring(0, secondUppercaseIndex.intValue)
+                        statusValue.value = notification.message.substring(secondUppercaseIndex.intValue)
+                        statusColor.value = getStatusColorFromValue(statusValue.value)
+                        Notification_Item(
+                            notification,
+                            normalPart.value,
+                            statusValue.value,
+                            statusColor.value
+                        )
+                    }
                 }
-                items(notifications.value)
-                { notification ->
-                    Notification_Item(notification)
+            }else {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    Text(
+                        text = "No notification yet ):",
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
             }
         }
@@ -124,11 +156,12 @@ fun NotificationsPage(navController: NavHostController) {
 
 @SuppressLint("NewApi")
 @Composable
-fun Notification_Item(notification: Notification) {
-
-    val parts = notification.createdAt.split(" ")
-    val datePart = parts[0]
-    val timePart = parts[1]
+fun Notification_Item(
+    notification: Notification,
+    normalPart : String,
+    statusValue : String,
+    statusColor : Color
+) {
 
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -162,13 +195,16 @@ fun Notification_Item(notification: Notification) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // NotificationMessage(message = notification.message)
-                NotificationMessage(message = "Your order is now On Way")
+                NotificationMessage(
+                    normalPart = normalPart,
+                    statusValue = statusValue,
+                    statusColor = statusColor
+                )
             }
 
             Column {
                 Text(
-                    text = datePart,
+                    text = DateTimeManipulation.formatDateStringIntoDate(notification.createdAt),
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium
@@ -176,7 +212,7 @@ fun Notification_Item(notification: Notification) {
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = timePart,
+                    text = DateTimeManipulation.formatDateStringIntoTime(notification.createdAt),
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium
@@ -196,11 +232,11 @@ fun Notification_Item(notification: Notification) {
 }
 
 @Composable
-fun NotificationMessage(message: String) {
-    val secondUppercaseIndex = message.indexOfFirst { it.isUpperCase() && it != message[0] }
-    val normalPart = message.substring(0, secondUppercaseIndex)
-    val statusValue = message.substring(secondUppercaseIndex)
-    val statusColor = getStatusColorFromValue(statusValue)
+fun NotificationMessage(
+    normalPart : String,
+    statusValue : String,
+    statusColor : Color
+) {
 
     Row {
         Text(

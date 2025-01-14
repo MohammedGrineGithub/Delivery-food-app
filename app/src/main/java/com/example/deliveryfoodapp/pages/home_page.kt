@@ -51,7 +51,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.ui.theme.CardBackground
@@ -59,17 +58,23 @@ import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.models.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.backend_services.restaurant_api.RestaurantEndpoints
 import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Primary
+import com.example.deliveryfoodapp.ui.theme.Red
+import com.example.deliveryfoodapp.ui.theme.White
 import com.example.deliveryfoodapp.utils.CuisineTypes
+import com.example.deliveryfoodapp.utils.DateTimeManipulation
 import com.example.deliveryfoodapp.utils.Wilayas
-import java.time.LocalTime
 
 @SuppressLint("NewApi", "MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,7 +84,12 @@ fun HomePage(navController : NavHostController) {
     val configuration = LocalConfiguration.current
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(true) }
+    val isLoadingList = remember { mutableStateOf(false) }
+    val updateTriggerForAllRestaurants = remember { mutableStateOf(true) }
+    val updateTriggerForSearch = remember { mutableStateOf(false) }
+    val updateTriggerForFilter = remember { mutableStateOf(false) }
 
+    val focusManager = LocalFocusManager.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
     val topBottomMargin = (screenHeight * 0.02f) // 11.3% of screen height
@@ -88,10 +98,13 @@ fun HomePage(navController : NavHostController) {
     var search by remember {
         mutableStateOf("")
     }
-    var CuisineisExpanded by remember {
+    var cuisinesExpanded by remember {
         mutableStateOf(false)
     }
-    var WilayaisExpanded by remember {
+    var wilayasExpanded by remember {
+        mutableStateOf(false)
+    }
+    val cancelFilterVisible = remember {
         mutableStateOf(false)
     }
     var wilaya by remember {
@@ -100,45 +113,78 @@ fun HomePage(navController : NavHostController) {
     var cuisine by remember {
         mutableStateOf("Cuisine")
     }
+    val wilayaID = remember { mutableStateOf<Int?>(null) }
+    val cuisineID = remember { mutableStateOf<Int?>(null) }
 
     val restaurants = remember {
         mutableStateOf(mutableListOf<Restaurant>())
     }
     val hasNotification = remember { mutableStateOf(authenticatedUser.has_notification) }
 
-    LaunchedEffect(1) {
-        try {
-            val res : MutableList<Restaurant> = RestaurantEndpoints.fetchAllRestaurants()
-            restaurants.value = res
-        } catch (e: Exception) {
-            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-        } finally {
-            isLoading.value = false
+    // Get All restaurants
+    LaunchedEffect(updateTriggerForAllRestaurants.value) {
+        if (updateTriggerForAllRestaurants.value){
+            try {
+                val res : MutableList<Restaurant> = RestaurantEndpoints.fetchAllRestaurants()
+                restaurants.value = res
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTriggerForAllRestaurants.value = false
+            }
         }
     }
-
-    if (isLoading.value) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ){
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    // Search for restaurant
+    LaunchedEffect(updateTriggerForSearch.value) {
+        if (updateTriggerForSearch.value){
+            try {
+                val res : MutableList<Restaurant> = RestaurantEndpoints.searchRestaurantByName(search)
+                restaurants.value = res
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoadingList.value = false
+                updateTriggerForSearch.value = false
+            }
         }
-    }else {
+    }
+    // Apply filter for restaurants
+    LaunchedEffect(updateTriggerForFilter.value) {
+        if (updateTriggerForFilter.value){
+            try {
+                val res : MutableList<Restaurant> = RestaurantEndpoints.filterRestaurant(
+                    wilayaID = wilayaID.value,
+                    cuisineID = cuisineID.value
+                )
+                restaurants.value = res
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoadingList.value = false
+                updateTriggerForFilter.value = false
+            }
+        }
+    }
         Box (
             modifier = Modifier.fillMaxSize()
         ) {
             Box (
 
-                modifier = Modifier.fillMaxWidth().padding(
-                    top = (screenHeight * 0.02f) - 6.dp
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = (screenHeight * 0.02f) - 6.dp
+                    ),
 
                 ){
                 Button(
                     onClick = {
                         navController.navigate(Routes.NOTIFICATIONS_PAGE)
                     },
-                    modifier = Modifier.align(Alignment.TopEnd).padding(0.dp),
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(0.dp),
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
                 ){
                     if (!hasNotification.value){
@@ -146,7 +192,10 @@ fun HomePage(navController : NavHostController) {
                             painter = painterResource(id = R.drawable.notification),
                             contentDescription = "has notification",
                             tint = GreyStroke,
-                            modifier = Modifier.size(34.dp).background(color = Color.Transparent).align(Alignment.Top),
+                            modifier = Modifier
+                                .size(34.dp)
+                                .background(color = Color.Transparent)
+                                .align(Alignment.Top),
                         )
                     }
                     else {
@@ -154,7 +203,10 @@ fun HomePage(navController : NavHostController) {
                             painter = painterResource(R.drawable.notification_on),
                             contentDescription = "no notification",
                             tint = Primary,
-                            modifier = Modifier.size(34.dp).background(color = Color.Transparent).align(Alignment.Top),
+                            modifier = Modifier
+                                .size(34.dp)
+                                .background(color = Color.Transparent)
+                                .align(Alignment.Top),
                         )
                     }
                 }
@@ -216,21 +268,32 @@ fun HomePage(navController : NavHostController) {
                                 ),
                                 placeholder = { Text("Search") },
                                 modifier = Modifier.weight(1f),
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Done
+                                ),
                                 keyboardActions = KeyboardActions(
-                                    onSearch = {
-
+                                    onDone = {
+                                        focusManager.clearFocus()
+                                        if (search.isNotEmpty()){
+                                            isLoadingList.value = true
+                                            updateTriggerForSearch.value = true
+                                        }
                                     }
                                 ),
+                                singleLine = true,
                                 trailingIcon = {
                                     if (search.isNotEmpty()) {
                                         Button(
                                             onClick = {
-
+                                                focusManager.clearFocus()
+                                                search = ""
+                                                isLoading.value = true
+                                                updateTriggerForAllRestaurants.value = true
                                             } ,
                                             colors = ButtonDefaults.buttonColors(Color.Transparent),
                                         ) {
-                                            Icon(Icons.Default.Check, contentDescription = "Search" ,
+                                            Icon(Icons.Default.Clear, contentDescription = "Search" ,
                                                 tint = Black)
                                         }
                                     }
@@ -243,187 +306,187 @@ fun HomePage(navController : NavHostController) {
                             modifier = Modifier.fillMaxWidth()
                         )
                         {
-                            Box(
-                                modifier = Modifier.background(
-                                    color = Grey,
-                                    shape = RoundedCornerShape(100.dp)
-                                ).padding(10.dp).width((screenWidth * 0.06f)),
+                            if (cancelFilterVisible.value){
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = Red.copy(alpha = 5f),
+                                            shape = RoundedCornerShape(100.dp)
+                                        )
+                                        .padding(10.dp)
+                                        .width((screenWidth * 0.06f))
+                                        .clickable {
+                                            cancelFilterVisible.value = false
+                                            wilayaID.value = null
+                                            cuisineID.value = null
+                                            cuisine = "Cuisine Type"
+                                            wilaya = "Wilaya"
+                                            isLoading.value = true
+                                            updateTriggerForAllRestaurants.value = true
+                                        },
 
-                                ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.filter),
-                                    contentDescription = "filter",
-                                    modifier = Modifier.size(26.dp).background(color = Color.Transparent)
-                                        .align(
-                                            Alignment.Center
-                                        ),
-                                    tint = Color.Unspecified
-                                )
+                                    ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "close filter",
+                                        modifier = Modifier
+                                            .size(26.dp)
+                                            .background(color = Color.Transparent)
+                                            .align(
+                                                Alignment.Center
+                                            ),
+                                        tint = White
+                                    )
+                                }
                             }
+                            else {
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = Grey,
+                                            shape = RoundedCornerShape(100.dp)
+                                        )
+                                        .padding(10.dp)
+                                        .width((screenWidth * 0.06f)),
+
+                                    ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.filter),
+                                        contentDescription = "filter",
+                                        modifier = Modifier
+                                            .size(26.dp)
+                                            .background(color = Color.Transparent)
+                                            .align(
+                                                Alignment.Center
+                                            ),
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                            }
+
                             Row(
                                 horizontalArrangement =  Arrangement.spacedBy(6.dp),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 ExposedDropdownMenuBox(
-                                    expanded = CuisineisExpanded,
-                                    onExpandedChange = { CuisineisExpanded = !CuisineisExpanded },
+                                    expanded = cuisinesExpanded,
+                                    onExpandedChange = { cuisinesExpanded = !cuisinesExpanded },
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    if (cuisine == "Cuisine") {
-                                        TextField(
-                                            value = cuisine,
-                                            onValueChange = {},
-                                            readOnly = true,
-                                            trailingIcon = {
-                                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                                    expanded = CuisineisExpanded
-                                                )
-                                            },
-                                            modifier = Modifier
-                                                .background(Grey, RoundedCornerShape(12.dp))
-                                                .menuAnchor(),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedContainerColor = Color.Transparent,
-                                                unfocusedContainerColor = Color.Transparent,
-                                                focusedTextColor = Color.Black,
-                                                unfocusedTextColor = Color.Black,
-                                                disabledTextColor = Color.Gray,
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
-                                            textStyle = LocalTextStyle.current.copy(
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.Normal
+                                    TextField(
+                                        value = cuisine,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        singleLine = true,
+                                        trailingIcon = {
+                                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                                expanded = cuisinesExpanded
                                             )
+                                        },
+                                        modifier = Modifier
+                                            .background(Grey, RoundedCornerShape(12.dp))
+                                            .menuAnchor(),
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedContainerColor = Color.Transparent,
+                                            focusedTextColor = Color.Black,
+                                            unfocusedTextColor = Color.Black,
+                                            disabledTextColor = Color.Gray,
+                                            focusedIndicatorColor = Color.Transparent,
+                                            unfocusedIndicatorColor = Color.Transparent,
+                                            disabledIndicatorColor = Color.Transparent
+                                        ),
+                                        textStyle = LocalTextStyle.current.copy(
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Normal
                                         )
-                                    } else {
-                                        TextField(
-                                            value = cuisine,
-                                            onValueChange = {},
-                                            readOnly = true,
-                                            singleLine = true,
-                                            trailingIcon = {
-                                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                                    expanded = CuisineisExpanded
-                                                )
-                                            },
-                                            modifier = Modifier
-                                                .background(Grey, RoundedCornerShape(12.dp))
-                                                .menuAnchor(),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedContainerColor = Color.Transparent,
-                                                unfocusedContainerColor = Color.Transparent,
-                                                focusedTextColor = Color.Black,
-                                                unfocusedTextColor = Color.Black,
-                                                disabledTextColor = Color.Gray,
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
-                                            textStyle = LocalTextStyle.current.copy(
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.Normal
-                                            )
-                                        )
-                                    }
+                                    )
+
                                     ExposedDropdownMenu(
-                                        expanded = CuisineisExpanded,
-                                        onDismissRequest = { CuisineisExpanded = false },
-                                        modifier = Modifier.heightIn(max = 300.dp)
+                                        expanded = cuisinesExpanded,
+                                        onDismissRequest = { cuisinesExpanded = false },
+                                        modifier = Modifier
+                                            .heightIn(max = 300.dp)
                                             .background(color = Grey)
                                     ) {
-                                        CuisineTypes.ALL_CUISINE_TYPES.forEach { CuisineType ->
+                                        CuisineTypes.ALL_CUISINE_TYPES.forEach { cuisineType ->
                                             DropdownMenuItem(
-                                                text = { Text(text = "${CuisineType.id}- ${CuisineType.name}") },
+                                                text = { Text(text = "${cuisineType.id}- ${cuisineType.name}") },
                                                 onClick = {
-                                                    cuisine = CuisineType.name
-                                                    CuisineisExpanded = false
+                                                    cuisine = cuisineType.name
+                                                    cuisineID.value = cuisineType.id
+                                                    cuisinesExpanded = false
+
+                                                    cancelFilterVisible.value = true
+                                                    isLoadingList.value = true
+                                                    updateTriggerForFilter.value = true
                                                 },
                                                 contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                                modifier = Modifier.fillMaxWidth().background(color = Grey)
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(color = Grey)
                                             )
                                         }
                                     }
                                 }
+                                /** ************************************************************ **/
                                 ExposedDropdownMenuBox(
-                                    expanded = WilayaisExpanded,
-                                    onExpandedChange = { WilayaisExpanded = !WilayaisExpanded },
+                                    expanded = wilayasExpanded,
+                                    onExpandedChange = { wilayasExpanded = !wilayasExpanded },
                                     modifier = Modifier.weight(1f)
                                 ) {
-                                    if (wilaya == "Wilaya") {
-                                        TextField(
-                                            value = wilaya,
-                                            onValueChange = {},
-                                            readOnly = true,
-                                            trailingIcon = {
-                                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                                    expanded = WilayaisExpanded
-                                                )
-                                            },
-                                            modifier = Modifier
-                                                .background(Grey, RoundedCornerShape(12.dp))
-                                                .menuAnchor(),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedContainerColor = Color.Transparent,
-                                                unfocusedContainerColor = Color.Transparent,
-                                                focusedTextColor = Color.Black,
-                                                unfocusedTextColor = Color.Black,
-                                                disabledTextColor = Color.Gray,
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
-                                            textStyle = LocalTextStyle.current.copy(
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.Normal
+                                    TextField(
+                                        value = wilaya,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        singleLine = true,
+                                        trailingIcon = {
+                                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                                expanded = wilayasExpanded
                                             )
+                                        },
+                                        modifier = Modifier
+                                            .background(Grey, RoundedCornerShape(12.dp))
+                                            .menuAnchor(),
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedContainerColor = Color.Transparent,
+                                            focusedTextColor = Color.Black,
+                                            unfocusedTextColor = Color.Black,
+                                            disabledTextColor = Color.Gray,
+                                            focusedIndicatorColor = Color.Transparent,
+                                            unfocusedIndicatorColor = Color.Transparent,
+                                            disabledIndicatorColor = Color.Transparent
+                                        ),
+                                        textStyle = LocalTextStyle.current.copy(
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Normal
                                         )
-                                    } else {
-                                        TextField(
-                                            value = wilaya,
-                                            onValueChange = {},
-                                            readOnly = true,
-                                            singleLine = true,
-                                            trailingIcon = {
-                                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                                    expanded = WilayaisExpanded
-                                                )
-                                            },
-                                            modifier = Modifier
-                                                .background(Grey, RoundedCornerShape(12.dp))
-                                                .menuAnchor(),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedContainerColor = Color.Transparent,
-                                                unfocusedContainerColor = Color.Transparent,
-                                                focusedTextColor = Color.Black,
-                                                unfocusedTextColor = Color.Black,
-                                                disabledTextColor = Color.Gray,
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
-                                            textStyle = LocalTextStyle.current.copy(
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.Normal
-                                            )
-                                        )
-                                    }
+                                    )
+
                                     ExposedDropdownMenu(
-                                        expanded = WilayaisExpanded,
-                                        onDismissRequest = { WilayaisExpanded = false },
-                                        modifier = Modifier.heightIn(max = 300.dp)
+                                        expanded = wilayasExpanded,
+                                        onDismissRequest = { wilayasExpanded = false },
+                                        modifier = Modifier
+                                            .heightIn(max = 300.dp)
                                             .background(color = Grey)
                                     ) {
-                                        Wilayas.ALL_WILAYAS.forEach { Wilaya ->
+                                        Wilayas.ALL_WILAYAS.forEach { w ->
                                             DropdownMenuItem(
-                                                text = { Text(text = "${Wilaya.id}- ${Wilaya.name}") },
+                                                text = { Text(text = "${w.id}- ${w.name}") },
                                                 onClick = {
-                                                    wilaya = Wilaya.name
-                                                    WilayaisExpanded = false
+                                                    wilaya = w.name
+                                                    wilayaID.value = w.id
+                                                    wilayasExpanded = false
+
+                                                    cancelFilterVisible.value = true
+                                                    isLoadingList.value = true
+                                                    updateTriggerForFilter.value = true
                                                 },
                                                 contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                                modifier = Modifier.fillMaxWidth().background(color = Grey)
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(color = Grey)
                                             )
                                         }
                                     }
@@ -431,35 +494,48 @@ fun HomePage(navController : NavHostController) {
                             }
                         }
                     }
-                    if ( ( cuisine == "Cuisine" || cuisine == "None" ) && (wilaya == "Wilaya" || wilaya == "None") )
-                    {
-                        LazyColumn (
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                    if (isLoading.value || isLoadingList.value) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
                         ){
-                            items(restaurants.value){
-                                    restaurant ->
-                                Restaurant_Box(ScreenHeight = screenHeight, navController = navController, restaurant = restaurant)
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    }else {
+                        if (restaurants.value.isNotEmpty()) {
+                            LazyColumn (
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                            ){
+                                items(restaurants.value){
+                                        restaurant ->
+                                    Restaurant_Box(screenHeight = screenHeight, navController = navController, restaurant = restaurant)
+                                }
+                            }
+                        }else {
+                            Box(
+                                modifier = Modifier.fillMaxSize()
+                            ){
+                                Text(
+                                    text = "No restaurants ):",
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Light,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
                             }
                         }
                     }
+                    /*if ( ( cuisine == "Cuisine") && (wilaya == "Wilaya") )
+                    {
+
+                    }*/
                 }
             }
         }
-    }
 
 }
 
 @Composable
-fun Restaurant_Box(ScreenHeight: Dp, navController: NavHostController, restaurant: Restaurant) {
-
-    fun isWithinOperatingHours(openingTime: LocalTime, closingTime: LocalTime): Boolean {
-        val currentTime = LocalTime.now()
-        return if (closingTime.isAfter(openingTime) || closingTime == openingTime) {
-            currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime)
-        } else {
-            currentTime.isAfter(openingTime) || currentTime.isBefore(closingTime)
-        }
-    }
+fun Restaurant_Box(screenHeight: Dp, navController: NavHostController, restaurant: Restaurant) {
 
     Box(
         modifier = Modifier
@@ -477,7 +553,7 @@ fun Restaurant_Box(ScreenHeight: Dp, navController: NavHostController, restauran
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(ScreenHeight * 0.18f)
+                    .height(screenHeight * 0.18f)
             ) {
                 AsyncImage(
                     model = restaurant.banner.imagePath,
@@ -486,11 +562,14 @@ fun Restaurant_Box(ScreenHeight: Dp, navController: NavHostController, restauran
                         .fillMaxSize()
                         .clip(
                             shape = RoundedCornerShape(
-                                topStart = 16.dp, topEnd = 16.dp, bottomEnd = 0.dp, bottomStart = 0.dp
+                                topStart = 16.dp,
+                                topEnd = 16.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp
                             )
                         )
                         .then(
-                            if (!isWithinOperatingHours(
+                            if (!DateTimeManipulation.isWithinOperatingHours(
                                     restaurant.openingTime,
                                     restaurant.closingTime
                                 )
@@ -498,13 +577,16 @@ fun Restaurant_Box(ScreenHeight: Dp, navController: NavHostController, restauran
                         ),
                     contentScale = ContentScale.Crop
                 )
-                if (!isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) {
+                if (!DateTimeManipulation.isWithinOperatingHours(restaurant.openingTime, restaurant.closingTime)) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(
                                 shape = RoundedCornerShape(
-                                    topStart = 16.dp, topEnd = 16.dp, bottomEnd = 0.dp, bottomStart = 0.dp
+                                    topStart = 16.dp,
+                                    topEnd = 16.dp,
+                                    bottomEnd = 0.dp,
+                                    bottomStart = 0.dp
                                 )
                             )
                             .background(Color.Black.copy(alpha = 0.6f)),
@@ -556,9 +638,9 @@ fun Restaurant_Box(ScreenHeight: Dp, navController: NavHostController, restauran
                 ) {
                     Box(
                         modifier = Modifier
-                            .size((ScreenHeight * 0.055f))
+                            .size((screenHeight * 0.055f))
                             .background(
-                                shape = RoundedCornerShape((ScreenHeight * 0.065f)),
+                                shape = RoundedCornerShape((screenHeight * 0.065f)),
                                 color = Color.Transparent
                             )
                     ) {
@@ -566,7 +648,7 @@ fun Restaurant_Box(ScreenHeight: Dp, navController: NavHostController, restauran
                             model = restaurant.logo.imagePath,
                             contentDescription = "Logo",
                             modifier = Modifier
-                                .size((ScreenHeight * 0.055f))
+                                .size((screenHeight * 0.055f))
                                 .clip(shape = CircleShape),
                             contentScale = ContentScale.FillBounds
                         )

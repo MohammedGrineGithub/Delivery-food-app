@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.currentOrderID
 import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.models.User
@@ -195,14 +196,6 @@ fun ProfilePage(navController : NavHostController) {
 
             Spacer(modifier = Modifier.height(150.dp))
 
-            Text(
-                text = "MAKLAEXPRESS . Version 1.0",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.ExtraLight
-                )
-            )
-
 
         }
 
@@ -218,7 +211,7 @@ fun ProfilePage(navController : NavHostController) {
                     Pref.clearUserID()
                     authenticatedUser = User.emptyUser()
                     currentRestaurant = Restaurant.emptyRestaurant()
-
+                    currentOrderID = 0
                     navController.navigate(Routes.LOGIN_PAGE) {
                         popUpTo(0) { inclusive = true }
                     }

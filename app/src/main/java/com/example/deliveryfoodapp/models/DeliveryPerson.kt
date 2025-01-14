@@ -6,7 +6,7 @@ data class DeliveryPerson(
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
-        "fullName" to fullName,
+        "full_name" to fullName,
         "phone" to phone,
     )
 

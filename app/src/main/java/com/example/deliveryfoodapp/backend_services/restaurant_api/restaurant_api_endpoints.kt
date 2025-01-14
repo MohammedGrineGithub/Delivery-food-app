@@ -6,6 +6,7 @@ import com.example.deliveryfoodapp.models.Category
 import com.example.deliveryfoodapp.models.Comment
 import com.example.deliveryfoodapp.models.Restaurant
 import com.example.deliveryfoodapp.models.RestaurantMenu
+import com.example.deliveryfoodapp.models.SocialMediaLink
 
 object RestaurantEndpoints {
 
@@ -22,7 +23,7 @@ object RestaurantEndpoints {
 
     /** **************************** Get all restaurant comments **************************** **/
     suspend fun fetchCommentsByRestaurantID(restaurantID: Int): MutableList<Comment> {
-        val commentsList = RestaurantEndpoints.apiService.getCommentsByRestaurantID(
+        val commentsList = apiService.getCommentsByRestaurantID(
             id = restaurantID,
             token = token
         )
@@ -31,7 +32,7 @@ object RestaurantEndpoints {
 
     /** ******************************* Get restaurant menu ********************************* **/
     suspend fun fetchRestaurantMenuByMenuID(menuID: Int): RestaurantMenu {
-        val categories = RestaurantEndpoints.apiService.getRestaurantMenuByMenuID(
+        val categories = apiService.getRestaurantMenuByMenuID(
             id = menuID,
             token = token
         )
@@ -39,5 +40,39 @@ object RestaurantEndpoints {
             id = menuID,
             categories = categories.map { Category.fromMap(it) }.toMutableList()
         )
+    }
+
+    /** ************************ Get all restaurant social media links ********************** **/
+    suspend fun fetchSocialMediaLinksByRestaurantID(restaurantID: Int): MutableList<SocialMediaLink> {
+        val socialMediaLinkList = apiService.getSocialMediaLinksByRestaurantID(
+            id = restaurantID,
+            token = token
+        )
+        return socialMediaLinkList.map { SocialMediaLink.fromMap(it) }.toMutableList()
+    }
+
+    /** ************************ search restaurant by name ********************** **/
+    suspend fun searchRestaurantByName(name: String): MutableList<Restaurant> {
+        val restaurantList = apiService.searchRestaurantByName(
+            token = token,
+            body = mapOf("restaurant_name" to name)
+        )
+        return restaurantList.map { Restaurant.fromMap(it) }.toMutableList()
+    }
+
+    /** ******************** Filter restaurant by wilaya or cuisine type ****************** **/
+    suspend fun filterRestaurant(wilayaID: Int?, cuisineID: Int?): MutableList<Restaurant> {
+        val body = mutableMapOf<String, Int>()
+        if (wilayaID != null) {
+            body["wilaya"] = wilayaID
+        }
+        if (cuisineID != null){
+            body["cuisine"] = cuisineID
+        }
+        val restaurantList = apiService.filterRestaurant(
+            token = token,
+            body = body
+        )
+        return restaurantList.map { Restaurant.fromMap(it) }.toMutableList()
     }
 }

@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import com.example.deliveryfoodapp.ui.theme.*
@@ -25,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +63,76 @@ fun LoginPage(navController : NavHostController) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val updateTrigger = remember { mutableStateOf(false) }
+    val isLoading = remember { mutableStateOf(false) }
+
+    /** Async fun for google auth **/
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                // TODO : Call google login function from the backend
+                // TODO : save the userID
+                // TODO : save the token
+
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+
+                // navigate to home screen
+                navController.navigate(Routes.HOME_SCREEN){
+                    popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
+                }
+            }
+        }
+    }
+
+    /** Async fun for email/password auth **/
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                if (email.isEmpty()){
+                    Toast.makeText(
+                        context,
+                        "Email must not be empty",
+                        Toast.LENGTH_LONG).show()
+                }else if (!isValidEmail(email)) {
+                    Toast.makeText(
+                        context,
+                        "Your email is not valid",
+                        Toast.LENGTH_LONG).show()
+                }
+                if (password.isEmpty()){
+                    Toast.makeText(
+                        context,
+                        "Password must not be empty",
+                        Toast.LENGTH_LONG).show()
+                } else if (password.length < 8){
+                    Toast.makeText(
+                        context,
+                        "Password must have more than 8 characters",
+                        Toast.LENGTH_LONG).show()
+                }
+                if (isValidEmail(email) && email.isNotEmpty() && password.length >= 8){
+
+                    // TODO : Call email/password login function from the backend
+                    // TODO : save the userID
+                    // TODO : save the token
+
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+                // navigate to home screen
+                navController.navigate(Routes.HOME_SCREEN){
+                    popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -92,40 +165,42 @@ fun LoginPage(navController : NavHostController) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ){
-                OutlinedButton(
-                    onClick = {
-                        // TODO : Call google login function from the backend
-                        // TODO : save the userID
-                        // TODO : save the token
-
-                        // navigate to home screen
-                        navController.navigate(Routes.HOME_SCREEN){
-                            popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(top = 12.dp, bottom = 12.dp)
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    border = BorderStroke(1.dp, BlackStroke),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                if (isLoading.value) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ){
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }else {
+                    OutlinedButton(
+                        onClick = {
+                            isLoading.value = true
+                            updateTrigger.value = true
+                        },
+                        modifier = Modifier
+                            .padding(top = 12.dp, bottom = 12.dp)
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        border = BorderStroke(1.dp, BlackStroke),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.google),
-                            contentDescription = "Icon",
-                            modifier = Modifier.size(30.dp),
-                            tint = Color.Unspecified
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Log in with google",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.google),
+                                contentDescription = "Icon",
+                                modifier = Modifier.size(30.dp),
+                                tint = Color.Unspecified
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Log in with google",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
                     }
                 }
                 Spacer(Modifier.height(20.dp))
@@ -206,44 +281,21 @@ fun LoginPage(navController : NavHostController) {
                         unfocusedBorderColor = GreyStroke
                     )
                 )
-                PrincipalButton(
-                    text = "Log In",
-                    onClick = {
-                        if (email.isEmpty()){
-                            Toast.makeText(
-                                context,
-                                "Email must not be empty",
-                                Toast.LENGTH_SHORT).show()
-                        }else if (!isValidEmail(email)) {
-                            Toast.makeText(
-                                context,
-                                "Your email is not valid",
-                                Toast.LENGTH_SHORT).show()
-                        }
-                        if (password.isEmpty()){
-                            Toast.makeText(
-                                context,
-                                "Password must not be empty",
-                                Toast.LENGTH_SHORT).show()
-                        } else if (password.length < 8){
-                            Toast.makeText(
-                                context,
-                                "Password must have more than 8 characters",
-                                Toast.LENGTH_SHORT).show()
-                        }
-                        if (isValidEmail(email) && email.isNotEmpty() && password.length >= 8){
-
-                            // TODO : Call email/password login function from the backend
-                            // TODO : save the userID
-                            // TODO : save the token
-
-                            // navigate to home screen
-                            navController.navigate(Routes.HOME_SCREEN){
-                                popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
-                            }
-                        }
+                if (isLoading.value) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ){
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
-                )
+                }else {
+                    PrincipalButton(
+                        text = "Log In",
+                        onClick = {
+                            isLoading.value = true
+                            updateTrigger.value = true
+                        }
+                    )
+                }
             }
         }
         Row(

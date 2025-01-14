@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,12 +23,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,23 +37,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.authenticatedUser
-import com.example.deliveryfoodapp.backend_services.restaurant_api.RestaurantEndpoints
 import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.currentRestaurant
 import com.example.deliveryfoodapp.models.UserCart
 import com.example.deliveryfoodapp.local_storage_services.repositories.UserCartRepository
 import com.example.deliveryfoodapp.local_storage_services.room.RoomUserCart
+import com.example.deliveryfoodapp.models.DeliveryPerson
+import com.example.deliveryfoodapp.models.UserOrder
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Secondary
+import com.example.deliveryfoodapp.utils.OrderStatuses
 import com.example.deliveryfoodapp.utils.Routes
+import com.example.deliveryfoodapp.widgets.ConfirmPhoneNumberPopUp
 import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
-import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,30 +65,81 @@ fun ValidatePaymentPage(navController : NavHostController) {
 
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val updateTrigger = remember { mutableStateOf(false) }
+
+    var showDialog by remember { mutableStateOf(false) }
 
     var userCart = authenticatedUser.getUserCartByRestaurantID(restaurantID = currentRestaurant.id)
 
-    val address by remember {
-        mutableStateOf(currentRestaurant.location.address)
+    val address = remember {
+        mutableStateOf(authenticatedUser.location.address)
     }
-    val phone by remember {
+    val phone = remember {
         mutableStateOf(authenticatedUser.phone)
     }
-    var note_To_driver by remember {
+    var noteToDriver by remember {
         mutableStateOf("")
     }
-    val Items_total by remember {
+    val itemsTotal by remember {
         mutableDoubleStateOf(
             userCart.totalPrice()
         )
     }
-    val Delivery_fees by remember {
+    val deliveryFees by remember {
         mutableIntStateOf(currentRestaurant.deliveryPrice)
     }
-    val Service_fees = 0
+    val serviceFees = 0
 
-    val Total_price by remember { mutableDoubleStateOf(Items_total + Delivery_fees + Service_fees) }
+    val totalPrice by remember { mutableDoubleStateOf(itemsTotal + deliveryFees + serviceFees) }
+
+
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                // Create the order
+                val userOrder = UserOrder(
+                    id = 0,
+                    restaurant = currentRestaurant,
+                    createdAt = "",
+                    status = OrderStatuses.IS_WAITING_STATUS,
+                    deliveryNote = noteToDriver,
+                    itemsTotalPrice = itemsTotal,
+                    deliveryPerson = DeliveryPerson.emptyDeliveryPerson(),
+                    orderItems = userCart.orderItems
+                )
+                // Save it in backend
+                UserEndpoints.createOrder(
+                    userID = authenticatedUser.id,
+                    userOrder = userOrder
+                )
+                // Update user phone number
+                UserEndpoints.updateUserPhoneNumber(
+                    id = authenticatedUser.id,
+                    phone = authenticatedUser.phone
+                )
+                // Toast.makeText(context, "Update phone with success", Toast.LENGTH_LONG).show()
+                // Delete that cart from the authenticatedUser
+                authenticatedUser.deleteCart(userCart)
+
+                // delete that cart from SqlLite (their orderItems will be deleted automatically)
+                val roomUserCart : RoomUserCart? = UserCartRepository.getUserCartById(userCart.id)
+                if (roomUserCart != null) {
+                    UserCartRepository.removeUserCart(roomUserCart)
+                }
+                // Empty userCart variable
+                userCart = UserCart.emptyUserCart()
+
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+                navController.navigate(Routes.ORDER_PLACED_PAGE) {
+                    popUpTo(0) { inclusive = true } // Clear the entire back stack
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -136,7 +191,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             Spacer(modifier = Modifier.height(6.dp))
 
                             Text(
-                                text = address,
+                                text = address.value,
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Light
@@ -152,17 +207,13 @@ fun ValidatePaymentPage(navController : NavHostController) {
                         Modifier.size(22.dp)
                             .align(Alignment.CenterVertically)
                     )
-
-
-
-
-
-
                 }
 
                 Row (
                     modifier = Modifier.fillMaxWidth()
-                        .clickable {  },
+                        .clickable {
+                            showDialog = true
+                        },
                     horizontalArrangement = Arrangement.SpaceBetween
 
                 ) {
@@ -188,7 +239,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             Spacer(modifier = Modifier.height(6.dp))
 
                             Text(
-                                text = phone,
+                                text = phone.value,
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Light
@@ -240,8 +291,8 @@ fun ValidatePaymentPage(navController : NavHostController) {
                     Spacer(modifier = Modifier.height(6.dp))
 
                     OutlinedTextField(
-                        value = note_To_driver,
-                        onValueChange = {note_To_driver=it},
+                        value = noteToDriver,
+                        onValueChange = {noteToDriver=it},
                         placeholder = { Text(
                             text = "Ex : I live in the third stage of the building",
                             style = TextStyle( fontSize = 14.sp, fontWeight = FontWeight.Normal, color = Color(0xFF9F9F9F)  )) },
@@ -257,7 +308,9 @@ fun ValidatePaymentPage(navController : NavHostController) {
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Secondary.copy(alpha = 0.4f),
                             unfocusedBorderColor = GreyStroke
-                        )
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true
 
 
                     )
@@ -311,7 +364,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             )
 
                             Text(
-                                text = "${String.format("%.1f",Items_total)} DA",
+                                text = "${String.format("%.1f",itemsTotal)} DA",
                                 style = TextStyle(
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.SemiBold
@@ -333,7 +386,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             )
 
                             Text(
-                                text = "$Delivery_fees DA",
+                                text = "$deliveryFees DA",
                                 style = TextStyle(
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.SemiBold
@@ -354,7 +407,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             )
 
                             Text(
-                                text = "$Service_fees DA",
+                                text = "$serviceFees DA",
                                 style = TextStyle(
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.SemiBold
@@ -376,7 +429,7 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             )
 
                             Text(
-                                text = "${String.format("%.1f",Total_price)} DA",
+                                text = "${String.format("%.1f",totalPrice)} DA",
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
@@ -385,13 +438,6 @@ fun ValidatePaymentPage(navController : NavHostController) {
                             )
 
                         }
-
-
-
-
-
-
-
                     }
 
                 }
@@ -411,33 +457,20 @@ fun ValidatePaymentPage(navController : NavHostController) {
                 text = "Place the order",
                 onClick = {
                     isLoading.value = true
-                    scope.launch {
-                        try {
-                            // TODO Call backend function to Create new order in backend
-                        } catch (e: Exception) {
-                            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-                        } finally {
-                            isLoading.value = false
-                        }
-                    }
-
-                    // Delete that cart from the authenticatedUser
-                    authenticatedUser.deleteCart(userCart)
-
-                    // delete that cart from SqlLite (their orderItems will be deleted automatically)
-                    val roomUserCart : RoomUserCart? = UserCartRepository.getUserCartById(userCart.id)
-                    if (roomUserCart != null) {
-                        UserCartRepository.removeUserCart(roomUserCart)
-                    }
-                    // Empty userCart variable
-                    userCart = UserCart.emptyUserCart()
-
-
-                    navController.navigate(Routes.ORDER_PLACED_PAGE) {
-                        popUpTo(0) { inclusive = true } // Clear the entire back stack
-                    }
+                    updateTrigger.value = true
                 }
             )
         }
+    }
+    if (showDialog){
+        ConfirmPhoneNumberPopUp(
+            phoneNumber = phone.value,
+            onDismiss = { showDialog = false },
+            onConfirm = { updatedPhoneNumber ->
+                phone.value = updatedPhoneNumber
+                authenticatedUser.phone = updatedPhoneNumber
+                showDialog = false
+            }
+        )
     }
 }

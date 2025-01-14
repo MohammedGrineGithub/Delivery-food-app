@@ -1,6 +1,7 @@
 package com.example.deliveryfoodapp.pages
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +17,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -28,16 +33,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.backend_services.restaurant_api.RestaurantEndpoints
 import com.example.deliveryfoodapp.currentRestaurant
+import com.example.deliveryfoodapp.models.Comment
 import com.example.deliveryfoodapp.models.SocialMediaLink
 import com.example.deliveryfoodapp.ui.theme.Blue
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
@@ -45,44 +52,33 @@ import com.example.deliveryfoodapp.ui.theme.Orange
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.Red
 import com.example.deliveryfoodapp.ui.theme.White
-import com.example.deliveryfoodapp.utils.Routes
-import com.example.deliveryfoodapp.utils.createRestaurantForTest
-import java.time.LocalTime
+import com.example.deliveryfoodapp.utils.DateTimeManipulation
 
-@SuppressLint("DefaultLocale")
+@SuppressLint("DefaultLocale", "MutableCollectionMutableState")
 @Composable
 fun PlusInfoPage(navController : NavHostController) {
 
-    fun isWithinOperatingHours(openingTime: LocalTime, closingTime: LocalTime): Boolean {
-        return true
-        val currentTime = LocalTime.now()
-        return if (closingTime.isAfter(openingTime) || closingTime == openingTime) {
-            currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime)
-        } else {
-            currentTime.isAfter(openingTime) || currentTime.isBefore(closingTime)
-        }
-    }
-    // TODO : Get socialMediaLinks from backend
-    var socialMediaLinks : MutableList<SocialMediaLink> = mutableListOf()
-    socialMediaLinks.add(
-        SocialMediaLink(id = 1, name = "Facebook", url = "https://Amerrican_Burger.facebook.com")
-    )
-
+    val context = LocalContext.current
+    val isLoading = remember { mutableStateOf(true) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
-    val feedbackList = listOf(
-        "I like it very much",
-        "they don't have pizza, but they are the best",
-        "It's always the best place",
-        "I like it very much",
-        "they don't have pizza, but they are the best",
-        "It's always the best place",
-        "I like it very much",
-        "they don't have pizza, but they are the best",
-        "It's always the best place"
-    )
+    val socialMediaLinks  = remember { mutableStateOf(mutableListOf<SocialMediaLink>()) }
+    val comments = remember { mutableStateOf(mutableListOf<Comment>()) }
 
+    LaunchedEffect(Unit) {
+        try {
+
+            comments.value = RestaurantEndpoints.fetchCommentsByRestaurantID(currentRestaurant.id)
+            socialMediaLinks.value = RestaurantEndpoints.fetchSocialMediaLinksByRestaurantID(
+                currentRestaurant.id
+            )
+        } catch (e: Exception) {
+            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+        } finally {
+            isLoading.value = false
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -107,7 +103,7 @@ fun PlusInfoPage(navController : NavHostController) {
                         .fillMaxWidth()
                         .height(screenHeight / 4)
                         .then(
-                            if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) Modifier.blur(16.dp) else Modifier
+                            if (!DateTimeManipulation.isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) Modifier.blur(16.dp) else Modifier
                         ),
                     contentScale = ContentScale.FillBounds
                 )
@@ -139,7 +135,7 @@ fun PlusInfoPage(navController : NavHostController) {
                 }
 
                 // Overlay with "Closed" text if not within operating hours
-                if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
+                if (!DateTimeManipulation.isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -300,7 +296,7 @@ fun PlusInfoPage(navController : NavHostController) {
                 icon = R.drawable.phone_icon,
                 title = "Phone",
                 info =  { Text(
-                    text = "${currentRestaurant.phone}",
+                    text = currentRestaurant.phone,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 20.dp)
@@ -309,7 +305,7 @@ fun PlusInfoPage(navController : NavHostController) {
             InfoSection(
                 icon = R.drawable.mail_icon,
                 title = "E-mail",
-                info = { Text(text = "${currentRestaurant.email}",
+                info = { Text(text = currentRestaurant.email,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 20.dp)
@@ -318,86 +314,77 @@ fun PlusInfoPage(navController : NavHostController) {
 
             // Social Media
 
-            InfoSection(
-                icon = R.drawable.social_icon,
-                title = "Social Media",
-                info = {
-                    Column(modifier = Modifier.padding(start = 20.dp)) {
-                        socialMediaLinks.forEach { link ->
-                            Column (
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.Start
-                            ){
-                                Text(
-                                    text = "${link.name} : ",
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp,
-                                )
-                                Text(
-                                    text = link.url,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 14.sp,
-                                    color = Blue,
-                                    modifier = Modifier.padding(bottom = 4.dp)
-                                )
-                            }
-                        }
-                    }
+            if (isLoading.value) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-
-            )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                item {
-                    InfoSection(
-                        icon = R.drawable.feedback_icon,
-                        title = "Restaurant feedbacks",
-                        info = {
-                            Column(
-                                modifier = Modifier.padding(start = 20.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                feedbackList.forEach { infoText ->
-
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalArrangement = Arrangement.spacedBy(1.dp)
-                                    ){
-                                        Text(
-                                            text = infoText,
-                                            fontWeight = FontWeight.Normal,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        )
-                                        HorizontalDivider(color = GreyStroke.copy(alpha = 0.5f))
-                                    }
-
+            }else {
+                InfoSection(
+                    icon = R.drawable.social_icon,
+                    title = "Social Media",
+                    info = {
+                        Column(modifier = Modifier.padding(start = 20.dp)) {
+                            socialMediaLinks.value.forEach { link ->
+                                Column (
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.Start
+                                ){
+                                    Text(
+                                        text = "${link.name} : ",
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 14.sp,
+                                    )
+                                    Text(
+                                        text = link.url,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 14.sp,
+                                        color = Blue,
+                                        modifier = Modifier.padding(bottom = 4.dp)
+                                    )
                                 }
                             }
                         }
-                    )
+                    }
+
+                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    item {
+                        InfoSection(
+                            icon = R.drawable.feedback_icon,
+                            title = "Restaurant feedbacks",
+                            info = {
+                                Column(
+                                    modifier = Modifier.padding(start = 20.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    comments.value.forEach { infoText ->
+
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalArrangement = Arrangement.spacedBy(1.dp)
+                                        ){
+                                            Text(
+                                                text = infoText.comment,
+                                                fontWeight = FontWeight.Normal,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            )
+                                            HorizontalDivider(color = GreyStroke.copy(alpha = 0.5f))
+                                        }
+
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun IconText(icon: Int, text: String, marginStart: Dp ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(start = marginStart) // Add margin on the left
-    ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            tint = Color.Unspecified,
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = text, fontWeight = FontWeight.Medium)
     }
 }
 

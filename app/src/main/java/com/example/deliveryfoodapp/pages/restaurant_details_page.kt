@@ -71,24 +71,15 @@ import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.Red
 import com.example.deliveryfoodapp.ui.theme.White
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
+import com.example.deliveryfoodapp.utils.DateTimeManipulation
 import com.example.deliveryfoodapp.utils.Routes
 import com.example.deliveryfoodapp.widgets.InfoAddItemDialog
 import com.example.deliveryfoodapp.widgets.ItemCard
-import java.time.LocalTime
 
 
 @SuppressLint("NewApi", "DefaultLocale")
 @Composable
 fun RestaurantDetailsPage(navController : NavHostController) {
-
-    fun isWithinOperatingHours(openingTime: LocalTime, closingTime: LocalTime): Boolean {
-        val currentTime = LocalTime.now()
-        return if (closingTime.isAfter(openingTime) || closingTime == openingTime) {
-            currentTime.isAfter(openingTime) && currentTime.isBefore(closingTime)
-        } else {
-            currentTime.isAfter(openingTime) || currentTime.isBefore(closingTime)
-        }
-    }
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -110,7 +101,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
         mutableStateOf(UserCart.emptyUserCart())
     }
 
-    LaunchedEffect(1) {
+    LaunchedEffect(Unit) {
         try {
             menu.value = RestaurantEndpoints.fetchRestaurantMenuByMenuID(currentRestaurant.menu)
             userCart.value = authenticatedUser
@@ -147,7 +138,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                             .fillMaxWidth()
                             .height(screenHeight / 4)
                             .then(
-                                if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) Modifier.blur(16.dp) else Modifier
+                                if (!DateTimeManipulation.isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) Modifier.blur(16.dp) else Modifier
                             ),
                         contentScale = ContentScale.FillBounds
                     )
@@ -178,7 +169,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                         }
                     }
 
-                    if (!isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
+                    if (!DateTimeManipulation.isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -446,9 +437,10 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                                 modifier = Modifier.fillMaxSize()
                             ){
                                 Text(
-                                    text = "This restaurant has no menu yet!",
+                                    text = "This restaurant has no menu yet ):",
                                     textAlign = TextAlign.Center,
-                                    fontSize = 30.sp,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Light,
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }
@@ -457,7 +449,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
                     }
 
                     /** Button of user cart **/
-                    if (userCart.value.totalItems() != 0 && isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime))
+                    if (userCart.value.totalItems() != 0 && DateTimeManipulation.isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime))
                         Button(
                             onClick = {
                                 navController.navigate(Routes.USER_CART_PAGE)
@@ -513,7 +505,7 @@ fun RestaurantDetailsPage(navController : NavHostController) {
             }
         }
 
-    if (showDialog && selectedItem != null && isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
+    if (showDialog && selectedItem != null && DateTimeManipulation.isWithinOperatingHours(currentRestaurant.openingTime, currentRestaurant.closingTime)) {
         InfoAddItemDialog(
             userCart = userCart.value,
             item = selectedItem!!,

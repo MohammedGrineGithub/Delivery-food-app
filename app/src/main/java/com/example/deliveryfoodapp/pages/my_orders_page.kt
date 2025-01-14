@@ -1,5 +1,6 @@
 package com.example.deliveryfoodapp.pages
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -32,34 +33,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.deliveryfoodapp.R
+import com.example.deliveryfoodapp.authenticatedUser
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
+import com.example.deliveryfoodapp.currentOrderID
+import com.example.deliveryfoodapp.models.UserOrder
 import com.example.deliveryfoodapp.ui.theme.CardBackground
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.lemonFontFamily
 import com.example.deliveryfoodapp.utils.*
 
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun MyOrdersPage(navController : NavHostController) {
 
-    val configuration = LocalConfiguration.current
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(true) }
 
-    val sampleOrders = createOrdersForTest()
+    val orders =  remember {
+        mutableStateOf(mutableListOf<UserOrder>())
+    }
 
-    LaunchedEffect(1) {
+    LaunchedEffect(Unit) {
         try {
+            orders.value = UserEndpoints.fetchAllUserOrdersByUserID(authenticatedUser.id)
         } catch (e: Exception) {
             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
         } finally {
@@ -86,21 +94,38 @@ fun MyOrdersPage(navController : NavHostController) {
                 fontFamily = lemonFontFamily,
                 fontSize = 24.sp
             )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                itemsIndexed(sampleOrders) { index, order ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .clip(shape = RoundedCornerShape(8))
-                            .clickable { navController.navigate(Routes.MY_ORDERS_DETAILS_PAGE) }
-                    ){
-                        OrderCard(order = order)
+            if (orders.value.isNotEmpty()){
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    itemsIndexed(orders.value) { _, order ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .clip(shape = RoundedCornerShape(8))
+                                .clickable {
+                                    currentOrderID = order.id
+                                    navController.navigate(Routes.MY_ORDERS_DETAILS_PAGE)
+                                }
+                        ){
+                            OrderCard(order = order)
+                        }
                     }
+                }
+            }else {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    Text(
+                        text = "You have no order yet ):",
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Light,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
             }
         }
@@ -110,7 +135,7 @@ fun MyOrdersPage(navController : NavHostController) {
 
 
 @Composable
-fun OrderCard(order: OrderTest) {
+fun OrderCard(order: UserOrder) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -129,7 +154,7 @@ fun OrderCard(order: OrderTest) {
             // First Row: Image and Restaurant Name
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    painter = rememberAsyncImagePainter(order.imageUrl), // Replace with your image resource
+                    painter = rememberAsyncImagePainter(order.restaurant.logo.imagePath), // Replace with your image resource
                     contentDescription = "Restaurant Logo",
                     modifier = Modifier
                         .size(48.dp)
@@ -137,7 +162,7 @@ fun OrderCard(order: OrderTest) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = order.restaurantName,
+                    text = order.restaurant.restaurantName,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -162,7 +187,7 @@ fun OrderCard(order: OrderTest) {
                         color = Primary
                     )
                     Text(
-                        text = order.price,
+                        text = "${order.itemsTotalPrice + order.restaurant.deliveryPrice} DA",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black
@@ -178,13 +203,13 @@ fun OrderCard(order: OrderTest) {
                         color = Primary
                     )
                     Text(
-                        text = order.orderedAtTime,
+                        text = DateTimeManipulation.formatDateStringIntoTime(order.createdAt),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black
                     )
                     Text(
-                        text = order.orderedAtDate,
+                        text = DateTimeManipulation.formatDateStringIntoDate(order.createdAt),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black
@@ -196,7 +221,7 @@ fun OrderCard(order: OrderTest) {
                         .border(
                             width = 1.dp,
                             shape = RoundedCornerShape(8),
-                            color = order.statusId
+                            color = OrderStatuses.getStatusColor(order.status)
                         ),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -208,20 +233,19 @@ fun OrderCard(order: OrderTest) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
                     ) {
-                        // TODO change the color of the status according to it value
                         Icon(
                             painter = painterResource(id = R.drawable.order_status_icon),
                             contentDescription = "order status",
                             modifier = Modifier.size(22.dp),
-                            tint = order.statusId
+                            tint = OrderStatuses.getStatusColor(order.status)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = order.status,
+                            text = OrderStatuses.getStatusValue(order.status),
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = order.statusId,
+                                color = OrderStatuses.getStatusColor(order.status),
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

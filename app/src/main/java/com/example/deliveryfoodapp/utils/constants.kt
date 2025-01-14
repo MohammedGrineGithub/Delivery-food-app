@@ -16,6 +16,7 @@ class OrderStatuses {
         const val ON_WAY_STATUS = 3
         const val DELIVERED_STATUS = 4
         const val CANCELED_STATUS = 5
+        const val RATED_STATUS = 6
 
         private const val IS_WAITING_VALUE = "Waiting"
         private const val IS_PREPARED_VALUE = "Prepared"
@@ -23,6 +24,7 @@ class OrderStatuses {
         private const val ON_WAY_VALUE = "On Way"
         private const val DELIVERED_VALUE = "Delivered"
         private const val CANCELED_VALUE = "Canceled"
+        private const val RATED_VALUE = "Rated"
 
         private val STATUS_VALUE_LIST = listOf(
             IS_WAITING_VALUE,
@@ -30,7 +32,8 @@ class OrderStatuses {
             PICKED_UP_VALUE,
             ON_WAY_VALUE,
             DELIVERED_VALUE,
-            CANCELED_VALUE
+            CANCELED_VALUE,
+            RATED_VALUE
         )
 
         private val STATUS_COLOR_LIST = listOf(
@@ -39,7 +42,8 @@ class OrderStatuses {
             Color.Cyan,        // Picked Up
             Color.Blue,        // On Way
             Primary,           // Delivered
-            Red                // Canceled
+            Red,               // Canceled
+            Primary,           // Rated
         )
 
         fun getStatusColor(status: Int): Color {
@@ -66,7 +70,6 @@ class CuisineTypes {
     companion object {
 
         val ALL_CUISINE_TYPES = listOf(
-            CuisineType(0, "None") ,
             CuisineType(1, "Algerian"),
             CuisineType(2, "Italian"),
             CuisineType(3, "Chinese"),
@@ -88,7 +91,6 @@ class Wilayas {
     companion object {
 
         val ALL_WILAYAS = listOf(
-            Wilaya(0, "None"),
             Wilaya(1, "Adrar"),
             Wilaya(2, "Chlef"),
             Wilaya(3, "Laghouat"),

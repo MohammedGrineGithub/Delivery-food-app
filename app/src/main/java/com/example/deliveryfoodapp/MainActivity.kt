@@ -22,6 +22,8 @@ var authenticatedUser : User = User.emptyUser()
 
 var currentRestaurant : Restaurant = Restaurant.emptyRestaurant()
 
+var currentOrderID = 0
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 

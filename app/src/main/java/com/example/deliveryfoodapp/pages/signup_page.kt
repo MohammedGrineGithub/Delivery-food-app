@@ -50,7 +50,10 @@ import androidx.navigation.NavHostController
 import com.example.deliveryfoodapp.R
 import com.example.deliveryfoodapp.utils.Routes
 import androidx.compose.animation.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.widgets.PrincipalButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -69,7 +72,7 @@ fun SignupPage(navController : NavHostController) {
 
     var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
-    val location by remember { mutableStateOf("filled just to test") }
+    val location by remember { mutableStateOf(authenticatedUser.location.address) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -77,6 +80,73 @@ fun SignupPage(navController : NavHostController) {
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var next by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val updateTrigger = remember { mutableStateOf(false) }
+    val isLoading = remember { mutableStateOf(false) }
+
+    /** Async fun for google signup **/
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                // TODO : Call google sigun function from the backend
+                // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
+                // TODO : save the userID
+                // TODO : save the token
+
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+
+                // navigate to home screen
+                navController.navigate(Routes.HOME_SCREEN){
+                    popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
+                }
+            }
+        }
+    }
+
+    /** Async fun for email/password signup **/
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                if (password.isEmpty()){
+                    Toast.makeText(
+                        context,
+                        "Password must not be empty",
+                        Toast.LENGTH_LONG).show()
+                } else if (password.length < 8){
+                    Toast.makeText(
+                        context,
+                        "Password must have more than 8 characters",
+                        Toast.LENGTH_LONG).show()
+                }
+                if (confirmPassword != password) {
+                    Toast.makeText(
+                        context,
+                        "Confirm password must be equal to Password",
+                        Toast.LENGTH_LONG).show()
+                }
+                if (password.length >= 8 && confirmPassword == password){
+
+                    // TODO : Call email/password signup function from the backend
+                    // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
+                    // TODO : save the userID
+                    // TODO : save the token
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+
+                // navigate to home screen
+                navController.navigate(Routes.HOME_SCREEN){
+                    popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
+                }
+            }
+        }
+    }
 
     /** Principal column, Items and text at the bottom **/
     Column(
@@ -114,40 +184,41 @@ fun SignupPage(navController : NavHostController) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)){
 
                 /** Sign up with google Button **/
-                OutlinedButton(
-                    onClick = {
-                        // TODO : Call google sigun function from the backend
-                        // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
-                        // TODO : save the userID
-                        // TODO : save the token
-
-                        // navigate to home screen
-                        navController.navigate(Routes.HOME_SCREEN){
-                            popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    border = BorderStroke(1.dp, BlackStroke),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                if (isLoading.value) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ){
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }else {
+                    OutlinedButton(
+                        onClick = {
+                            isLoading.value = true
+                            updateTrigger.value = true
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        border = BorderStroke(1.dp, BlackStroke),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.google),
-                            contentDescription = "Icon",
-                            modifier = Modifier.size(30.dp),
-                            tint = Color.Unspecified
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Sign up with google",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.google),
+                                contentDescription = "Icon",
+                                modifier = Modifier.size(30.dp),
+                                tint = Color.Unspecified
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Sign up with google",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
                     }
                 }
 
@@ -291,40 +362,21 @@ fun SignupPage(navController : NavHostController) {
                                     unfocusedBorderColor = GreyStroke
                                 )
                             )
-                            PrincipalButton(
-                                text = "Sign Up",
-                                onClick = {
-                                    if (password.isEmpty()){
-                                        Toast.makeText(
-                                            context,
-                                            "Password must not be empty",
-                                            Toast.LENGTH_SHORT).show()
-                                    } else if (password.length < 8){
-                                        Toast.makeText(
-                                            context,
-                                            "Password must have more than 8 characters",
-                                            Toast.LENGTH_SHORT).show()
-                                    }
-                                    if (confirmPassword != password) {
-                                        Toast.makeText(
-                                            context,
-                                            "Confirm password must be equal to Password",
-                                            Toast.LENGTH_SHORT).show()
-                                    }
-                                    if (password.length >= 8 && confirmPassword == password){
-
-                                        // TODO : Call email/password signup function from the backend
-                                        // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
-                                        // TODO : save the userID
-                                        // TODO : save the token
-
-                                        // navigate to home screen
-                                        navController.navigate(Routes.HOME_SCREEN){
-                                            popUpTo(Routes.SIGNUP_PAGE) { inclusive = true }
-                                        }
-                                    }
+                            if (isLoading.value) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth()
+                                ){
+                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                                 }
-                            )
+                            }else {
+                                PrincipalButton(
+                                    text = "Sign Up",
+                                    onClick = {
+                                        isLoading.value = true
+                                        updateTrigger.value = true
+                                    }
+                                )
+                            }
                         }
                     } else {
                         Column (
@@ -418,7 +470,7 @@ fun SignupPage(navController : NavHostController) {
                                     .clickable { navController.navigate(Routes.LOCATION_PAGE) },
                                 trailingIcon = {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.maps),
+                                        painter = painterResource(id = R.drawable.vector),
                                         contentDescription = "location",
                                         tint = Secondary,
                                         modifier = Modifier.size(30.dp)
@@ -445,39 +497,39 @@ fun SignupPage(navController : NavHostController) {
                                             Toast.makeText(
                                                 context,
                                                 "Full name must not be empty",
-                                                Toast.LENGTH_SHORT).show()
+                                                Toast.LENGTH_LONG).show()
                                         }
 
                                         if (email.isEmpty()){
                                             Toast.makeText(
                                                 context,
                                                 "Email must not be empty",
-                                                Toast.LENGTH_SHORT).show()
+                                                Toast.LENGTH_LONG).show()
                                         }else if (!isValidEmail(email)) {
                                             Toast.makeText(
                                                 context,
                                                 "Your email is not valid",
-                                                Toast.LENGTH_SHORT).show()
+                                                Toast.LENGTH_LONG).show()
                                         }
 
                                         if (phone.isEmpty()){
                                             Toast.makeText(
                                                 context,
                                                 "Phone number must not be empty",
-                                                Toast.LENGTH_SHORT).show()
+                                                Toast.LENGTH_LONG).show()
 
                                         }else if (!isValidPhoneNumber(phone)){
                                             Toast.makeText(
                                                 context,
                                                 "Your phone number is not valid, it must contain only numbers",
-                                                Toast.LENGTH_SHORT).show()
+                                                Toast.LENGTH_LONG).show()
                                         }
 
                                         if (location.isEmpty()){
                                             Toast.makeText(
                                                 context,
                                                 "Location must not be empty",
-                                                Toast.LENGTH_SHORT).show()
+                                                Toast.LENGTH_LONG).show()
                                         }
 
                                         if (fullName.isNotEmpty() && email.isNotEmpty() && isValidEmail(email) && phone.isNotEmpty() && isValidPhoneNumber(phone) && location.isNotEmpty()){

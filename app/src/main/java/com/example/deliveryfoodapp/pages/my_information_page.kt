@@ -2,7 +2,6 @@ package com.example.deliveryfoodapp.pages
 
 import android.net.Uri
 import android.util.Base64
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -40,7 +41,6 @@ import com.example.deliveryfoodapp.ui.theme.Secondary
 import com.example.deliveryfoodapp.ui.theme.SecondaryFill
 import com.example.deliveryfoodapp.widgets.CustomAppBar
 import com.example.deliveryfoodapp.widgets.PrincipalButton
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
@@ -49,7 +49,7 @@ fun MyInformationPage(navController: NavHostController) {
 
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val updateTrigger = remember { mutableStateOf(false) }
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var base64Image by remember { mutableStateOf<String?>(null) }
@@ -66,6 +66,28 @@ fun MyInformationPage(navController: NavHostController) {
     var fullName by remember { mutableStateOf(authenticatedUser.fullName) }
     var phoneNumber by remember { mutableStateOf(authenticatedUser.phone) }
 
+    LaunchedEffect(updateTrigger.value) {
+        if (updateTrigger.value) {
+            try {
+                authenticatedUser.fullName = fullName
+                authenticatedUser.phone = phoneNumber
+
+                // TODO : try to save the image as binary then send it via api, else send it base64 via api and get the image url then affect that url
+
+                /*base64Image?.let { base64 ->
+                    authenticatedUser.photo.imagePath = base64
+                }*/
+                // Save changes in backend
+                UserEndpoints.updateUserInformation(authenticatedUser)
+            } catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            } finally {
+                isLoading.value = false
+                updateTrigger.value = false
+                navController.popBackStack()
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -178,29 +200,8 @@ fun MyInformationPage(navController: NavHostController) {
             PrincipalButton(
                 text = "Save changes",
                 onClick = {
-
                     isLoading.value = true
-                    scope.launch {
-                        try {
-                            authenticatedUser.fullName = fullName
-                            authenticatedUser.phone = phoneNumber
-
-                            // TODO : try to save the image as binary then send it via api, else send it base64 via api and get the image url then affect that url
-
-                            /*base64Image?.let { base64 ->
-                                authenticatedUser.photo.imagePath = base64
-                            }*/
-                            // Save changes in backend
-                            UserEndpoints.updateUserInformation(authenticatedUser)
-                            Toast.makeText(context, "Works !!!!", Toast.LENGTH_LONG).show()
-
-                        } catch (e: Exception) {
-                            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-                        } finally {
-                            isLoading.value = false
-                            navController.popBackStack()
-                        }
-                    }
+                    updateTrigger.value = true
                 },
             )
         }
@@ -258,7 +259,9 @@ fun GreenOutlinedTextField(
             focusedLabelColor = Primary,
             cursorColor = Primary
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        singleLine = true
     )
 }
 

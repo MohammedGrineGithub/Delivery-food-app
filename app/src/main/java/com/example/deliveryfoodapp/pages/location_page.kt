@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.example.deliveryfoodapp.ui.theme.Black
 import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
-import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,14 +40,12 @@ import androidx.compose.material3.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.core.content.ContextCompat
-import com.google.android.gms.location.LocationServices
 import androidx.compose.ui.platform.LocalContext
 import com.example.deliveryfoodapp.ui.theme.Primary
 import androidx.compose.ui.res.painterResource
+import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.ui.theme.Grey
-import com.example.deliveryfoodapp.models.*
-import com.example.deliveryfoodapp.utils.Routes
+import com.example.deliveryfoodapp.utils.Wilayas
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,67 +56,6 @@ fun LocationPage(navController : NavHostController) {
     val topBottomMargin = (screenHeight * 0.1f)
     val leftRightMargin = (screenWidth * 0.04f)
     val context = LocalContext.current
-    val wilayas = listOf(
-    Wilaya(1, "Adrar"),
-    Wilaya(2, "Chlef"),
-    Wilaya(3, "Laghouat"),
-    Wilaya(4, "Oum El Bouaghi"),
-    Wilaya(5, "Batna"),
-    Wilaya(6, "Béjaïa"),
-    Wilaya(7, "Biskra"),
-    Wilaya(8, "Béchar"),
-    Wilaya(9, "Blida"),
-    Wilaya(10, "Bouira"),
-    Wilaya(11, "Tamanrasset"),
-    Wilaya(12, "Tébessa"),
-    Wilaya(13, "Tlemcen"),
-    Wilaya(14, "Tiaret"),
-    Wilaya(15, "Tizi Ouzou"),
-    Wilaya(16, "Algiers"),
-    Wilaya(17, "Djelfa"),
-    Wilaya(18, "Jijel"),
-    Wilaya(19, "Sétif"),
-    Wilaya(20, "Saïda"),
-    Wilaya(21, "Skikda"),
-    Wilaya(22, "Sidi Bel Abbès"),
-    Wilaya(23, "Annaba"),
-    Wilaya(24, "Guelma"),
-    Wilaya(25, "Constantine"),
-    Wilaya(26, "Médéa"),
-    Wilaya(27, "Mostaganem"),
-    Wilaya(28, "M’Sila"),
-    Wilaya(29, "Mascara"),
-    Wilaya(30, "Ouargla"),
-    Wilaya(31, "Oran"),
-    Wilaya(32, "El Bayadh"),
-    Wilaya(33, "Illizi"),
-    Wilaya(34, "Bordj Bou Arreridj"),
-    Wilaya(35, "Boumerdès"),
-    Wilaya(36, "El Tarf"),
-    Wilaya(37, "Tindouf"),
-    Wilaya(38, "Tissemsilt"),
-    Wilaya(39, "El Oued"),
-    Wilaya(40, "Khenchela"),
-    Wilaya(41, "Souk Ahras"),
-    Wilaya(42, "Tipaza"),
-    Wilaya(43, "Mila"),
-    Wilaya(44, "Aïn Defla"),
-    Wilaya(45, "Naâma"),
-    Wilaya(46, "Aïn Témouchent"),
-    Wilaya(47, "Ghardaïa"),
-    Wilaya(48, "Relizane"),
-    Wilaya(49, "Timimoun"),
-    Wilaya(50, "Bordj Badji Mokhtar"),
-    Wilaya(51, "Ouled Djellal"),
-    Wilaya(52, "Béni Abbès"),
-    Wilaya(53, "In Salah"),
-    Wilaya(54, "In Guezzam"),
-    Wilaya(55, "Touggourt"),
-    Wilaya(56, "Djanet"),
-    Wilaya(57, "El M'Ghair"),
-    Wilaya(58, "El Meniaa")
-)
-    val location = Location.emptyLocation()
 
     var isExpanded by remember {
         mutableStateOf(false)
@@ -127,13 +63,13 @@ fun LocationPage(navController : NavHostController) {
     var selected by remember {
         mutableStateOf("Select your wilaya")
     }
-    var exact_location by remember {
+    var exactLocation by remember {
         mutableStateOf("")
     }
-    var location_extracted = remember {
+    val currentLocation = remember {
         mutableStateOf(false)
     }
-    var locationText by remember { mutableStateOf("") }
+
     Box (
         modifier = Modifier.fillMaxWidth()
     )
@@ -242,7 +178,7 @@ fun LocationPage(navController : NavHostController) {
                                     onDismissRequest = { isExpanded = false },
                                     modifier = Modifier.heightIn(max = 300.dp).fillMaxWidth().background(color = Grey)
                                 ) {
-                                    wilayas.forEach { wilaya ->
+                                    Wilayas.ALL_WILAYAS.forEach { wilaya ->
                                         DropdownMenuItem(
                                             text = { Text(text = "${wilaya.id}- ${wilaya.name}") },
                                             onClick = {
@@ -266,8 +202,8 @@ fun LocationPage(navController : NavHostController) {
                             )
                             Spacer(Modifier.height(8.dp))
                             TextField(
-                                value = exact_location,
-                                onValueChange = { exact_location = it },
+                                value = exactLocation,
+                                onValueChange = { exactLocation = it },
                                 placeholder = { Text("Example: Sommame - Bab Ezzouar" , color = GreyStroke) },
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = Grey,
@@ -295,10 +231,10 @@ fun LocationPage(navController : NavHostController) {
                                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(width=1.dp , color = GreyStroke , shape =RoundedCornerShape(20.dp) ) ,
                                 colors = ButtonDefaults.buttonColors(Color.White),
                                 onClick = {
-                                    location_extracted.value = location.checkLocationPermissionAndServices(context)
+                                    currentLocation.value = authenticatedUser.location.checkLocationPermissionAndServices(context)
                                 }
                             )  {
-                                if (location_extracted.value == false) {
+                                if (!currentLocation.value) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.vector),
                                         contentDescription = "Location",
@@ -329,12 +265,12 @@ fun LocationPage(navController : NavHostController) {
 
                             // TODO : save these values into authenticatedUser
 
-                            if ( selected == "Select your wilaya" || locationText =="" || exact_location == ""){
+                            if ( selected == "Select your wilaya" || exactLocation == ""){
                                 Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                             }
                             else {
-                                location.wilayaId = wilayas.find { it.name == selected }!!.id
-                                location.address = exact_location
+                                authenticatedUser.location.wilayaId = Wilayas.ALL_WILAYAS.find { it.name == selected }!!.id
+                                authenticatedUser.location.address = exactLocation
                                 navController.popBackStack()
                             }
                         } ,

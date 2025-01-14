@@ -55,9 +55,6 @@ data class Restaurant(
 
 
     companion object {
-
-        // TODO : When i cast the map into double than user to int, make a test if i can cast it into a double, then if i can i will cast it
-
         @SuppressLint("NewApi")
         fun fromMap(map: Map<String, Any?>): Restaurant {
             println("Enter to fromMap")
@@ -79,13 +76,10 @@ data class Restaurant(
             println("phone ++")
             val email = map["email"] as? String ?: ""
             println("email ++")
-
             val deliveryPrice = (map["delivery_price"] as Double).toInt()
             println("delivery_price = $deliveryPrice")
-
             val deliveryDuration = (map["delivery_duration"] as Double).toInt()
             println("delivery_duration = $deliveryDuration")
-
             val menu = (map["menu"] as Double).toInt()
             println("menu ++")
             val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "00:00:00")
@@ -96,6 +90,37 @@ data class Restaurant(
             return Restaurant(
                 id, restaurantName, logo, bannerLogo, location, cuisineType, rating, phone, email,
                 deliveryPrice, deliveryDuration, menu, openingTime, closingTime
+            )
+        }
+
+        @SuppressLint("NewApi")
+        fun fromMapToOrder(map: Map<String, Any?>): Restaurant {
+            println("Enter to fromMap")
+            val id = (map["id"] as Double).toInt()
+            println("id ++")
+            val restaurantName = map["restaurant_name"] as? String ?: ""
+            println("restaurant_name ++")
+            val logo = AppImage.fromMap(map["logo"] as? Map<String, Any> ?: emptyMap())
+            println("logo ++")
+            val bannerLogo = AppImage.fromMap(map["banner_logo"] as? Map<String, Any> ?: emptyMap())
+            println("banner_logo ++")
+            val location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap())
+            println("location ++")
+            val rating = Rating.fromMap(map["rating"] as? Map<String, Any> ?: emptyMap())
+            println("rating ++")
+            val deliveryPrice = (map["delivery_price"] as Double).toInt()
+            println("delivery_price = $deliveryPrice")
+            val deliveryDuration = (map["delivery_duration"] as Double).toInt()
+            println("delivery_duration = $deliveryDuration")
+            val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "00:00:00")
+            println("opening_time ++")
+            val closingTime = LocalTime.parse(map["closing_time"] as? String ?: "00:00:00")
+            println("closing_time ++\n")
+
+            return Restaurant(
+                id, restaurantName, logo, bannerLogo, location, CuisineType.emptyCuisineType(),
+                rating, "", "", deliveryPrice, deliveryDuration, 0, openingTime,
+                closingTime
             )
         }
 

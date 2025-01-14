@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,11 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -62,7 +60,6 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
     val itemQuantity = remember { mutableIntStateOf(1) }
     val totalPrice = remember { mutableDoubleStateOf(item.price) }
     /** ************************************************************* **/
-    val focusManager = LocalFocusManager.current
 
 
     Dialog(onDismissRequest = { onDismiss() }) {
@@ -200,14 +197,8 @@ fun InfoAddItemDialog(userCart: UserCart, item: Item, onDismiss: () -> Unit) {
                             .padding(start = 20.dp, end = 20.dp)
                             .height(80.dp),
                         maxLines = 1,
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                focusManager.clearFocus()
-                            }
-                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true,
                         shape = RoundedCornerShape(
                             topStart = 2.dp,
                             topEnd = 2.dp,
