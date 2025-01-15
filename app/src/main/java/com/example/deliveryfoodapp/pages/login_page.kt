@@ -128,7 +128,9 @@ fun LoginPage(navController : NavHostController) {
                     Pref.saveUserID(userID)
 
                     // Get the user token and save it locally
-
+                    val token = UserEndpoints.getToken(email, password)
+                    Pref.saveUserToken(token)
+                    yy
                     // navigate to home screen
                     navController.navigate(Routes.HOME_SCREEN){
                         popUpTo(Routes.LOGIN_PAGE) { inclusive = true }
