@@ -117,7 +117,6 @@ fun ValidatePaymentPage(navController : NavHostController) {
                     id = authenticatedUser.id,
                     phone = authenticatedUser.phone
                 )
-                // Toast.makeText(context, "Update phone with success", Toast.LENGTH_LONG).show()
                 // Delete that cart from the authenticatedUser
                 authenticatedUser.deleteCart(userCart)
 

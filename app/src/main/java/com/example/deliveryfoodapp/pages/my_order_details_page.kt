@@ -372,20 +372,13 @@ fun MyOrderDetailsPage(navController: NavHostController) {
 
                         }
                         Spacer(modifier = Modifier.height(10.dp))
-
-                        Row(
-
-                            modifier = Modifier.width(174.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "${order.value.deliveryPerson.fullName}    ${order.value.deliveryPerson.phone}",
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Normal
-                                )
+                        Text(
+                            text = "${order.value.deliveryPerson.fullName}    ${order.value.deliveryPerson.phone}",
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Normal
                             )
-                        }
+                        )
 
 
                     }

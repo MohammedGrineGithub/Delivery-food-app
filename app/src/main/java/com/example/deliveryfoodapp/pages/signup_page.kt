@@ -72,27 +72,29 @@ fun SignupPage(navController : NavHostController) {
         return phoneNumber.matches("^(\\+)?[0-9]+\$".toRegex())
     }
 
-    var fullName by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf(authenticatedUser.fullName) }
+    var phone by remember { mutableStateOf(authenticatedUser.phone) }
     val location by remember { mutableStateOf(authenticatedUser.location.address) }
-    var email by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(authenticatedUser.email) }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var next by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val updateTrigger = remember { mutableStateOf(false) }
-    val isLoading = remember { mutableStateOf(false) }
+    val updateTriggerGoogleSignup = remember { mutableStateOf(false) }
+    val updateTriggerEmailPasswordSignup = remember { mutableStateOf(false) }
+    val isLoadingGoogleSignup = remember { mutableStateOf(false) }
+    val isLoadingEmailPasswordSignup = remember { mutableStateOf(false) }
 
     /** Async fun for google signup **/
-    LaunchedEffect(updateTrigger.value) {
-        if (updateTrigger.value) {
+    LaunchedEffect(updateTriggerGoogleSignup.value) {
+        if (updateTriggerGoogleSignup.value) {
             try {
-                // TODO : Call google sigun function from the backend
-                // TODO : If that function does not create automaticly a user in backend : Create new one and return it ID
-                // TODO : save the userID
-                // TODO : save the token
+                // Call google sigun function from the backend
+                // If that function does not create a user in backend : Create new one and return it ID
+                // save the userID
+                // save the token
 
                 // navigate to home screen
                 navController.navigate(Routes.HOME_SCREEN){
@@ -102,15 +104,15 @@ fun SignupPage(navController : NavHostController) {
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             } finally {
-                isLoading.value = false
-                updateTrigger.value = false
+                isLoadingGoogleSignup.value = false
+                updateTriggerGoogleSignup.value = false
             }
         }
     }
 
     /** Async fun for email/password signup **/
-    LaunchedEffect(updateTrigger.value) {
-        if (updateTrigger.value) {
+    LaunchedEffect(updateTriggerEmailPasswordSignup.value) {
+        if (updateTriggerEmailPasswordSignup.value) {
             try {
                 if (password.isEmpty()){
                     Toast.makeText(
@@ -130,19 +132,16 @@ fun SignupPage(navController : NavHostController) {
                         Toast.LENGTH_LONG).show()
                 }
                 if (password.length >= 8 && confirmPassword == password){
-
-                    // TODO : Call email/password signup function from the backend
+                    // Call email/password signup function from the backend
                     val userID = UserEndpoints.userRegister(
-                        fullName = fullName,
-                        email = email,
-                        phone = phone,
-                        location = authenticatedUser.location,
+                        user = authenticatedUser,
                         password = password
                     )
+
                     // Save the userID in Shared preferences
                     Pref.saveUserID(userID)
-                    // TODO : Get the user token
-                    // TODO : save the token
+
+                    // Get the user token and save it locally
 
                     // navigate to home screen
                     navController.navigate(Routes.HOME_SCREEN){
@@ -152,8 +151,8 @@ fun SignupPage(navController : NavHostController) {
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             } finally {
-                isLoading.value = false
-                updateTrigger.value = false
+                isLoadingEmailPasswordSignup.value = false
+                updateTriggerEmailPasswordSignup.value = false
             }
         }
     }
@@ -194,7 +193,7 @@ fun SignupPage(navController : NavHostController) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)){
 
                 /** Sign up with google Button **/
-                if (isLoading.value) {
+                if (isLoadingGoogleSignup.value) {
                     Box(
                         modifier = Modifier.fillMaxWidth()
                     ){
@@ -203,8 +202,8 @@ fun SignupPage(navController : NavHostController) {
                 }else {
                     OutlinedButton(
                         onClick = {
-                            isLoading.value = true
-                            updateTrigger.value = true
+                            isLoadingGoogleSignup.value = true
+                            updateTriggerGoogleSignup.value = true
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -372,7 +371,7 @@ fun SignupPage(navController : NavHostController) {
                                     unfocusedBorderColor = GreyStroke
                                 )
                             )
-                            if (isLoading.value) {
+                            if (isLoadingEmailPasswordSignup.value) {
                                 Box(
                                     modifier = Modifier.fillMaxWidth()
                                 ){
@@ -382,8 +381,8 @@ fun SignupPage(navController : NavHostController) {
                                 PrincipalButton(
                                     text = "Sign Up",
                                     onClick = {
-                                        isLoading.value = true
-                                        updateTrigger.value = true
+                                        isLoadingEmailPasswordSignup.value = true
+                                        updateTriggerEmailPasswordSignup.value = true
                                     }
                                 )
                             }
@@ -395,7 +394,10 @@ fun SignupPage(navController : NavHostController) {
                             /** Full name TextField **/
                             OutlinedTextField(
                                 value = fullName,
-                                onValueChange = { fullName = it },
+                                onValueChange = {
+                                    fullName = it
+                                    authenticatedUser.fullName = it
+                                },
                                 label = { Text("Full name", color = GreyStroke) },
                                 placeholder = { Text("Full name", color = GreyStroke) },
                                 modifier = Modifier
@@ -420,7 +422,10 @@ fun SignupPage(navController : NavHostController) {
                             /** Email Text Field **/
                             OutlinedTextField(
                                 value = email,
-                                onValueChange = { email = it },
+                                onValueChange = {
+                                    email = it
+                                    authenticatedUser.email = it
+                                },
                                 label = { Text("Email", color = GreyStroke) },
                                 placeholder = { Text("Email", color = GreyStroke) },
                                 modifier = Modifier
@@ -445,7 +450,10 @@ fun SignupPage(navController : NavHostController) {
                             /** Phone Text Field **/
                             OutlinedTextField(
                                 value = phone,
-                                onValueChange = { phone = it },
+                                onValueChange = {
+                                    phone = it
+                                    authenticatedUser.phone = it
+                                },
                                 label = { Text("Phone number", color = GreyStroke) },
                                 placeholder = { Text("Phone number", color = GreyStroke) },
                                 modifier = Modifier

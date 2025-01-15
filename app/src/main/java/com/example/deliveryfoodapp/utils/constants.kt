@@ -70,16 +70,10 @@ class CuisineTypes {
     companion object {
 
         val ALL_CUISINE_TYPES = listOf(
-            CuisineType(1, "Algerian"),
-            CuisineType(2, "Italian"),
-            CuisineType(3, "Chinese"),
-            CuisineType(4, "French"),
-            CuisineType(5, "Japanese"),
-            CuisineType(6, "Indian"),
-            CuisineType(7, "Mexican"),
-            CuisineType(8, "Thai"),
-            CuisineType(9, "Spanish"),
-            CuisineType(10, "Greek")
+            CuisineType(1, "Traditional"),
+            CuisineType(2, "Fast Food"),
+            CuisineType(3, "Indian"),
+            CuisineType(7, "Fruits de mers"),
         )
 
         fun getCuisineTypeByCuisineTypeID(cuisineTypeID : Int) : CuisineType {

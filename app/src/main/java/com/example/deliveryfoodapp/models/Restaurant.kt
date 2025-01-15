@@ -57,35 +57,20 @@ data class Restaurant(
     companion object {
         @SuppressLint("NewApi")
         fun fromMap(map: Map<String, Any?>): Restaurant {
-            println("Enter to fromMap")
             val id = (map["id"] as Double).toInt()
-            println("id ++")
             val restaurantName = map["restaurant_name"] as? String ?: ""
-            println("restaurant_name ++")
             val logo = AppImage.fromMap(map["logo"] as? Map<String, Any> ?: emptyMap())
-            println("logo ++")
             val bannerLogo = AppImage.fromMap(map["banner_logo"] as? Map<String, Any> ?: emptyMap())
-            println("banner_logo ++")
             val location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap())
-            println("location ++")
             val cuisineType = CuisineTypes.getCuisineTypeByCuisineTypeID((map["cuisine_type"] as Double).toInt() ?: 0)
-            println("cuisine_type ++")
             val rating = Rating.fromMap(map["rating"] as? Map<String, Any> ?: emptyMap())
-            println("rating ++")
             val phone = map["phone"] as? String ?: ""
-            println("phone ++")
             val email = map["email"] as? String ?: ""
-            println("email ++")
             val deliveryPrice = (map["delivery_price"] as Double).toInt()
-            println("delivery_price = $deliveryPrice")
             val deliveryDuration = (map["delivery_duration"] as Double).toInt()
-            println("delivery_duration = $deliveryDuration")
             val menu = (map["menu"] as Double).toInt()
-            println("menu ++")
             val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "00:00:00")
-            println("opening_time ++")
             val closingTime = LocalTime.parse(map["closing_time"] as? String ?: "00:00:00")
-            println("closing_time ++\n")
 
             return Restaurant(
                 id, restaurantName, logo, bannerLogo, location, cuisineType, rating, phone, email,
@@ -95,27 +80,16 @@ data class Restaurant(
 
         @SuppressLint("NewApi")
         fun fromMapToOrder(map: Map<String, Any?>): Restaurant {
-            println("Enter to fromMap")
             val id = (map["id"] as Double).toInt()
-            println("id ++")
             val restaurantName = map["restaurant_name"] as? String ?: ""
-            println("restaurant_name ++")
             val logo = AppImage.fromMap(map["logo"] as? Map<String, Any> ?: emptyMap())
-            println("logo ++")
             val bannerLogo = AppImage.fromMap(map["banner_logo"] as? Map<String, Any> ?: emptyMap())
-            println("banner_logo ++")
             val location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap())
-            println("location ++")
             val rating = Rating.fromMap(map["rating"] as? Map<String, Any> ?: emptyMap())
-            println("rating ++")
             val deliveryPrice = (map["delivery_price"] as Double).toInt()
-            println("delivery_price = $deliveryPrice")
             val deliveryDuration = (map["delivery_duration"] as Double).toInt()
-            println("delivery_duration = $deliveryDuration")
             val openingTime = LocalTime.parse(map["opening_time"] as? String ?: "00:00:00")
-            println("opening_time ++")
             val closingTime = LocalTime.parse(map["closing_time"] as? String ?: "00:00:00")
-            println("closing_time ++\n")
 
             return Restaurant(
                 id, restaurantName, logo, bannerLogo, location, CuisineType.emptyCuisineType(),

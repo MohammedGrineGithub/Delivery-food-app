@@ -262,9 +262,6 @@ fun LocationPage(navController : NavHostController) {
                 ) {
                     Button(
                         onClick = {
-
-                            // TODO : save these values into authenticatedUser
-
                             if ( selected == "Select your wilaya" || exactLocation == ""){
                                 Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                             }

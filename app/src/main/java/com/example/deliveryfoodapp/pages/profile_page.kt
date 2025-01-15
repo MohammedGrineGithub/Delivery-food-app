@@ -1,6 +1,5 @@
 package com.example.deliveryfoodapp.pages
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -147,9 +146,9 @@ fun ProfilePage(navController : NavHostController) {
                         .padding(vertical = 15.dp, horizontal = 20.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    ItemProfil("person", "Personal information", navController)
-                    ItemProfil("lock", "Change password", navController)
-                    ItemProfil("maps", "Change location", navController)
+                    ItemProfile("person", "Personal information", navController)
+                    ItemProfile("lock", "Change password", navController)
+                    ItemProfile("maps", "Change location", navController)
 
                     Row(
                         modifier = Modifier.fillMaxWidth()
@@ -224,7 +223,7 @@ fun ProfilePage(navController : NavHostController) {
 }
 
 @Composable
-fun ItemProfil(icon:String,name:String,navController: NavHostController) {
+fun ItemProfile(icon:String, name:String, navController: NavHostController) {
     val iconId = when(icon)
     {
         "person" -> R.drawable.person

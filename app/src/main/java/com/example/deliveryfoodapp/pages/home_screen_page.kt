@@ -43,11 +43,11 @@ import com.example.deliveryfoodapp.local_storage_services.room.RoomUserCart
 fun HomeScreen(navController: NavHostController) {
 
     val context = LocalContext.current
-    val isLoading = remember { mutableStateOf(true) } // Track loading state
+    val isLoading = remember { mutableStateOf(true) }
 
     // Get user id from local storage
     val userID = Pref.getUserID()
-    authenticatedUser.id = if (userID != -1) userID else 1 // later remove that 1
+    authenticatedUser.id = userID
 
     LaunchedEffect(Unit) {
         try {

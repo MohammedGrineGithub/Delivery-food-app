@@ -67,7 +67,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.deliveryfoodapp.authenticatedUser
 import com.example.deliveryfoodapp.backend_services.restaurant_api.RestaurantEndpoints
+import com.example.deliveryfoodapp.backend_services.user_api.UserEndpoints
 import com.example.deliveryfoodapp.currentRestaurant
+import com.example.deliveryfoodapp.ui.theme.BlackStroke
 import com.example.deliveryfoodapp.ui.theme.GreyStroke
 import com.example.deliveryfoodapp.ui.theme.Primary
 import com.example.deliveryfoodapp.ui.theme.Red
@@ -119,10 +121,13 @@ fun HomePage(navController : NavHostController) {
     val restaurants = remember {
         mutableStateOf(mutableListOf<Restaurant>())
     }
-    val hasNotification = remember { mutableStateOf(authenticatedUser.has_notification) }
+    val hasNotification = remember { mutableStateOf(authenticatedUser.hasNotification) }
 
     // Get All restaurants
     LaunchedEffect(updateTriggerForAllRestaurants.value) {
+        // Get the attribute 'has_notification' of the user
+        hasNotification.value = UserEndpoints.getUserHasNotificationByUserID(authenticatedUser.id)
+        authenticatedUser.hasNotification = hasNotification.value
         if (updateTriggerForAllRestaurants.value){
             try {
                 val res : MutableList<Restaurant> = RestaurantEndpoints.fetchAllRestaurants()
@@ -191,9 +196,9 @@ fun HomePage(navController : NavHostController) {
                         Icon(
                             painter = painterResource(id = R.drawable.notification),
                             contentDescription = "has notification",
-                            tint = GreyStroke,
+                            tint = BlackStroke,
                             modifier = Modifier
-                                .size(34.dp)
+                                .size(30.dp)
                                 .background(color = Color.Transparent)
                                 .align(Alignment.Top),
                         )
@@ -524,10 +529,6 @@ fun HomePage(navController : NavHostController) {
                             }
                         }
                     }
-                    /*if ( ( cuisine == "Cuisine") && (wilaya == "Wilaya") )
-                    {
-
-                    }*/
                 }
             }
         }

@@ -21,6 +21,11 @@ data class Location(
     var latitude: Double = 0.0,
     var longitude: Double = 0.0
 ) {
+
+    override fun toString(): String {
+        return "Location(id=$id, address='$address', wilayaId=$wilayaId, latitude=$latitude, longitude=$longitude)"
+    }
+
     fun toMap(): Map<String, Any> = mapOf(
         "id" to id,
         "address" to address,

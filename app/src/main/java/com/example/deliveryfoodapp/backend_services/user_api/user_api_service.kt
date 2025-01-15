@@ -10,14 +10,20 @@ import retrofit2.http.Path
 interface UserApiService {
 
     /** ***************************** User Sign Up ******************************** **/
-    @POST("user/register")
+    @POST("user/register/")
     suspend fun userRegister(
         @Body body: Map<String, @JvmSuppressWildcards Any>
     ) : Map<String, @JvmSuppressWildcards Any>
 
     /** ***************************** User Log In ******************************** **/
-    @POST("user/login")
+    @POST("user/login/")
     suspend fun userLogin(
+        @Body body: Map<String, @JvmSuppressWildcards Any>
+    ) : Map<String, @JvmSuppressWildcards Any>
+
+    /** ***************************** Get user token ******************************** **/
+    @POST("api/token/email/")
+    suspend fun getToken(
         @Body body: Map<String, @JvmSuppressWildcards Any>
     ) : Map<String, @JvmSuppressWildcards Any>
 
@@ -91,5 +97,12 @@ interface UserApiService {
     suspend fun changePassword(
         @Header("Authorization") token: String,
         @Body body: Map<String, @JvmSuppressWildcards Any>
+    ): Map<String, Any?>
+
+    /** ****************** get the attribute 'has_notification' of user ******************** **/
+    @GET("user/has_notification/{id}/")
+    suspend fun getUserHasNotificationByUserID(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
     ): Map<String, Any?>
 }

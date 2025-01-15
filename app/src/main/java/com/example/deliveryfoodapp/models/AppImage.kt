@@ -10,7 +10,7 @@ data class AppImage(
 
     companion object {
         fun fromMap(map: Map<String, Any>) = AppImage(
-            id = (map["id"] as Double).toInt() ?: 0,
+            id = (map["id"] as Double).toInt(),
             imagePath = map["url"] as String
         )
         fun emptyAppImage() : AppImage {

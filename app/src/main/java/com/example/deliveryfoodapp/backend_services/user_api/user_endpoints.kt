@@ -1,11 +1,11 @@
 package com.example.deliveryfoodapp.backend_services.user_api
 
-import Location
 import com.example.deliveryfoodapp.backend_services.ApiClient
 import com.example.deliveryfoodapp.local_storage_services.Pref
 import com.example.deliveryfoodapp.models.Notification
 import com.example.deliveryfoodapp.models.User
 import com.example.deliveryfoodapp.models.UserOrder
+import retrofit2.HttpException
 
 object UserEndpoints {
 
@@ -13,23 +13,15 @@ object UserEndpoints {
     private val token = Pref.getUserToken() ?: ""
 
     /** ***************************** User Sign Up ******************************** **/
-    suspend fun userRegister(
-        fullName: String,
-        email: String,
-        phone: String,
-        location: Location,
-        password: String
-    ): Int {
-        val userID = apiService.userRegister(
-            body = mapOf(
-                "full_name" to fullName,
-                "email" to email,
-                "phone" to phone,
-                "location" to location.toMap(),
-                "password" to password
-            )
-        )
-        return (userID["user_id"] as Double).toInt()
+    suspend fun userRegister(user: User, password: String): Int {
+        val bodyMap = user.toMapToInsert().toMutableMap()
+        bodyMap["password"] = password
+        try {
+            val userID = apiService.userRegister(body = bodyMap)
+            return (userID["user_id"] as Double).toInt()
+        } catch (e: HttpException) {
+            throw e
+        }
     }
 
     /** ***************************** User Log In ******************************** **/
@@ -41,6 +33,17 @@ object UserEndpoints {
             )
         )
         return (userID["user_id"] as Double).toInt()
+    }
+
+    /** ***************************** Get user token ******************************** **/
+    suspend fun getToken(email: String, password: String): String {
+        val tokenMap = apiService.getToken(
+            body = mapOf(
+                "email" to email,
+                "password" to password
+            )
+        )
+        return tokenMap["access"] as String
     }
 
     /** ***************************** Get user information ******************************** **/
@@ -149,6 +152,14 @@ object UserEndpoints {
                 "new_password" to newPassword
             )
         )
+    }
+    /** ****************** get the attribute 'has_notification' of user ******************** **/
+    suspend fun getUserHasNotificationByUserID(id: Int): Boolean {
+        val hasNotification = apiService.getUserHasNotificationByUserID(
+            token = token,
+            id = id
+        )
+        return hasNotification["has_notification"] as Boolean
     }
 
 }

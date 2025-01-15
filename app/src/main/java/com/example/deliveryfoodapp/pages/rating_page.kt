@@ -59,9 +59,6 @@ fun RatingPage(navController: NavHostController) {
     LaunchedEffect(updateTrigger.value) {
         if (updateTrigger.value) {
             try {
-                println("******************************************")
-                println("order_id = ${currentOrderID}")
-                println("******************************************")
                 UserEndpoints.rateRestaurant(
                     restaurantID = currentRestaurant.id,
                     rating = selectedRating.doubleValue,

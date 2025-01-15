@@ -65,16 +65,18 @@ fun LoginPage(navController : NavHostController) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val updateTrigger = remember { mutableStateOf(false) }
-    val isLoading = remember { mutableStateOf(false) }
+    val updateTriggerGoogleLogin = remember { mutableStateOf(false) }
+    val updateTriggerEmailPasswordLogin = remember { mutableStateOf(false) }
+    val isLoadingGoogleLogin = remember { mutableStateOf(false) }
+    val isLoadingEmailPasswordLogin = remember { mutableStateOf(false) }
 
     /** Async fun for google auth **/
-    LaunchedEffect(updateTrigger.value) {
-        if (updateTrigger.value) {
+    LaunchedEffect(updateTriggerGoogleLogin.value) {
+        if (updateTriggerGoogleLogin.value) {
             try {
-                // TODO : Call google login function from the backend
-                // TODO : save the userID
-                // TODO : save the token
+                // Call google login function from the backend
+                // save the userID
+                // save the token
 
                 // navigate to home screen
                 navController.navigate(Routes.HOME_SCREEN){
@@ -83,15 +85,15 @@ fun LoginPage(navController : NavHostController) {
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             } finally {
-                isLoading.value = false
-                updateTrigger.value = false
+                isLoadingGoogleLogin.value = false
+                updateTriggerGoogleLogin.value = false
             }
         }
     }
 
     /** Async fun for email/password auth **/
-    LaunchedEffect(updateTrigger.value) {
-        if (updateTrigger.value) {
+    LaunchedEffect(updateTriggerEmailPasswordLogin.value) {
+        if (updateTriggerEmailPasswordLogin.value) {
             try {
                 if (email.isEmpty()){
                     Toast.makeText(
@@ -117,14 +119,15 @@ fun LoginPage(navController : NavHostController) {
                 }
                 if (isValidEmail(email) && email.isNotEmpty() && password.length >= 8){
 
-                    // TODO : Call email/password login function from the backend
+                    // Call email/password login function from the backend
                     val userID = UserEndpoints.userLogin(
                         email = email,
                         password = password
                     )
-                    // TODO : save the userID
+                    // save the userID locally
                     Pref.saveUserID(userID)
-                    // TODO : save the token
+
+                    // Get the user token and save it locally
 
                     // navigate to home screen
                     navController.navigate(Routes.HOME_SCREEN){
@@ -135,8 +138,8 @@ fun LoginPage(navController : NavHostController) {
             } catch (e: Exception) {
                 Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             } finally {
-                isLoading.value = false
-                updateTrigger.value = false
+                isLoadingEmailPasswordLogin.value = false
+                updateTriggerEmailPasswordLogin.value = false
 
             }
         }
@@ -173,7 +176,7 @@ fun LoginPage(navController : NavHostController) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ){
-                if (isLoading.value) {
+                if (isLoadingGoogleLogin.value) {
                     Box(
                         modifier = Modifier.fillMaxWidth()
                     ){
@@ -182,8 +185,8 @@ fun LoginPage(navController : NavHostController) {
                 }else {
                     OutlinedButton(
                         onClick = {
-                            isLoading.value = true
-                            updateTrigger.value = true
+                            isLoadingGoogleLogin.value = true
+                            updateTriggerGoogleLogin.value = true
                         },
                         modifier = Modifier
                             .padding(top = 12.dp, bottom = 12.dp)
@@ -289,7 +292,7 @@ fun LoginPage(navController : NavHostController) {
                         unfocusedBorderColor = GreyStroke
                     )
                 )
-                if (isLoading.value) {
+                if (isLoadingEmailPasswordLogin.value) {
                     Box(
                         modifier = Modifier.fillMaxWidth()
                     ){
@@ -299,8 +302,8 @@ fun LoginPage(navController : NavHostController) {
                     PrincipalButton(
                         text = "Log In",
                         onClick = {
-                            isLoading.value = true
-                            updateTrigger.value = true
+                            isLoadingEmailPasswordLogin.value = true
+                            updateTriggerEmailPasswordLogin.value = true
                         }
                     )
                 }

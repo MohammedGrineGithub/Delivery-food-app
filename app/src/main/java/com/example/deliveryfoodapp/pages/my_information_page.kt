@@ -49,8 +49,6 @@ import java.io.InputStream
 @Composable
 fun MyInformationPage(navController: NavHostController) {
 
-    authenticatedUser.fullName = "Grine Mohammed"
-
     val context = LocalContext.current
     val isLoading = remember { mutableStateOf(false) }
     val updateTrigger = remember { mutableStateOf(false) }

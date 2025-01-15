@@ -62,8 +62,8 @@ fun NotificationsPage(navController: NavHostController) {
         try {
 
             notifications.value = UserEndpoints.fetchAllUserNotificationsByUserID(authenticatedUser.id)
-            if (authenticatedUser.has_notification){
-                authenticatedUser.has_notification = false
+            if (authenticatedUser.hasNotification){
+                authenticatedUser.hasNotification = false
                 UserEndpoints.updateUserHasNotifications(authenticatedUser.id)
             }
         } catch (e: Exception) {
@@ -118,7 +118,7 @@ fun NotificationsPage(navController: NavHostController) {
 
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(51.dp))
+                        Spacer(modifier = Modifier.height(50.dp))
                     }
                     items(notifications.value)
                     { notification ->

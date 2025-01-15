@@ -12,22 +12,21 @@ data class User(
     var phone: String,
     var location: Location,
     var photo: AppImage,
-    var has_notification: Boolean,
+    var hasNotification: Boolean,
     var carts: MutableList<UserCart> = mutableListOf(),
 ) {
 
     override fun toString(): String {
-        return "User(id=$id, fullName='$fullName', email='$email', phone='$phone', location=$location, photo=$photo, has_notification=$has_notification)"
+        return "User(id=$id, fullName='$fullName', email='$email', phone='$phone', location=$location, photo=$photo, has_notification=$hasNotification)"
     }
 
     fun toMapToInsert(): Map<String, Any> = mapOf(
-        "id" to id,
         "full_name" to fullName,
         "email" to email,
         "phone" to phone,
         "location" to location.toMap(),
         "photo" to photo.toMap(),
-        "has_notification" to has_notification,
+        "has_notification" to hasNotification,
     )
     fun toMapToUpdate(): Map<String, Any> = mapOf(
         "id" to id,
@@ -35,7 +34,7 @@ data class User(
         "phone" to phone,
         "location" to location.toMap(),
         "photo" to photo.toMap(),
-        "has_notification" to has_notification,
+        "has_notification" to hasNotification,
     )
 
     fun getUserCartByRestaurantID(restaurantID: Int): UserCart {
@@ -94,7 +93,7 @@ data class User(
             phone = map["phone"] as? String ?: "",
             location = Location.fromMap(map["location"] as? Map<String, Any> ?: emptyMap()),
             photo = AppImage.fromMap(map["photo"] as? Map<String, Any> ?: emptyMap()),
-            has_notification = map["has_notification"] as? Boolean ?: false
+            hasNotification = map["has_notification"] as? Boolean ?: false
         )
 
         fun emptyUser(): User {
@@ -105,7 +104,7 @@ data class User(
                 phone = "",
                 location = Location.emptyLocation(),
                 photo = AppImage.emptyAppImage(),
-                has_notification = false,
+                hasNotification = false,
                 carts = mutableListOf(),
             )
         }
